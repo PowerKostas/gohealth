@@ -28,7 +28,7 @@ import com.example.gohealth.ui.components.general.DropdownMenu
 import com.example.gohealth.ui.components.general.NumberTextField
 import com.example.gohealth.ui.components.general.RadioButtonGroup
 import com.example.gohealth.ui.components.profile.ProfilePicture
-import com.example.gohealth.ui.state.ThemeViewModel
+import com.example.gohealth.data.viewModels.ThemeViewModel
 
 // Gets the themeViewModel to update the state of the theme option
 @OptIn(ExperimentalMaterial3Api::class)

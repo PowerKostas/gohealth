@@ -1,4 +1,4 @@
-package com.example.gohealth.ui.state
+package com.example.gohealth.data.viewModels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
