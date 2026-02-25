@@ -23,8 +23,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
@@ -54,8 +55,10 @@ fun DrawerMenu() {
 
         drawerContent = {
             ModalDrawerSheet (
-                modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp * 0.7f),
-                drawerContainerColor = MaterialTheme.colorScheme.surface
+                drawerContainerColor = MaterialTheme.colorScheme.surface,
+
+                // Make the drawer menu take 70% of the screen
+                modifier = Modifier.width(with(LocalDensity.current) { (LocalWindowInfo.current.containerSize.width * 0.7f).toDp() })
             ) {
                 Text(
                     text = buildAnnotatedString {

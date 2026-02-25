@@ -9,7 +9,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gohealth.ui.components.central.DrawerMenu
-import com.example.gohealth.data.viewModels.ThemeViewModel
+import com.example.gohealth.ui.viewModels.ThemeViewModel
 import com.example.gohealth.ui.themes.GoHealthTheme
 
 // This is where the program starts, sets basic settings and runs the custom drawer menu function, which is the center of the app

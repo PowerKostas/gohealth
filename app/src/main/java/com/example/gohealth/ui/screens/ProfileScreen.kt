@@ -16,6 +16,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,12 +30,39 @@ import com.example.gohealth.ui.components.general.DropdownMenu
 import com.example.gohealth.ui.components.general.NumberTextField
 import com.example.gohealth.ui.components.general.RadioButtonGroup
 import com.example.gohealth.ui.components.profile.ProfilePicture
-import com.example.gohealth.data.viewModels.ThemeViewModel
+import com.example.gohealth.ui.viewModels.ThemeViewModel
+import com.example.gohealth.ui.viewModels.UsersViewModel
 
 // Gets the themeViewModel to update the state of the theme option
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(themeViewModel: ThemeViewModel = viewModel()) {
+fun ProfileScreen(
+    themeViewModel: ThemeViewModel = viewModel(),
+    usersViewModel: UsersViewModel = viewModel(factory = UsersViewModel.Factory)
+) {
+    val usersList by usersViewModel.users.collectAsState()
+    val currentUser = usersList.firstOrNull()
+
+    var username by remember { mutableStateOf("") }
+    var gender by remember { mutableStateOf("") }
+    var age by remember { mutableStateOf("") }
+    var height by remember { mutableStateOf("") }
+    var weight by remember { mutableStateOf("") }
+    var activityLevel by remember { mutableStateOf("") }
+    var weightGoal by remember { mutableStateOf("") }
+
+    LaunchedEffect(currentUser) {
+        if (currentUser != null) {
+            username = currentUser.username
+            gender = currentUser.gender
+            age = currentUser.age.toString()
+            height = currentUser.height.toString()
+            weight = currentUser.weight.toString()
+            activityLevel = currentUser.activityLevel
+            weightGoal = currentUser.weightGoal
+        }
+    }
+
     val scrollState = rememberScrollState()
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
@@ -62,12 +91,18 @@ fun ProfileScreen(themeViewModel: ThemeViewModel = viewModel()) {
                 )
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
-                var username by remember { mutableStateOf("") }
                 OutlinedTextField(
                     value = username,
-                    onValueChange = { username = it },
                     label = { Text("Username") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = {newValue ->
+                        username = newValue
+
+                        if (currentUser != null) {
+                            val updatedUser = currentUser.copy(username = newValue)
+                            usersViewModel.updateUser(updatedUser)
+                        }
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
