@@ -4,8 +4,8 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerValue
@@ -18,20 +18,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
@@ -39,21 +34,15 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gohealth.R
 import com.example.gohealth.ui.screens.ProfileScreen
-import com.example.gohealth.ui.viewModels.ThemeViewModel
-import com.example.gohealth.ui.viewModels.UsersViewModel
 import kotlinx.coroutines.launch
 
 // Drawer menu is the central screen of the app. It has the Scaffold, the top bar that remains static and is in charge of switching the
 // different screens
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DrawerMenu(
-    themeViewModel: ThemeViewModel = viewModel(),
-    usersViewModel: UsersViewModel = viewModel(factory = UsersViewModel.Factory)
-) {
+fun DrawerMenu() {
     // drawerState is used to handle the opening and closing of the menu, scope is for the opening and closing animation, whenever the value
     // of currentScreen changes, Compose automatically reruns every line in this code that has currentScreen in it. Because this is the
     // central screen, this is where the main focus manager goes
@@ -63,28 +52,6 @@ fun DrawerMenu(
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
 
-    val usersList by usersViewModel.users.collectAsState()
-    val currentUser = usersList.firstOrNull()
-
-    var initialLoadDone by remember { mutableStateOf(false) }
-
-    // When the app first opens it initializes the theme with the value from the database
-    LaunchedEffect(currentUser) {
-        if (currentUser != null) {
-            if (currentUser.appearance.isNotEmpty()) { // The first time the app opens, it uses the hard-coded Light mode
-                themeViewModel.update(currentUser.appearance)
-            }
-
-            initialLoadDone = true
-        }
-    }
-
-    // Blank loading screen
-    if (!initialLoadDone) {
-        Box(modifier = Modifier.fillMaxSize())
-        return
-    }
-
     ModalNavigationDrawer(
         drawerState = drawerState,
 
@@ -93,7 +60,7 @@ fun DrawerMenu(
                 drawerContainerColor = MaterialTheme.colorScheme.surface,
 
                 // Make the drawer menu take 70% of the screen
-                modifier = Modifier.width(with(LocalDensity.current) { (LocalWindowInfo.current.containerSize.width * 0.7f).toDp() })
+                modifier = Modifier.fillMaxWidth(0.7f)
             ) {
                 Column(
                     modifier = Modifier

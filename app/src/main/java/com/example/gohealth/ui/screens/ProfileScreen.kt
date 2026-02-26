@@ -1,7 +1,6 @@
 package com.example.gohealth.ui.screens
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -84,7 +83,6 @@ fun ProfileScreen(
 
     // Blank loading screen
     if (!initialLoadDone ) {
-        Box(modifier = Modifier.fillMaxSize())
         return
     }
 
