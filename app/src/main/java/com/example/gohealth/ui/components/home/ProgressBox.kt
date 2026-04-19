@@ -4,8 +4,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,12 +19,10 @@ import androidx.compose.ui.unit.dp
 import com.example.gohealth.ui.components.general.ProgressBar
 
 @Composable
-fun ProgressBox(modifier: Modifier, iconId: Int, progressBarColour: Color) {
+fun ProgressBox(iconId: Int, category: String, progressBarColour: Color) {
     Box(
         contentAlignment = Alignment.TopCenter,
-        modifier = modifier
-            .aspectRatio(1f)
-
+        modifier = Modifier
             .border(
                 2.dp,
                 MaterialTheme.colorScheme.onSurface,
@@ -37,26 +33,26 @@ fun ProgressBox(modifier: Modifier, iconId: Int, progressBarColour: Color) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Icon(
                 painter = painterResource(id = iconId),
-                contentDescription = "Category",
+                contentDescription = category,
                 tint = Color.Unspecified,
-                modifier = Modifier.size(96.dp)
+                modifier = Modifier.size(80.dp)
             )
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                ProgressBar(modifier = Modifier.weight(1f), 8.dp, progressBarColour)
+            Text(
+                text = category,
+                style = MaterialTheme.typography.labelLarge
+            )
 
-                Text(
-                    text = "25%",
-                    style = MaterialTheme.typography.labelLarge
-                )
-            }
+            ProgressBar(8.dp, progressBarColour)
+
+            Text(
+                text = "25%",
+                style = MaterialTheme.typography.labelLarge
+            )
         }
     }
 }

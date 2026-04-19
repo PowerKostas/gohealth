@@ -2,14 +2,12 @@ package com.example.gohealth.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -21,26 +19,14 @@ fun HomeScreen() {
     HorizontalDivider(color = MaterialTheme.colorScheme.onSurface)
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(
-            alignment = Alignment.CenterVertically,
-            space = 144.dp
-        ),
-
+        verticalArrangement = Arrangement.spacedBy(64.dp),
         modifier = Modifier
-            .fillMaxSize()
             .padding(12.dp)
-
+            .verticalScroll(rememberScrollState())
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(40.dp)) {
-            val modifier = Modifier.weight(1f)
-            ProgressBox(modifier, R.drawable.water, Color(0xFF2196F3))
-            ProgressBox(modifier, R.drawable.calories, Color(0xFF8B4513))
-        }
-
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(40.dp)) {
-            val modifier = Modifier.weight(1f)
-            ProgressBox(modifier, R.drawable.push_ups, Color.Black)
-            ProgressBox(modifier, R.drawable.steps, Color(0xFFE0AC69))
-        }
+        ProgressBox(R.drawable.water, "Water", Color(0xFF2196F3))
+        ProgressBox(R.drawable.calories, "Calories", Color(0xFF8B4513))
+        ProgressBox(R.drawable.push_ups, "Push-ups", Color.Black)
+        ProgressBox(R.drawable.steps, "Steps", Color(0xFFE0AC69))
     }
 }

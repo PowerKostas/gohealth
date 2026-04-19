@@ -31,17 +31,20 @@ import com.example.gohealth.ui.components.general.DropdownMenu
 import com.example.gohealth.ui.components.general.NumberTextField
 import com.example.gohealth.ui.components.general.RadioButtonGroup
 import com.example.gohealth.ui.components.profile.ProfilePicture
-import com.example.gohealth.ui.viewModels.ThemeViewModel
-import com.example.gohealth.ui.viewModels.UsersViewModel
+import com.example.gohealth.ui.viewModels.CharacteristicsViewModel
+import com.example.gohealth.ui.viewModels.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    themeViewModel: ThemeViewModel = viewModel(),
-    usersViewModel: UsersViewModel = viewModel(factory = UsersViewModel.Factory)
+    characteristicsViewModel: CharacteristicsViewModel = viewModel(factory = CharacteristicsViewModel.Factory),
+    settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)
 ) {
-    val usersList by usersViewModel.users.collectAsState()
-    val currentUser = usersList.firstOrNull()
+    val userCharacteristicsList by characteristicsViewModel.characteristics.collectAsState()
+    val userCharacteristics = userCharacteristicsList.firstOrNull()
+
+    val userSettingsList by settingsViewModel.settings.collectAsState()
+    val userSettings = userSettingsList.firstOrNull()
 
     var profilePictureString by remember { mutableStateOf<String?>(null) }
     var username by remember { mutableStateOf("") }
@@ -55,13 +58,13 @@ fun ProfileScreen(
     // Flag to stop the program from entering the LaunchedEffect function when typing in the text field
     var initialLoadDone by remember { mutableStateOf(false) }
 
-    // When the app first opens it initializes the variables with the values from the database, also runs every time currentUser changes, but
-    // that will probably not happen
-    LaunchedEffect(currentUser) {
-        if (currentUser != null && !initialLoadDone) {
-            profilePictureString = currentUser.profilePictureString
-            username = currentUser.username
-            gender = currentUser.gender
+    // When the app first opens it initializes the variables with the values from the database, also runs every time the current user
+    // changes, but that will probably not happen
+    LaunchedEffect(userCharacteristics, userSettings) {
+        if (userCharacteristics != null && userSettings != null && !initialLoadDone) {
+            profilePictureString = userSettings.profilePictureString
+            username = userSettings.username
+            gender = userCharacteristics.gender
 
             val formatNumber = { num: Float? ->
                 when {
@@ -71,12 +74,12 @@ fun ProfileScreen(
                 }
             }
 
-            age = formatNumber(currentUser.age)
-            height = formatNumber(currentUser.height)
-            weight = formatNumber(currentUser.weight)
+            age = formatNumber(userCharacteristics.age)
+            height = formatNumber(userCharacteristics.height)
+            weight = formatNumber(userCharacteristics.weight)
 
-            activityLevel = currentUser.activityLevel
-            weightGoal = currentUser.weightGoal
+            activityLevel = userCharacteristics.activityLevel
+            weightGoal = userCharacteristics.weightGoal
 
             initialLoadDone = true
         }
@@ -101,8 +104,8 @@ fun ProfileScreen(
         // the UI instantly, creates a copy of the user and only updates the profile picture String in the local database
         newProfilePictureString ->
             profilePictureString = newProfilePictureString
-            currentUser?.let { user ->
-                usersViewModel.updateUser(
+            userSettings?.let { user ->
+                settingsViewModel.updateUserSettings(
                     user.copy(profilePictureString = newProfilePictureString)
                 )
             }
@@ -141,9 +144,9 @@ fun ProfileScreen(
                     onValueChange = { newValue ->
                         username = newValue
 
-                        if (currentUser != null) {
-                            val updatedUser = currentUser.copy(username = newValue)
-                            usersViewModel.updateUser(updatedUser)
+                        if (userSettings != null) {
+                            val updatedUser = userSettings.copy(username = newValue)
+                            settingsViewModel.updateUserSettings(updatedUser)
                         }
                     }
                 )
@@ -153,8 +156,8 @@ fun ProfileScreen(
                     gender
                 ) { newValue ->
                     gender = newValue
-                    currentUser?.let { user ->
-                        usersViewModel.updateUser(
+                    userCharacteristics?.let { user ->
+                        characteristicsViewModel.updateUserCharacteristics(
                             user.copy(gender = newValue)
                         )
                     }
@@ -166,8 +169,8 @@ fun ProfileScreen(
                     age
                 ) { newValue ->
                     age = newValue
-                    currentUser?.let { user ->
-                        usersViewModel.updateUser(
+                    userCharacteristics?.let { user ->
+                        characteristicsViewModel.updateUserCharacteristics(
                             user.copy(age = newValue.toFloatOrNull())
                         )
                     }
@@ -179,8 +182,8 @@ fun ProfileScreen(
                     height
                 ) { newValue ->
                     height = newValue
-                    currentUser?.let { user ->
-                        usersViewModel.updateUser(
+                    userCharacteristics?.let { user ->
+                        characteristicsViewModel.updateUserCharacteristics(
                             user.copy(height = newValue.toFloatOrNull())
                         )
                     }
@@ -192,8 +195,8 @@ fun ProfileScreen(
                     weight
                 ) { newValue ->
                     weight = newValue
-                    currentUser?.let { user ->
-                        usersViewModel.updateUser(
+                    userCharacteristics?.let { user ->
+                        characteristicsViewModel.updateUserCharacteristics(
                             user.copy(weight = newValue.toFloatOrNull())
                         )
                     }
@@ -204,8 +207,8 @@ fun ProfileScreen(
                     activityLevel
                 ) { newValue ->
                     activityLevel = newValue
-                    currentUser?.let { user ->
-                        usersViewModel.updateUser(
+                    userCharacteristics?.let { user ->
+                        characteristicsViewModel.updateUserCharacteristics(
                             user.copy(activityLevel = newValue)
                         )
                     }
@@ -216,8 +219,8 @@ fun ProfileScreen(
                     weightGoal
                 ) { newValue ->
                     weightGoal = newValue
-                    currentUser?.let { user ->
-                        usersViewModel.updateUser(
+                    userCharacteristics?.let { user ->
+                        characteristicsViewModel.updateUserCharacteristics(
                             user.copy(weightGoal = newValue)
                         )
                     }
@@ -247,13 +250,11 @@ fun ProfileScreen(
         ) {
             RadioButtonGroup(
                 listOf("Light", "Dark", "Dynamic"),
-                themeViewModel.selectedTheme
-            ) { newTheme ->
-                themeViewModel.update(newTheme)
-
-                currentUser?.let { user ->
-                    usersViewModel.updateUser(
-                        user.copy(appearance = newTheme)
+                userSettings?.appearance ?: "Light" // If a value hasn't been added yet, the default is light mode
+            ) { newAppearance ->
+                userSettings?.let { user ->
+                    settingsViewModel.updateUserSettings(
+                        user.copy(appearance = newAppearance)
                     )
                 }
             }

@@ -1,5 +1,6 @@
 package com.example.gohealth.ui.components.general
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
@@ -12,11 +13,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ProgressBar(modifier: Modifier, height: Dp, colour: Color) {
+fun ProgressBar(height: Dp, colour: Color) {
     LinearProgressIndicator(
         progress = { 0.25f },
 
-        modifier = modifier
+        modifier = Modifier
+            .fillMaxWidth()
             .height(height)
             .clip(RoundedCornerShape(4.dp)),
 
