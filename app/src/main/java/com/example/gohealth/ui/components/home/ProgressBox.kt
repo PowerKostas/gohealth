@@ -11,12 +11,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gohealth.helpers.calculateStepsGoal
 import com.example.gohealth.ui.components.general.ProgressBar
+import com.example.gohealth.ui.viewModels.CharacteristicsViewModel
 
 @Composable
 fun ProgressBox(iconId: Int, category: String, progressBarColour: Color) {
@@ -53,6 +58,13 @@ fun ProgressBox(iconId: Int, category: String, progressBarColour: Color) {
                 text = "25%",
                 style = MaterialTheme.typography.labelLarge
             )
+
+            val characteristicsViewModel = viewModel<CharacteristicsViewModel>(factory = CharacteristicsViewModel.Factory)
+            val userCharacteristicsList by characteristicsViewModel.characteristics.collectAsState()
+            val userCharacteristics = userCharacteristicsList.firstOrNull()
+            val waterGoal = calculateStepsGoal(userCharacteristics)
+            println(waterGoal)
+
         }
     }
 }

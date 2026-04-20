@@ -36,13 +36,12 @@ import com.example.gohealth.ui.viewModels.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(
-    characteristicsViewModel: CharacteristicsViewModel = viewModel(factory = CharacteristicsViewModel.Factory),
-    settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)
-) {
+fun ProfileScreen() {
+    val characteristicsViewModel: CharacteristicsViewModel = viewModel(factory = CharacteristicsViewModel.Factory)
     val userCharacteristicsList by characteristicsViewModel.characteristics.collectAsState()
     val userCharacteristics = userCharacteristicsList.firstOrNull()
 
+    val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)
     val userSettingsList by settingsViewModel.settings.collectAsState()
     val userSettings = userSettingsList.firstOrNull()
 

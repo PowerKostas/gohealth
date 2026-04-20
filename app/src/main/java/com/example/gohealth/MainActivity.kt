@@ -28,7 +28,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)
-
             val settingsList by settingsViewModel.settings.collectAsState()
             val userSettings = settingsList.firstOrNull()
 

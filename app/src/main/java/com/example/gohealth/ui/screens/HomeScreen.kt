@@ -21,7 +21,7 @@ fun HomeScreen() {
     Column(
         verticalArrangement = Arrangement.spacedBy(64.dp),
         modifier = Modifier
-            .padding(12.dp)
+            .padding(12.dp, 32.dp, 12.dp, 32.dp)
             .verticalScroll(rememberScrollState())
     ) {
         ProgressBox(R.drawable.water, "Water", Color(0xFF2196F3))
