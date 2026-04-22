@@ -16,6 +16,8 @@ import com.example.gohealth.ui.themes.GoHealthTheme
 import com.example.gohealth.ui.viewModels.CharacteristicsViewModel
 import com.example.gohealth.ui.viewModels.SettingsViewModel
 import com.example.gohealth.ui.viewModels.TrackingsViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 // This is where the program starts, sets basic settings and runs the custom drawer menu function, which is the center of the app
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,19 +36,36 @@ class MainActivity : ComponentActivity() {
             val characteristicsViewModel: CharacteristicsViewModel = viewModel(factory = CharacteristicsViewModel.Factory)
             val trackingsViewModel: TrackingsViewModel = viewModel(factory = TrackingsViewModel.Factory)
 
-            // Settings is the table with the primary key, when it's first initialized here, the other 2 tables with the foreign keys also
-            // get initialized
-            val settingsList by settingsViewModel.settings.collectAsState()
-            LaunchedEffect(settingsList) {
-                if (settingsList.isNotEmpty()) {
-                    val userId = settingsList.first().userId
+            val userSettingsList by settingsViewModel.settings.collectAsState()
+            val userSettings = userSettingsList.firstOrNull()
+            val userId = userSettings?.userId
+
+            val userTrackingsList by trackingsViewModel.trackings.collectAsState()
+            val userTrackings = userTrackingsList.firstOrNull()
+
+            // Settings is the table with the primary key, it's initialized automatically. LaunchedEffect runs everytime the key
+            // changes, including the initialization to a null value, so the actual block here only executes the first time the user opens
+            // the app. The other 2 tables, with the foreign keys, get initialized when that happens
+            LaunchedEffect(userId) {
+                if (userId != null) {
+                    val userId = userSettingsList.first().userId
                     characteristicsViewModel.initializeUserCharacteristics(userId)
                     trackingsViewModel.initializeUserTrackings(userId)
                 }
             }
 
+            // The while loop executes when userTrackings and userSettings get initialized and stays true until the app is closed. The loop
+            // is checking every minute if the day has changed to reset the trackings table
+            LaunchedEffect(userTrackings != null && userSettings != null) {
+                if (userTrackings != null && userSettings != null) {
+                    while (isActive) {
+                        trackingsViewModel.resetUserTrackings(userTrackings, userSettings)
+                        delay(60000)
+                    }
+                }
+            }
+
             // Gets the set theme option and passes it to the function that sets the theme
-            val userSettings = settingsList.firstOrNull()
             if (userSettings != null) {
                 val isDarkTheme = when (userSettings.appearance) {
                     "Light" -> false
