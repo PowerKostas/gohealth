@@ -39,9 +39,14 @@ class MainActivity : ComponentActivity() {
             window.isNavigationBarContrastEnforced = false
         }
 
-        // Asks user for notifications permission
+        // Asks user for activity recognition and notifications permissions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+            requestPermissions(arrayOf(Manifest.permission.ACTIVITY_RECOGNITION, Manifest.permission.POST_NOTIFICATIONS), 1)
+        }
+
+        // Asks user only for activity recognition permissions, notifications permissions are enabled by default in this version
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            requestPermissions(arrayOf(Manifest.permission.ACTIVITY_RECOGNITION), 1)
         }
 
         schedulePeriodicNotification()
@@ -112,6 +117,10 @@ class MainActivity : ComponentActivity() {
 
             .build()
 
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork("periodic_notification", ExistingPeriodicWorkPolicy.KEEP, workRequest)
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "periodic_notification",
+            ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
     }
 }

@@ -10,6 +10,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.kostas.gohealth.MainActivity
 import com.kostas.gohealth.R
+import java.time.LocalTime
 
 private const val CHANNEL_ID = "periodic_channel"
 private val uniqueNotificationId = System.currentTimeMillis().toInt()
@@ -18,8 +19,12 @@ private val randomTitles = arrayOf("Daily Progress", "Push-ups Goal", "Push-ups 
 private val randomTexts = arrayOf("Time for your push-up set ⏰", "Stay on track with a quick set of reps \uD83D\uDCAA", "A short set of push-ups will maintain your momentum ⚡", "Ready for your next set?", "Your future self will thank you!")
 
 class NotificationWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+    // Only sends notifications between 12pm and 12am
     override suspend fun doWork(): Result {
-        sendNotification()
+        if (LocalTime.now() >= LocalTime.of(12, 0)) {
+            sendNotification()
+        }
+
         return Result.success()
     }
 
@@ -39,7 +44,7 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Coroutine
         val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setContentTitle(randomTitles.random())
             .setContentText(randomTexts.random())
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_notification)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .build()
