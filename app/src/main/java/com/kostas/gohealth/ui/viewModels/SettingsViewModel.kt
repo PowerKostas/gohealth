@@ -41,7 +41,8 @@ class SettingsViewModel(private val settingsDao: SettingsDao) : ViewModel() {
                     username = null,
                     appearance = "Light",
                     lastResetDate = LocalDate.MIN,
-                    lastSavedSteps = 0
+                    lastSavedSteps = 0,
+                    stepTracking = "Enabled"
                 )
 
                 settingsDao.insert(defaultSettings)

@@ -1,6 +1,5 @@
 package com.kostas.gohealth.ui.screens
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,12 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kostas.gohealth.ui.components.general.DropdownMenu
 import com.kostas.gohealth.ui.components.general.NumberTextField
 import com.kostas.gohealth.ui.components.general.RadioButtonGroup
+import com.kostas.gohealth.ui.components.screen.CustomSurface
 import com.kostas.gohealth.ui.components.screen.ProfilePicture
 import com.kostas.gohealth.ui.viewModels.CharacteristicsViewModel
 import com.kostas.gohealth.ui.viewModels.SettingsViewModel
@@ -95,17 +92,7 @@ fun ProfileScreen() {
                 .padding(start = 16.dp)
         )
 
-        Surface(
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp, bottom = 4.dp, top = 4.dp)
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    shape = RoundedCornerShape(16.dp)
-                )
-        ) {
+        CustomSurface {
             Column(
                 verticalArrangement = Arrangement.spacedBy(space = 24.dp),
                 modifier = Modifier.padding(24.dp)
@@ -205,23 +192,35 @@ fun ProfileScreen() {
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
+            text = "Step Tracking",
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 16.dp)
+        )
+
+        CustomSurface {
+            RadioButtonGroup(
+                listOf("Enabled", "Disabled"),
+                userSettings.stepTracking
+            ) { newSetting ->
+                userSettings.let { settings ->
+                    settingsViewModel.updateUserSettings(
+                        settings.copy(stepTracking = newSetting)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
             text = "Appearance",
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(start = 16.dp)
         )
 
-        Surface(
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp, bottom = 4.dp, top = 4.dp)
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    shape = RoundedCornerShape(16.dp)
-                )
-        ) {
+        CustomSurface {
             RadioButtonGroup(
                 listOf("Light", "Dark", "Dynamic"),
                 userSettings.appearance

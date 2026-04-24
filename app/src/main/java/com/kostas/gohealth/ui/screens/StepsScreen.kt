@@ -12,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,12 +29,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kostas.gohealth.R
 import com.kostas.gohealth.helpers.checkActivityPermissions
 import com.kostas.gohealth.ui.components.general.ProgressBar
+import com.kostas.gohealth.ui.viewModels.SettingsViewModel
 
 @Composable
 fun StepsScreen(categoryProgress: Int, categoryGoal: Int) {
+    val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory)
+    val userSettingsList by settingsViewModel.settings.collectAsState()
+    val userSettings = userSettingsList.firstOrNull()
+
     HorizontalDivider(color = MaterialTheme.colorScheme.onSurface)
 
     Column(
@@ -55,12 +62,13 @@ fun StepsScreen(categoryProgress: Int, categoryGoal: Int) {
             onPauseOrDispose { }
         }
 
+        // Builds the appropriate text, if both permissions and settings are disabled, notifications gets priority in the text
         val text = buildAnnotatedString {
-            if (isActivityRecognitionEnabled) {
+            if (isActivityRecognitionEnabled && userSettings?.stepTracking == "Enabled") {
                 append("Currently tracking steps...")
             }
 
-            else {
+            else if (!isActivityRecognitionEnabled) {
                 append("Physical activity permissions are ")
 
                 withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.error)) {
@@ -68,6 +76,16 @@ fun StepsScreen(categoryProgress: Int, categoryGoal: Int) {
                 }
 
                 append(". Step tracking paused.")
+            }
+
+            else {
+                append("Step tracking is ")
+
+                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.error)) {
+                    append("disabled")
+                }
+
+                append(" in the app profile.")
             }
         }
 

@@ -8,12 +8,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -28,12 +31,28 @@ import com.kostas.gohealth.ui.viewModels.CharacteristicsViewModel
 import com.kostas.gohealth.ui.viewModels.SettingsViewModel
 import com.kostas.gohealth.ui.viewModels.TrackingsViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 // This is where the program starts, sets basic settings and runs the custom drawer menu function, which is the center of the app
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
+    private val settingsViewModel: SettingsViewModel by viewModels { SettingsViewModel.Factory }
+
+    // On first time open, the code doesn't wait for user input on the permissions dialog and the foreground service doesn't have the
+    // permissions to run, to fix this, foreground service runs from here too
+    private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val activityRecognitionGranted = permissions[Manifest.permission.ACTIVITY_RECOGNITION] ?: false
+            if (activityRecognitionGranted) {
+                val serviceIntent = Intent(this, StepTrackerService::class.java)
+                startForegroundService(serviceIntent)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,27 +64,41 @@ class MainActivity : ComponentActivity() {
 
         // Asks user for activity recognition and notifications permissions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissions(arrayOf(Manifest.permission.ACTIVITY_RECOGNITION, Manifest.permission.POST_NOTIFICATIONS), 1)
+            permissionLauncher.launch(arrayOf(Manifest.permission.POST_NOTIFICATIONS, Manifest.permission.ACTIVITY_RECOGNITION))
         }
 
         // Asks user only for activity recognition permissions, notifications permissions are enabled by default in this version
         else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            requestPermissions(arrayOf(Manifest.permission.ACTIVITY_RECOGNITION), 1)
+            permissionLauncher.launch(arrayOf(Manifest.permission.ACTIVITY_RECOGNITION))
         }
 
         schedulePeriodicNotification()
 
-        // Starts the foreground step tracking service, if physical activity permissions are enabled
-        val serviceIntent = Intent(this, StepTrackerService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
-                startForegroundService(serviceIntent)
-            }
-        }
+        // Starts the foreground step tracking service, only if the step tracking setting and the physical activity permissions are
+        // enabled. Steps are only counted if the foreground service is active
+        lifecycleScope.launch {
+            settingsViewModel.settings.collect { userSettingsList ->
+                val userSettings = userSettingsList.firstOrNull()
+                if (userSettings?.stepTracking == "Enabled") {
+                    val serviceIntent = Intent(this@MainActivity, StepTrackerService::class.java)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
+                            startForegroundService(serviceIntent)
+                        }
+                    }
 
-        // Below this version, permissions are not needed
-        else {
-            startForegroundService(serviceIntent)
+                    // Below this version, permissions are not needed
+                    else {
+                        startForegroundService(serviceIntent)
+                    }
+                }
+
+                // Kills the service if the user disables the setting
+                else if (userSettings?.stepTracking == "Disabled") {
+                    val stopIntent = Intent(this@MainActivity, StepTrackerService::class.java)
+                    stopService(stopIntent)
+                }
+            }
         }
 
         setContent {
@@ -114,6 +147,30 @@ class MainActivity : ComponentActivity() {
 
                 GoHealthTheme(darkTheme = isDarkTheme, dynamicColor = useDynamicColor) {
                     DrawerMenu()
+                }
+            }
+        }
+    }
+
+    // Handles edge case where, with the app on the background, the user allows activity recognition permissions and reopens the app, this
+    // opens the foreground service in that instance
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            val userSettingsList = settingsViewModel.settings.first()
+            val userSettings = userSettingsList.firstOrNull()
+
+            if (userSettings?.stepTracking == "Enabled") {
+                val serviceIntent = Intent(this@MainActivity, StepTrackerService::class.java)
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
+                        startForegroundService(serviceIntent)
+                    }
+                }
+
+                else {
+                    startForegroundService(serviceIntent)
                 }
             }
         }

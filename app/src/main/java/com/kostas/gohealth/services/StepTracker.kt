@@ -1,17 +1,21 @@
 package com.kostas.gohealth.services
 
+import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.kostas.gohealth.MainActivity
 import com.kostas.gohealth.R
 import com.kostas.gohealth.data.DatabaseProvider
@@ -45,6 +49,15 @@ class StepTrackerService : Service(), SensorEventListener {
             return START_NOT_STICKY
         }
 
+        // Handles weird bug
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+                stopForeground(STOP_FOREGROUND_REMOVE)
+                stopSelf()
+                return START_NOT_STICKY
+            }
+        }
+
         createNotificationChannel()
         val notification = createNotification()
 
@@ -67,7 +80,7 @@ class StepTrackerService : Service(), SensorEventListener {
             val totalSteps = event.values[0].toInt()
 
             // Every 10 new steps, it updates stepsProgress and lastSavedSteps. The step counter in Android counts steps since the last
-            // reset, this is why we subtract the lastSavedSteps from the totalSteps to get the new steps. New steps go into
+            // reboot, this is why we subtract the lastSavedSteps from the totalSteps to get the new steps. New steps go into
             // stepsProgress, stepsProgress gets reset every midnight and lastSavedSteps gets the value of totalSteps.
             serviceScope.launch {
                 val database = DatabaseProvider.getDatabase(applicationContext)
@@ -79,8 +92,21 @@ class StepTrackerService : Service(), SensorEventListener {
                 val userSettings = settingsDao.getAll().first().firstOrNull()
 
                 if (userTrackings != null && userSettings != null) {
-                    if (totalSteps - userSettings.lastSavedSteps >= 10) {
-                        trackingsDao.update(userTrackings.copy(stepsProgress = userTrackings.stepsProgress + totalSteps - userSettings.lastSavedSteps))
+                    val newSteps = totalSteps - userSettings.lastSavedSteps
+
+                    // Handles the first time the user opens the app
+                    if (userSettings.lastSavedSteps == 0) {
+                        settingsDao.update(userSettings.copy(lastSavedSteps = totalSteps))
+                        return@launch
+                    }
+
+                    // Handles device reboots
+                    if (newSteps < 0) {
+                        settingsDao.update(userSettings.copy(lastSavedSteps = totalSteps))
+                    }
+
+                    else if (newSteps >= 10) {
+                        trackingsDao.update(userTrackings.copy(stepsProgress = userTrackings.stepsProgress + newSteps))
                         settingsDao.update(userSettings.copy(lastSavedSteps = totalSteps))
                     }
                 }
