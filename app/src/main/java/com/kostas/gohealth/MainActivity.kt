@@ -189,9 +189,10 @@ class MainActivity : ComponentActivity() {
     // Updates the remote Firestore database every midnight, needs network
     private fun scheduleDailyLeaderboardSync() {
         // Testing
-        //val testRequest = OneTimeWorkRequestBuilder<DailySyncWorker>().build()
+        //val testRequest = OneTimeWorkRequestBuilder<LeaderboardSyncWorker>().build()
         //WorkManager.getInstance(this).enqueue(testRequest)
 
+        // Sets an initial delay to sync the 24-hour timer to midnight
         //val now = LocalDateTime.now()
         //val nextMidnight = LocalDateTime.now().toLocalDate().plusDays(1).atStartOfDay()
         //val delayInMilliseconds = Duration.between(now, nextMidnight).toMillis()
@@ -215,7 +216,9 @@ class MainActivity : ComponentActivity() {
 
     // Resets the trackings table every midnight, doesn't need network
     private fun scheduleDailyTrackingsReset() {
-        // Sets an initial delay to sync the 24-hour timer to midnight
+        //val testRequest = OneTimeWorkRequestBuilder<ResetTrackingsWorker>().build()
+        //WorkManager.getInstance(this).enqueue(testRequest)
+
         //val now = LocalDateTime.now()
         //val nextMidnight = now.toLocalDate().plusDays(1).atStartOfDay()
         //val delayInMilliseconds = Duration.between(now, nextMidnight).toMillis()

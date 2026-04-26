@@ -41,7 +41,6 @@ class LeaderboardSyncWorker(appContext: Context, workerParams: WorkerParameters)
                 val pushUpsGoal = calculatePushUpsGoal(userCharacteristics)
 
                 val updateData = hashMapOf(
-                    "userId" to userSettings.userId,
                     "username" to (userSettings.username ?: ""),
                     "profilePictureString" to userSettings.profilePictureString,
                     "waterGoalsCompleted" to FieldValue.increment(if (waterProgressSum >= waterGoal) 1L else 0L),
@@ -51,7 +50,7 @@ class LeaderboardSyncWorker(appContext: Context, workerParams: WorkerParameters)
                 )
 
                 firestore.collection("leaderboard")
-                    .document(userSettings.userId.toString())
+                    .document(userSettings.firestoreId)
                     .set(updateData, SetOptions.merge())
                     .await()
 
