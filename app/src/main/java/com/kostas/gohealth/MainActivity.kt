@@ -23,16 +23,16 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.kostas.gohealth.services.LeaderboardSyncWorker
 import com.kostas.gohealth.services.NotificationWorker
+import com.kostas.gohealth.services.ResetTrackingsWorker
 import com.kostas.gohealth.services.StepTrackerService
 import com.kostas.gohealth.ui.components.central.DrawerMenu
 import com.kostas.gohealth.ui.themes.GoHealthTheme
 import com.kostas.gohealth.ui.viewModels.CharacteristicsViewModel
 import com.kostas.gohealth.ui.viewModels.SettingsViewModel
 import com.kostas.gohealth.ui.viewModels.TrackingsViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
@@ -73,6 +73,8 @@ class MainActivity : ComponentActivity() {
         }
 
         schedulePeriodicNotification()
+        scheduleDailyLeaderboardSync()
+        scheduleDailyTrackingsReset()
 
         // Starts the foreground step tracking service, only if the step tracking setting and the physical activity permissions are
         // enabled. Steps are only counted if the foreground service is active
@@ -110,9 +112,6 @@ class MainActivity : ComponentActivity() {
             val userSettings = userSettingsList.firstOrNull()
             val userId = userSettings?.userId
 
-            val userTrackingsList by trackingsViewModel.trackings.collectAsState()
-            val userTrackings = userTrackingsList.firstOrNull()
-
             // Settings is the table with the primary key, it's initialized automatically. LaunchedEffect runs everytime the key
             // changes, including the initialization to a null value, so the actual block here only executes the first time the user opens
             // the app. The other 2 tables, with the foreign keys, get initialized when that happens
@@ -121,17 +120,6 @@ class MainActivity : ComponentActivity() {
                     val userId = userSettingsList.first().userId
                     characteristicsViewModel.initializeUserCharacteristics(userId)
                     trackingsViewModel.initializeUserTrackings(userId)
-                }
-            }
-
-            // The while loop executes when userTrackings and userSettings get initialized and stays true until the app is closed. The loop
-            // is checking every minute if the day has changed to reset the trackings table
-            LaunchedEffect(userTrackings != null && userSettings != null) {
-                if (userTrackings != null && userSettings != null) {
-                    while (isActive) {
-                        trackingsViewModel.resetUserTrackings()
-                        delay(60000)
-                    }
                 }
             }
 
@@ -193,6 +181,57 @@ class MainActivity : ComponentActivity() {
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             "periodic_notification",
+            ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
+    }
+
+    // Updates the remote Firestore database every midnight, needs network
+    private fun scheduleDailyLeaderboardSync() {
+        // Testing
+        //val testRequest = OneTimeWorkRequestBuilder<DailySyncWorker>().build()
+        //WorkManager.getInstance(this).enqueue(testRequest)
+
+        //val now = LocalDateTime.now()
+        //val nextMidnight = LocalDateTime.now().toLocalDate().plusDays(1).atStartOfDay()
+        //val delayInMilliseconds = Duration.between(now, nextMidnight).toMillis()
+
+        val workRequest = PeriodicWorkRequestBuilder<LeaderboardSyncWorker>(15, TimeUnit.MINUTES)
+            //.setInitialDelay(delayInMilliseconds, TimeUnit.MILLISECONDS)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            )
+
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "daily_sync",
+            ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
+    }
+
+    // Resets the trackings table every midnight, doesn't need network
+    private fun scheduleDailyTrackingsReset() {
+        // Sets an initial delay to sync the 24-hour timer to midnight
+        //val now = LocalDateTime.now()
+        //val nextMidnight = now.toLocalDate().plusDays(1).atStartOfDay()
+        //val delayInMilliseconds = Duration.between(now, nextMidnight).toMillis()
+
+        val workRequest = PeriodicWorkRequestBuilder<ResetTrackingsWorker>(15, TimeUnit.MINUTES)
+            //.setInitialDelay(delayInMilliseconds, TimeUnit.MILLISECONDS)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                    .build()
+            )
+
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "daily_reset",
             ExistingPeriodicWorkPolicy.KEEP,
             workRequest
         )

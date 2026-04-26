@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-// An entity represents a table within the database, uses userId from Settings as a foreign key
+// An entity represents a table within the local Room API database, uses userId from Settings as a foreign key
 @Entity(
     tableName = "characteristics",
     foreignKeys = [

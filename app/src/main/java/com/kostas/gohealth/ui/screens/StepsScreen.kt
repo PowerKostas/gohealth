@@ -75,7 +75,7 @@ fun StepsScreen(categoryProgress: Int, categoryGoal: Int) {
                     append("disabled")
                 }
 
-                append(". Step tracking paused.")
+                append(". Navigate to your device Settings to enable them.")
             }
 
             else {
@@ -85,7 +85,7 @@ fun StepsScreen(categoryProgress: Int, categoryGoal: Int) {
                     append("disabled")
                 }
 
-                append(" in the app profile.")
+                append(". You can turn it back on in your Profile.")
             }
         }
 

@@ -44,7 +44,7 @@ fun HomeScreen() {
     val waterProgressSum = userTrackings.waterProgress.sum()
     val caloriesProgressSum = userTrackings.caloriesProgress.sum()
     val pushUpsProgressSum = userTrackings.pushUpsProgress.sum()
-    val stepsProgressSum = userTrackings.stepsProgress
+    val stepsProgress = userTrackings.stepsProgress
 
     val waterGoal = calculateWaterGoal(userCharacteristics)
     val caloriesGoal = calculateCaloriesGoal(userCharacteristics)
@@ -72,6 +72,6 @@ fun HomeScreen() {
         ProgressBox(R.drawable.water, "Water", Color(0xFF2196F3), (waterProgressSum.toFloat() / waterGoal).coerceAtMost(1.0f))
         ProgressBox(R.drawable.calories, "Calories", Color(0xFF8B4513), (caloriesProgressSum.toFloat() / caloriesGoal).coerceAtMost(1.0f))
         ProgressBox(R.drawable.push_ups, "Push-ups", Color.Black, (pushUpsProgressSum.toFloat() / pushUpsGoal).coerceAtMost(1.0f))
-        ProgressBox(R.drawable.steps, "Steps", Color(0xFFE0AC69), (stepsProgressSum.toFloat() / stepsGoal).coerceAtMost(1.0f))
+        ProgressBox(R.drawable.steps, "Steps", Color(0xFFE0AC69), (stepsProgress.toFloat() / stepsGoal).coerceAtMost(1.0f))
     }
 }
