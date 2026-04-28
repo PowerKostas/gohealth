@@ -3,6 +3,19 @@ package com.kostas.gohealth.helpers
 import com.kostas.gohealth.data.entities.Characteristics
 import kotlin.math.roundToInt
 
+// For a better view, it rounds the goal
+fun roundGoal(categoryGoal: Int): Int {
+    val remainder = categoryGoal % 10
+    val roundedCategoryGoal = when {
+        remainder < 5 -> categoryGoal - remainder
+        remainder == 5 -> categoryGoal
+        else -> categoryGoal + (10 - remainder)
+    }
+
+    return roundedCategoryGoal
+}
+
+
 fun calculateWaterGoal(userCharacteristics: Characteristics?): Int {
     val weight = userCharacteristics?.weight ?: 70f
 
@@ -21,7 +34,8 @@ fun calculateWaterGoal(userCharacteristics: Characteristics?): Int {
 
     val activityLevelValue = activityLevelValues.getValue(userCharacteristics?.activityLevel ?: "")
 
-    return ((weight * genderValue) * activityLevelValue).roundToInt()
+    val waterGoal = ((weight * genderValue) * activityLevelValue).roundToInt()
+    return roundGoal(waterGoal)
 }
 
 
@@ -54,7 +68,8 @@ fun calculateCaloriesGoal(userCharacteristics: Characteristics?): Int {
     val weightGoalValue = weightGoalValues.getValue(userCharacteristics?.weightGoal ?: "")
 
     val BMR = (10f * weight) + (6.25f * height) - (5f * age) + genderValue
-    return ((BMR * activityLevelValue) + weightGoalValue).roundToInt()
+    val caloriesGoal = ((BMR * activityLevelValue) + weightGoalValue).roundToInt()
+    return roundGoal(caloriesGoal)
 }
 
 
@@ -93,7 +108,8 @@ fun calculatePushUpsGoal(userCharacteristics: Characteristics?): Int {
 
     val genderValue = genderValues.getValue(userCharacteristics?.gender ?: "")
 
-    return (BMIbasedPushUps * activityLevelValue * ageValue * genderValue).roundToInt()
+    val pushUpsGoal = (BMIbasedPushUps * activityLevelValue * ageValue * genderValue).roundToInt()
+    return roundGoal(pushUpsGoal)
 }
 
 

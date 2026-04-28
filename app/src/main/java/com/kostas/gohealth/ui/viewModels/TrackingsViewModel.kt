@@ -40,7 +40,11 @@ class TrackingsViewModel(private val trackingsDao: TrackingsDao) : ViewModel() {
                     waterProgress = emptyList(),
                     caloriesProgress = emptyList(),
                     pushUpsProgress = emptyList(),
-                    stepsProgress = 0
+                    stepsProgress = 0,
+                    unsyncedWaterGoalsCompleted = 0,
+                    unsyncedCaloriesGoalsCompleted = 0,
+                    unsyncedPushUpsGoalsCompleted = 0,
+                    unsyncedTotalSteps = 0
                 )
 
                 trackingsDao.insert(defaultTrackings)

@@ -23,7 +23,6 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.kostas.gohealth.services.LeaderboardSyncWorker
 import com.kostas.gohealth.services.NotificationWorker
 import com.kostas.gohealth.services.ResetTrackingsWorker
 import com.kostas.gohealth.services.StepTrackerService
@@ -34,6 +33,8 @@ import com.kostas.gohealth.ui.viewModels.SettingsViewModel
 import com.kostas.gohealth.ui.viewModels.TrackingsViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.time.Duration
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 // This is where the program starts, sets basic settings and runs the custom drawer menu function, which is the center of the app
@@ -73,7 +74,6 @@ class MainActivity : ComponentActivity() {
         }
 
         schedulePeriodicNotification()
-        scheduleDailyLeaderboardSync()
         scheduleDailyTrackingsReset()
 
         // Starts the foreground step tracking service, only if the step tracking setting and the physical activity permissions are
@@ -186,45 +186,15 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    // Updates the remote Firestore database every midnight, needs network
-    private fun scheduleDailyLeaderboardSync() {
-        // Testing
-        //val testRequest = OneTimeWorkRequestBuilder<LeaderboardSyncWorker>().build()
-        //WorkManager.getInstance(this).enqueue(testRequest)
-
-        // Sets an initial delay to sync the 24-hour timer to midnight
-        //val now = LocalDateTime.now()
-        //val nextMidnight = LocalDateTime.now().toLocalDate().plusDays(1).atStartOfDay()
-        //val delayInMilliseconds = Duration.between(now, nextMidnight).toMillis()
-
-        val workRequest = PeriodicWorkRequestBuilder<LeaderboardSyncWorker>(15, TimeUnit.MINUTES)
-            //.setInitialDelay(delayInMilliseconds, TimeUnit.MILLISECONDS)
-            .setConstraints(
-                Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-            )
-
-            .build()
-
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "daily_sync",
-            ExistingPeriodicWorkPolicy.KEEP,
-            workRequest
-        )
-    }
-
     // Resets the trackings table every midnight, doesn't need network
     private fun scheduleDailyTrackingsReset() {
-        //val testRequest = OneTimeWorkRequestBuilder<ResetTrackingsWorker>().build()
-        //WorkManager.getInstance(this).enqueue(testRequest)
+        // Sets an initial delay to sync the 24-hour timer to midnight
+        val now = LocalDateTime.now()
+        val nextMidnight = now.toLocalDate().plusDays(1).atStartOfDay()
+        val delayInMilliseconds = Duration.between(now, nextMidnight).toMillis()
 
-        //val now = LocalDateTime.now()
-        //val nextMidnight = now.toLocalDate().plusDays(1).atStartOfDay()
-        //val delayInMilliseconds = Duration.between(now, nextMidnight).toMillis()
-
-        val workRequest = PeriodicWorkRequestBuilder<ResetTrackingsWorker>(15, TimeUnit.MINUTES)
-            //.setInitialDelay(delayInMilliseconds, TimeUnit.MILLISECONDS)
+        val workRequest = PeriodicWorkRequestBuilder<ResetTrackingsWorker>(24, TimeUnit.HOURS)
+            .setInitialDelay(delayInMilliseconds, TimeUnit.MILLISECONDS)
             .setConstraints(
                 Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.NOT_REQUIRED)

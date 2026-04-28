@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 class SettingsViewModel(private val settingsDao: SettingsDao) : ViewModel() {
     companion object {
@@ -40,7 +39,6 @@ class SettingsViewModel(private val settingsDao: SettingsDao) : ViewModel() {
                     profilePictureString = "dinosaur",
                     username = null,
                     appearance = "Light",
-                    lastResetDate = LocalDate.MIN,
                     lastSavedSteps = 0,
                     stepTracking = "Enabled"
                 )

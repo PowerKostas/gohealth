@@ -82,20 +82,12 @@ fun CategoriesScreen(categoryName: String, iconId: Int, progressBarColour: Color
             modifier = Modifier.size(200.dp)
         )
 
-        // For a better view, it rounds up the goal
-        val remainder = categoryGoal % 10
-        val roundedCategoryGoal = when {
-            remainder < 5 -> categoryGoal - remainder
-            remainder == 5 -> categoryGoal
-            else -> categoryGoal + (10 - remainder)
-        }
-
         Text(
-            text = "$categoryProgress / $roundedCategoryGoal $metric",
+            text = "$categoryProgress / $categoryGoal $metric",
             style = MaterialTheme.typography.titleLarge
         )
 
-        ProgressBar(20.dp, progressBarColour, categoryProgress.toFloat() / roundedCategoryGoal)
+        ProgressBar(20.dp, progressBarColour, categoryProgress.toFloat() / categoryGoal)
 
         Text(text = "Add $metric to reach your goal!")
 
