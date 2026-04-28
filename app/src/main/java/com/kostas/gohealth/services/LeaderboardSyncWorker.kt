@@ -3,6 +3,8 @@ package com.kostas.gohealth.services
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -43,7 +45,7 @@ class LeaderboardSyncWorker(appContext: Context, workerParams: WorkerParameters)
                 )
 
                 firestore.collection("leaderboards")
-                    .document(userSettings.firestoreId)
+                    .document(Firebase.auth.currentUser?.uid ?: "")
                     .set(updateData, SetOptions.merge())
                     .await()
 

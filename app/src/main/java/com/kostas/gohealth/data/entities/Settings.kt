@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "settings")
 data class Settings(
     @PrimaryKey(autoGenerate = true) val userId: Int = 0,
-    @ColumnInfo(name = "firestore_id") val firestoreId: String = java.util.UUID.randomUUID().toString(),
     @ColumnInfo(name = "profile_picture_string") val profilePictureString: String,
     @ColumnInfo(name = "username") val username: String?,
     @ColumnInfo(name = "appearance") val appearance: String,

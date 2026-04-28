@@ -101,11 +101,7 @@ fun CategoriesScreen(categoryName: String, iconId: Int, progressBarColour: Color
             Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                 val modifier = Modifier.weight(1f)
                 ActionButton(modifier, progressBarColour, "Custom") { showCustomAlertDialog = true }
-                ActionButton(
-                    modifier,
-                    Color(0xFFE53935),
-                    "Delete Previous"
-                ) { handleDeletePrevious() }
+                ActionButton(modifier, Color(0xFFE53935), "Undo") { handleDeletePrevious() }
             }
         }
     }

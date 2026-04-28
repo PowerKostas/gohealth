@@ -21,8 +21,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.kostas.gohealth.services.NotificationWorker
 import com.kostas.gohealth.services.ResetTrackingsWorker
 import com.kostas.gohealth.services.StepTrackerService
@@ -58,6 +61,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+
+        // Authenticates the user anonymously to Firebase when the app first opens
+        Firebase.auth.signInAnonymously()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false
@@ -164,6 +170,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+
     // Sends the already made notification every 3 hours, doesn't need network
     private fun schedulePeriodicNotification() {
         // Testing
@@ -188,6 +195,10 @@ class MainActivity : ComponentActivity() {
 
     // Resets the trackings table every midnight, doesn't need network
     private fun scheduleDailyTrackingsReset() {
+        // Testing
+        val testRequest = OneTimeWorkRequestBuilder<ResetTrackingsWorker>().build()
+        WorkManager.getInstance(this).enqueue(testRequest)
+
         // Sets an initial delay to sync the 24-hour timer to midnight
         val now = LocalDateTime.now()
         val nextMidnight = now.toLocalDate().plusDays(1).atStartOfDay()
