@@ -43,12 +43,6 @@ class StepTrackerService : Service(), SensorEventListener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == "STOP_SERVICE") {
-            stopForeground(STOP_FOREGROUND_REMOVE)
-            stopSelf()
-            return START_NOT_STICKY
-        }
-
         // Handles weird bug
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
@@ -125,15 +119,11 @@ class StepTrackerService : Service(), SensorEventListener {
         val openAppIntent = Intent(this, MainActivity::class.java)
         val openAppPendingIntent = PendingIntent.getActivity(this, 0, openAppIntent, PendingIntent.FLAG_IMMUTABLE)
 
-        val stopIntent = Intent(this, StepTrackerService::class.java).apply{ action = "STOP_SERVICE" }
-        val stopPendingIntent = PendingIntent.getService(this, 1, stopIntent, PendingIntent.FLAG_IMMUTABLE)
-
         return NotificationCompat.Builder(this, "step_tracker_channel")
             .setContentTitle("Step tracking active")
-            .setContentText("Swipe to turn off step tracking")
+            .setContentText("Running smoothly in the background")
             .setSmallIcon(R.drawable.ic_notification)
             .setContentIntent(openAppPendingIntent)
-            .setDeleteIntent(stopPendingIntent)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .build()
     }

@@ -60,9 +60,9 @@ fun calculateCaloriesGoal(userCharacteristics: Characteristics?): Int {
     val activityLevelValue = activityLevelValues.getValue(userCharacteristics?.activityLevel ?: "")
 
     val weightGoalValues = mapOf(
-        "Lose" to -500f,
+        "Lose" to -250f,
         "Maintain" to 0f,
-        "Gain" to 500f
+        "Gain" to 250f
     ).withDefault { 0f }
 
     val weightGoalValue = weightGoalValues.getValue(userCharacteristics?.weightGoal ?: "")

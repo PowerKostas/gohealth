@@ -21,7 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.firebase.Firebase
@@ -196,8 +195,8 @@ class MainActivity : ComponentActivity() {
     // Resets the trackings table every midnight, doesn't need network
     private fun scheduleDailyTrackingsReset() {
         // Testing
-        val testRequest = OneTimeWorkRequestBuilder<ResetTrackingsWorker>().build()
-        WorkManager.getInstance(this).enqueue(testRequest)
+        //val testRequest = OneTimeWorkRequestBuilder<ResetTrackingsWorker>().build()
+        //WorkManager.getInstance(this).enqueue(testRequest)
 
         // Sets an initial delay to sync the 24-hour timer to midnight
         val now = LocalDateTime.now()

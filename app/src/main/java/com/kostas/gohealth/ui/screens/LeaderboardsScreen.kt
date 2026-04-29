@@ -98,7 +98,7 @@ fun LeaderboardsScreen() {
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 Text(
-                    text = "Most Goals Completed",
+                    text = "Daily Goals Completed",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFD4AF37)
