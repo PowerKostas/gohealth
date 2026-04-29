@@ -1,5 +1,7 @@
 package com.kostas.gohealth.ui.components.central
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -8,6 +10,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -20,7 +24,10 @@ import com.kostas.gohealth.R
 // Top bar with the drawer menu button, the title and the GoHealth logo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(title: String, onMenuClick: () -> Unit) {
+fun TopBar(title: String, onMenuClick: () -> Unit, onLogoClick: () -> Unit) {
+    // To disable button ripple effect
+    val interactionSource = remember { MutableInteractionSource() }
+
     TopAppBar(
         navigationIcon = {
             IconButton(onClick = onMenuClick) {
@@ -31,7 +38,7 @@ fun TopBar(title: String, onMenuClick: () -> Unit) {
             }
         },
 
-        title = { Text(title) },
+        title = { Text(text = title) },
 
         actions = {
             Text(
@@ -40,8 +47,15 @@ fun TopBar(title: String, onMenuClick: () -> Unit) {
                     withStyle(style = SpanStyle(color = Color(0xFF059669))) { append("Health") }
                 },
 
+                modifier = Modifier
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                        onClick = { onLogoClick() }
+                    ),
+
                 fontSize = 28.sp,
-                fontFamily = FontFamily(Font(R.font.fredoka_bold)),
+                fontFamily = FontFamily(Font(R.font.fredoka_bold))
             )
         }
     )

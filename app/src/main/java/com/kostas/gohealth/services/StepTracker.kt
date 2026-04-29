@@ -30,6 +30,7 @@ class StepTrackerService : Service(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private var stepSensor: Sensor? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var isForegroundServiceActive = false
 
     override fun onCreate() {
         super.onCreate()
@@ -52,13 +53,18 @@ class StepTrackerService : Service(), SensorEventListener {
             }
         }
 
-        createNotificationChannel()
-        val notification = createNotification()
+        // Only create the notification and register the sensor if the foreground service isn't already active
+        if (!isForegroundServiceActive) {
+            createNotificationChannel()
+            val notification = createNotification()
 
-        startForeground(1, notification)
+            startForeground(1, notification)
 
-        stepSensor?.let {
-            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
+            stepSensor?.let {
+                sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
+            }
+
+            isForegroundServiceActive = true
         }
 
         return START_STICKY

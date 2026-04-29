@@ -19,11 +19,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.kostas.gohealth.R
 import com.kostas.gohealth.data.documents.LeaderboardEntry
-import com.kostas.gohealth.ui.components.screen.LeaderboardRow
+import com.kostas.gohealth.ui.components.screen.LeaderboardBox
 
 @Composable
 // Sets up listeners to the Firestore database to continuously fetch the single highest-scoring user and his details for
@@ -43,12 +44,50 @@ fun getTopCategoryUser(category: String): State<LeaderboardEntry?> {
                 if (snapshot != null && !snapshot.isEmpty) {
                     val topUserDoc = snapshot.documents[0]
                     value = LeaderboardEntry(
+                        userId = topUserDoc.id,
                         username = topUserDoc.getString("username") ?: "",
                         profilePictureString = topUserDoc.getString("profilePictureString") ?: "",
                         waterGoalsCompleted = topUserDoc.getLong("waterGoalsCompleted") ?: 0L,
                         caloriesGoalsCompleted = topUserDoc.getLong("caloriesGoalsCompleted") ?: 0L,
                         pushUpsGoalsCompleted = topUserDoc.getLong("pushUpsGoalsCompleted") ?: 0L,
                         totalSteps = topUserDoc.getLong("totalSteps") ?: 0L
+                    )
+                }
+            }
+
+        awaitDispose {
+            listenerRegistration.remove()
+        }
+    }
+}
+
+// Same job as getTopCategoryUser, but gets the actual user's data and not the top user's data for a specific category
+@Composable
+fun getUserListener(userId: String?): State<LeaderboardEntry?> {
+    return produceState(initialValue = null, key1 = userId) {
+        if (userId == null) {
+            value = null
+            return@produceState
+        }
+
+        val db = Firebase.firestore
+
+        val listenerRegistration = db.collection("leaderboards")
+            .document(userId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    value = LeaderboardEntry(
+                        userId = snapshot.id,
+                        username = snapshot.getString("username") ?: "",
+                        profilePictureString = snapshot.getString("profilePictureString") ?: "",
+                        waterGoalsCompleted = snapshot.getLong("waterGoalsCompleted") ?: 0L,
+                        caloriesGoalsCompleted = snapshot.getLong("caloriesGoalsCompleted") ?: 0L,
+                        pushUpsGoalsCompleted = snapshot.getLong("pushUpsGoalsCompleted") ?: 0L,
+                        totalSteps = snapshot.getLong("totalSteps") ?: 0L
                     )
                 }
             }
@@ -66,6 +105,9 @@ fun LeaderboardsScreen() {
     val topCaloriesUser by getTopCategoryUser("caloriesGoalsCompleted")
     val topPushUpsUser by getTopCategoryUser("pushUpsGoalsCompleted")
     val topStepsUser by getTopCategoryUser("totalSteps")
+
+    val currentUserId = Firebase.auth.currentUser?.uid
+    val currentUser by getUserListener(currentUserId)
 
     val avatarMap = mapOf(
         "bear" to R.drawable.bear,
@@ -105,15 +147,19 @@ fun LeaderboardsScreen() {
                 )
 
                 topWaterUser?.let { user ->
-                    LeaderboardRow(avatarMap.getValue(user.profilePictureString), user.username, R.drawable.water, "Water", user.waterGoalsCompleted.toString())
+                    // Checks if the current user is the top user, if he is, make his score null to know not to draw a specific component
+                    val currentUserScore = if (currentUserId == user.userId) null else (currentUser?.waterGoalsCompleted?.toString() ?: "0")
+                    LeaderboardBox(avatarMap.getValue(user.profilePictureString), user.username, R.drawable.water, "Water", user.waterGoalsCompleted.toString(), currentUserScore)
                 }
 
                 topCaloriesUser?.let { user ->
-                    LeaderboardRow(avatarMap.getValue(user.profilePictureString), user.username, R.drawable.calories, "Calories", user.caloriesGoalsCompleted.toString())
+                    val currentUserScore = if (currentUserId == user.userId) null else (currentUser?.caloriesGoalsCompleted?.toString() ?: "0")
+                    LeaderboardBox(avatarMap.getValue(user.profilePictureString), user.username, R.drawable.calories, "Calories", user.caloriesGoalsCompleted.toString(), currentUserScore)
                 }
 
                 topPushUpsUser?.let { user ->
-                    LeaderboardRow(avatarMap.getValue(user.profilePictureString), user.username, R.drawable.push_ups, "Push-ups", user.pushUpsGoalsCompleted.toString())
+                    val currentUserScore = if (currentUserId == user.userId) null else (currentUser?.pushUpsGoalsCompleted?.toString() ?: "0")
+                    LeaderboardBox(avatarMap.getValue(user.profilePictureString), user.username, R.drawable.push_ups, "Push-ups", user.pushUpsGoalsCompleted.toString(), currentUserScore)
                 }
             }
 
@@ -129,7 +175,8 @@ fun LeaderboardsScreen() {
                 )
 
                 topStepsUser?.let { user ->
-                    LeaderboardRow(avatarMap.getValue(user.profilePictureString), user.username, R.drawable.steps, "Steps", user.totalSteps.toString())
+                    val currentUserScore = if (currentUserId == user.userId) null else (currentUser?.totalSteps?.toString() ?: "0")
+                    LeaderboardBox(avatarMap.getValue(user.profilePictureString), user.username, R.drawable.steps, "Steps", user.totalSteps.toString(), currentUserScore)
                 }
             }
         }

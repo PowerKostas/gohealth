@@ -193,8 +193,13 @@ fun DrawerMenu() {
             TopBar(
                 title = currentScreen,
                 onMenuClick = {
-                    focusManager.clearFocus()
+                    focusManager.clearFocus() // To close the keyboard, if the user is typing when clicking the button
                     scope.launch { drawerState.open() }
+                },
+
+                onLogoClick = {
+                    focusManager.clearFocus()
+                    currentScreen = "Home"
                 }
             )
         }) { innerPadding ->
@@ -203,7 +208,13 @@ fun DrawerMenu() {
                 .fillMaxSize()
             ) {
                 when (currentScreen) {
-                    "Home" -> HomeScreen()
+                    // onNavigate is a function that can change the current screen inside the home screen
+                    "Home" -> HomeScreen(
+                        onNavigate = { destinationScreen ->
+                            currentScreen = destinationScreen
+                        }
+                    )
+
                     "Water" -> CategoriesScreen("Water", R.drawable.water, Color(0xFF2196F3), userTrackings?.waterProgress?.sum() ?: 0, calculateWaterGoal(userCharacteristics), "mL")
                     "Calories" -> CategoriesScreen("Calories", R.drawable.calories, Color(0xFF8B4513), userTrackings?.caloriesProgress?.sum() ?: 0, calculateCaloriesGoal(userCharacteristics), "kcal")
                     "Push-ups" -> CategoriesScreen("Push-ups", R.drawable.push_ups, Color.Black, userTrackings?.pushUpsProgress?.sum() ?: 0, calculatePushUpsGoal(userCharacteristics), "reps")
