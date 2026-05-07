@@ -18,10 +18,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
-// If it's a new day, the remote Firestore database is updated with the users' needed details and with the incremented total
-// water, calories, push-ups, steps goals completed and the total steps. If there is no network, the data goes in Firebase's cache, and it
-// will eventually update the database when a connection is back up, usually when the user reopens the app. It also resets the trackings
-// and settings table
+// If it's a new day, it resets the trackings and settings tables. Also, the remote Firestore database is updated with the users' needed
+// details and with the incremented total water, calories, push-ups, steps goals completed and the total steps. If there is no network, the
+// data goes in Firebase's cache, and it will eventually update the database when a connection is back up, usually when the user reopens
+// the app. It also resets the trackings and settings table
 class DailyMaintenanceWorker(appContext: Context, workerParams: WorkerParameters) : CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {
@@ -43,6 +43,18 @@ class DailyMaintenanceWorker(appContext: Context, workerParams: WorkerParameters
                 if (LocalDate.now().toString() <= userSettings.lastSavedDate) {
                     return@withContext Result.success()
                 }
+
+                val updateUserTrackings = userTrackings.copy(
+                    waterProgress = emptyList(),
+                    caloriesProgress = emptyList(),
+                    pushUpsProgress = emptyList(),
+                    stepsProgress = 0
+                )
+
+                trackingsDao.update(updateUserTrackings)
+
+                val updateUserSettings = userSettings.copy(lastSavedDate = LocalDate.now().toString())
+                settingsDao.update(updateUserSettings)
 
                 val waterGoal = calculateWaterGoal(userCharacteristics)
                 val caloriesGoal = calculateCaloriesGoal(userCharacteristics)
@@ -68,19 +80,6 @@ class DailyMaintenanceWorker(appContext: Context, workerParams: WorkerParameters
                 FirebaseFirestore.getInstance().collection("leaderboards")
                     .document(Firebase.auth.currentUser?.uid ?: "")
                     .set(updateData, SetOptions.merge())
-
-
-                val updateUserTrackings = userTrackings.copy(
-                    waterProgress = emptyList(),
-                    caloriesProgress = emptyList(),
-                    pushUpsProgress = emptyList(),
-                    stepsProgress = 0
-                )
-
-                trackingsDao.update(updateUserTrackings)
-
-                val updateUserSettings = userSettings.copy(lastSavedDate = LocalDate.now().toString())
-                settingsDao.update(updateUserSettings)
 
                 Result.success()
             }
