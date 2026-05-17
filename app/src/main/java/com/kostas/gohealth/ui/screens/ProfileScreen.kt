@@ -34,6 +34,7 @@ import com.kostas.gohealth.ui.components.screen.ProfilePicture
 import com.kostas.gohealth.ui.components.screen.WeightGoalSelector
 import com.kostas.gohealth.ui.viewModels.CharacteristicsViewModel
 import com.kostas.gohealth.ui.viewModels.SettingsViewModel
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -200,13 +201,18 @@ fun ProfileScreen() {
                         Text(text = "Weight Goal")
 
                         WeightGoalSelector(
-                            userCharacteristics.weightGoal,
-                            userCharacteristics.kgGoal,
-                            userCharacteristics.daysGoal
+                            userCharacteristics,
+                            userSettings
                         ) { newWeightGoal, newKgGoal, newDaysGoal ->
                             userCharacteristics.let { characteristics ->
                                 characteristicsViewModel.updateUserCharacteristics(
                                     characteristics.copy(weightGoal = newWeightGoal, kgGoal = newKgGoal, daysGoal = newDaysGoal)
+                                )
+
+                                // Also updates initialWeightGoalDate so it starts the count again if the user changes the weight goal or
+                                // moves the sliders
+                                settingsViewModel.updateUserSettings(
+                                    userSettings.copy(initialWeightGoalDate = LocalDate.now().toString())
                                 )
                             }
                         }

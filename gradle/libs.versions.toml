@@ -14,7 +14,7 @@ ksp = "2.3.2"
 work = "2.11.2"
 googleServices = "4.4.4"
 firebaseBom = "34.13.0"
-coroutinesPlayServices = "1.10.2"
+coroutinesPlayServices = "1.11.0"
 fragment-ktx = "1.8.9"
 navigationCompose = "2.9.8"
 

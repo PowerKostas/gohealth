@@ -13,7 +13,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -21,30 +21,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kostas.gohealth.data.entities.Characteristics
+import com.kostas.gohealth.data.entities.Settings
 import com.kostas.gohealth.helpers.isCaloriesPlanExtreme
 import com.kostas.gohealth.ui.components.general.RadioButtonGroup
-import com.kostas.gohealth.ui.viewModels.CharacteristicsViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WeightGoalSelector(initialWeightGoal: String, initialKgGoal: Int, initialDaysGoal: Int, onGoalChange: (goal: String, kg: Int, days: Int) -> Unit) {
-    val characteristicsViewModel: CharacteristicsViewModel = viewModel(factory = CharacteristicsViewModel.Factory)
-    val userCharacteristicsList by characteristicsViewModel.characteristics.collectAsState()
-    val userCharacteristics = userCharacteristicsList.firstOrNull()
-
-    var selectedWeightGoal by remember { mutableStateOf(initialWeightGoal)}
+fun WeightGoalSelector(userCharacteristics: Characteristics, userSettings: Settings, onGoalChange: (goal: String, kg: Int, days: Int) -> Unit) {
+    var selectedWeightGoal by remember { mutableStateOf(userCharacteristics.weightGoal)}
 
     // The sliders require positive floats, kg can be negative if the lose option was selected and zero if the maintain option was selected
     // and then the loss or gain option. Days can be zero if the maintain option was selected and then the loss or gain option. If it's the
     // first time the app is run, kg and days will go to 1 and 14 from 0 and 0, but it doesn't matter because the database won't be updated
     // until a new radio button group option is selected
-    var selectedKgGoal by remember { mutableFloatStateOf(abs(initialKgGoal).toFloat().coerceAtLeast(1f)) }
-    var selectedDaysGoal by remember { mutableFloatStateOf(initialDaysGoal.toFloat().coerceAtLeast(14f)) }
+    var selectedKgGoal by remember { mutableFloatStateOf(abs(userCharacteristics.kgGoal).toFloat().coerceAtLeast(1f)) }
+    var selectedDaysGoal by remember { mutableFloatStateOf(userCharacteristics.daysGoal.toFloat().coerceAtLeast(14f)) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -137,6 +136,30 @@ fun WeightGoalSelector(initialWeightGoal: String, initialKgGoal: Int, initialDay
                 color = MaterialTheme.colorScheme.error,
                 textAlign = TextAlign.Center,
             )
+        }
+
+        else {
+            if (userCharacteristics.kgGoal != 0 && userCharacteristics.daysGoal != 0) { // If the user has set a calories lose/gain goal
+                // Initializes initialWeightGoalDate because it was added in a new migration and adds the timeframe to the goal to it
+                val initialWeightGoalDate = userSettings.initialWeightGoalDate ?: LocalDate.now().toString()
+                val weightGoalDate = LocalDate.parse(initialWeightGoalDate).plusDays(userCharacteristics.daysGoal.toLong())
+                val formatter = DateTimeFormatter.ofPattern("dd-MM-yy")
+                val formattedWeightGoalDate= weightGoalDate.format(formatter)
+
+                Text(
+                    text =  "You're all set! The weight goal plan will end on $formattedWeightGoalDate.",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color(0xFF4CAF50),
+                    textAlign = TextAlign.Center,
+                )
+
+                // Updates initialWeightGoalDate thus the weight goal text as well, when the timeframe is hit
+                LaunchedEffect(weightGoalDate) {
+                    if (LocalDate.now() >= weightGoalDate) {
+                        onGoalChange(selectedWeightGoal, selectedKgGoal.roundToInt(), selectedDaysGoal.roundToInt())
+                    }
+                }
+            }
         }
     }
 }

@@ -221,15 +221,15 @@ fun DrawerMenu() {
                     }
 
                     composable("Water") {
-                        CategoriesScreen("Water", R.drawable.water, Color(0xFF2196F3), userTrackings?.waterProgress?.sum() ?: 0, calculateWaterGoal(userCharacteristics), "mL", listOf(R.drawable.cup, R.drawable.water_bottle, R.drawable.large_water_bottle), listOf("+280mL", "+500mL", "+1000mL"))
+                        CategoriesScreen("Water", R.drawable.water, Color(0xFF2196F3), userTrackings?.waterProgress?.sum() ?: 0, calculateWaterGoal(userCharacteristics), "mL", listOf(R.drawable.water_low, R.drawable.water_full, R.drawable.water_bottle, R.drawable.water_bottle_large), listOf("+100mL", "+280mL", "+500mL", "+1000mL"), 12.sp)
                     }
 
                     composable("Calories") {
-                        CategoriesScreen("Calories", R.drawable.calories, Color(0xFF8B4513), userTrackings?.caloriesProgress?.sum() ?: 0, calculateCaloriesGoal(userCharacteristics), "kcal", null, listOf("+10", "+100", "+1000"))
+                        CategoriesScreen("Calories", R.drawable.calories, Color(0xFF8B4513), userTrackings?.caloriesProgress?.sum() ?: 0, calculateCaloriesGoal(userCharacteristics), "kcal", null, listOf("+10", "+100", "+1000"), 16.sp)
                     }
 
                     composable("Exercise") {
-                        CategoriesScreen("Exercise", R.drawable.exercise, Color.Black, userTrackings?.exerciseProgress?.sum() ?: 0, calculateExerciseGoal(userCharacteristics), "reps", null, listOf("+1", "+5", "+10"))
+                        CategoriesScreen("Exercise", R.drawable.exercise, Color.Black, userTrackings?.exerciseProgress?.sum() ?: 0, calculateExerciseGoal(userCharacteristics), "reps", null, listOf("+1", "+5", "+10"), 16.sp)
                     }
 
                     composable("Steps") {

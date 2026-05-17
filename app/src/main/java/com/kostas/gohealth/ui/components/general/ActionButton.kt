@@ -14,16 +14,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 
 // Custom button to do any action
 @Composable
-fun ActionButton(modifier: Modifier, progressBarColour: Color, icon: Int?, buttonText: String, action: () -> Unit) {
+fun ActionButton(modifier: Modifier, colour: Color, icon: Int?, text: String, fontSize: TextUnit, action: () -> Unit) {
     Button(
         onClick = action,
 
         colors = ButtonDefaults.buttonColors(
-            containerColor = progressBarColour,
+            containerColor = colour,
             contentColor = Color.White
         ),
 
@@ -43,7 +45,12 @@ fun ActionButton(modifier: Modifier, progressBarColour: Color, icon: Int?, butto
                 )
             }
 
-            Text(text = buttonText)
+            Text(
+                text = text,
+                fontSize = fontSize,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

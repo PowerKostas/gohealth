@@ -1,5 +1,6 @@
 package com.kostas.gohealth.data
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -11,16 +12,16 @@ import com.kostas.gohealth.data.entities.Settings
 import com.kostas.gohealth.data.entities.Trackings
 
 // Because of all the migration code, the user doesn't have to delete the app and reinstall it, if I change the database. When I change the
-// database, don't run the app without a new auto migration, if I accidentally do, just delete the app in the emulator and redo the process
+// database, don't run the app without a new auto migration and a change in build.gradle.kts (app), if I accidentally do, just delete the
+// app in the emulator and redo the process
 @TypeConverters(Converters::class) // Automatically runs the converters, I can just use the lists/dates as lists/dates in code now
 @Database(
     entities = [Settings::class, Characteristics::class, Trackings::class],
-    version = 1,
-    /*
+    version = 2,
     autoMigrations = [
-        AutoMigration(from = 1, to = 2, spec = AppDatabase.MyRenameMigration::class)
+        AutoMigration(from = 1, to = 2)
+        //AutoMigration(from = 2, to = 3, spec = AppDatabase.MyRenameMigration::class)
     ]
-    */
 )
 abstract class AppDatabase : RoomDatabase() {
     /*

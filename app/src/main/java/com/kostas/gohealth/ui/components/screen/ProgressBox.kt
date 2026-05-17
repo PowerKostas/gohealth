@@ -25,8 +25,6 @@ import kotlin.math.roundToInt
 
 @Composable
 fun ProgressBox(iconId: Int, category: String, progressBarColour: Color, progress: Int, goal: Int, onClick: () -> Unit) {
-    val progressPercentage = (progress.toFloat() / goal).coerceAtMost(1.0f)
-
     // To disable button ripple effect
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -62,23 +60,33 @@ fun ProgressBox(iconId: Int, category: String, progressBarColour: Color, progres
                 style = MaterialTheme.typography.labelLarge
             )
 
-            ProgressBar(12.dp, progressBarColour, progressPercentage)
+            var progressPercentage: Float
+            if (category == "Calories") {
+                // Calculates percentage from the minimum value, not the average
+                val minCaloriesValue = roundGoal((goal - goal * 0.1).roundToInt())
+                val maxCaloriesValue = roundGoal((goal + goal * 0.1).roundToInt())
+                progressPercentage = (progress.toFloat() / minCaloriesValue).coerceAtMost(1.0f)
 
-            // Special message if the user passes the calories range
-            if (category == "Calories" && progress > roundGoal((goal + goal * 0.1).roundToInt())) {
-                Text(
-                    text = "Calories Exceeded!",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.error
-                )
+                // Special message if the user passes the calories range
+                if (progress > maxCaloriesValue) {
+                    Text(
+                        text = "Calories Exceeded!",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
 
             else {
-                Text(
-                    text = "${"%.1f".format(progressPercentage * 100)}%", // Percentage, out of 100, rounded to 1 decimal place
-                    style = MaterialTheme.typography.labelLarge
-                )
+                progressPercentage = (progress.toFloat() / goal).coerceAtMost(1.0f)
             }
+
+            ProgressBar(12.dp, progressBarColour, progressPercentage)
+
+            Text(
+                text = "${"%.1f".format(progressPercentage * 100)}%", // Percentage, out of 100, rounded to 1 decimal place
+                style = MaterialTheme.typography.labelLarge
+            )
         }
     }
 }
