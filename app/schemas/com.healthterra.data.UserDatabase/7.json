@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "146d4eaa4de296a866786c95f8334186",
+    "identityHash": "dc7e8e21943891df398748f86cd42abc",
     "entities": [
       {
         "tableName": "settings",
@@ -294,7 +294,7 @@
       },
       {
         "tableName": "achievements",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` INTEGER NOT NULL, `appeared_on_water_leaderboards` INTEGER NOT NULL, `appeared_on_calories_leaderboards` INTEGER NOT NULL, `appeared_on_exercise_leaderboards` INTEGER NOT NULL, `appeared_on_steps_leaderboards` INTEGER NOT NULL, `appeared_on_total_steps_leaderboards` INTEGER NOT NULL, `appeared_on_healthiest_user` INTEGER NOT NULL, `secret` INTEGER NOT NULL, PRIMARY KEY(`userId`), FOREIGN KEY(`userId`) REFERENCES `settings`(`userId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` INTEGER NOT NULL, `apper_water_leaderboards` INTEGER NOT NULL, `appear_calories_leaderboards` INTEGER NOT NULL, `appear_exercise_leaderboards` INTEGER NOT NULL, `appear_steps_leaderboards` INTEGER NOT NULL, `appear_total_steps_leaderboards` INTEGER NOT NULL, `appear_healthiest_user` INTEGER NOT NULL, `secret` INTEGER NOT NULL, PRIMARY KEY(`userId`), FOREIGN KEY(`userId`) REFERENCES `settings`(`userId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "userId",
@@ -303,38 +303,38 @@
             "notNull": true
           },
           {
-            "fieldPath": "appearedOnWaterLeaderboards",
-            "columnName": "appeared_on_water_leaderboards",
+            "fieldPath": "appearWaterLeaderboards",
+            "columnName": "apper_water_leaderboards",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "appearedOnCaloriesLeaderboards",
-            "columnName": "appeared_on_calories_leaderboards",
+            "fieldPath": "appearCaloriesLeaderboards",
+            "columnName": "appear_calories_leaderboards",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "appearedOnExerciseLeaderboards",
-            "columnName": "appeared_on_exercise_leaderboards",
+            "fieldPath": "appearExerciseLeaderboards",
+            "columnName": "appear_exercise_leaderboards",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "appearedOnStepsLeaderboards",
-            "columnName": "appeared_on_steps_leaderboards",
+            "fieldPath": "appearStepsLeaderboards",
+            "columnName": "appear_steps_leaderboards",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "appearedOnTotalStepsLeaderboards",
-            "columnName": "appeared_on_total_steps_leaderboards",
+            "fieldPath": "appearTotalStepsLeaderboards",
+            "columnName": "appear_total_steps_leaderboards",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "appearedOnHealthiestUser",
-            "columnName": "appeared_on_healthiest_user",
+            "fieldPath": "appearHealthiestUser",
+            "columnName": "appear_healthiest_user",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -368,7 +368,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '146d4eaa4de296a866786c95f8334186')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'dc7e8e21943891df398748f86cd42abc')"
     ]
   }
 }

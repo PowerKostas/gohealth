@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.healthterra.data.documents.LeaderboardEntry
 
 @Composable
@@ -55,6 +57,8 @@ fun LeaderboardDialog(categoryString: String, categoryLeaderboard: List<Leaderbo
         maximumFractionDigits = 1
     }
 
+    val currentUserId = Firebase.auth.currentUser?.uid
+
     if (!categoryLeaderboard.isEmpty()) {
         Dialog(
             onDismissRequest = onDismiss,
@@ -75,8 +79,8 @@ fun LeaderboardDialog(categoryString: String, categoryLeaderboard: List<Leaderbo
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(24.dp),
-                    modifier = Modifier.padding(start = 16.dp, top = 24.dp, end = 16.dp, bottom = 24.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.padding(top = 24.dp, bottom = 20.dp)
                 ) {
                     Text(
                         text = correctCategoryString,
@@ -84,11 +88,14 @@ fun LeaderboardDialog(categoryString: String, categoryLeaderboard: List<Leaderbo
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFD4AF37),
                         textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 16.dp)
                     )
 
                     LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.weight(1f, fill = false)
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier
+                            .weight(1f, fill = false)
+                            .fillMaxWidth()
                     ) {
                         itemsIndexed(categoryLeaderboard) { index, user -> // Loops through the leaderboard and gets index and user
                             val score = when (categoryString) {
@@ -109,7 +116,11 @@ fun LeaderboardDialog(categoryString: String, categoryLeaderboard: List<Leaderbo
 
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(color = if (user.uid == currentUserId) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent)
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
                             ) {
                                 Text(
                                     text = "#${

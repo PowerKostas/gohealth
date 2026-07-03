@@ -256,8 +256,13 @@ class MainActivity : ComponentActivity() {
                 val uid = authResult.user?.uid
                 if (uid != null) {
                     createInitialUserDocument(uid, username, profilePictureString)
+                    achievementsViewModel.startFirestoreAchievementsListener()
                 }
             }
+        }
+
+        else {
+            achievementsViewModel.startFirestoreAchievementsListener()
         }
 
         schedulePeriodicNotification()

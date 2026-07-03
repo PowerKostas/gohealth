@@ -23,12 +23,12 @@ fun createInitialUserDocument(uid: String, username: String, profilePictureStrin
         "leaderboardsVisibility" to "Anonymous",
 
         "achievements" to mapOf(
-            "appearedOnWaterLeaderboards" to false,
-            "appearedOnCaloriesLeaderboards" to false,
-            "appearedOnExerciseLeaderboards" to false,
-            "appearedOnStepsLeaderboards" to false,
-            "appearedOnTotalStepsLeaderboards" to false,
-            "appearedOnHealthiestUser" to false,
+            "appearWaterLeaderboards" to false,
+            "appearCaloriesLeaderboards" to false,
+            "appearExerciseLeaderboards" to false,
+            "appearStepsLeaderboards" to false,
+            "appearTotalStepsLeaderboards" to false,
+            "appearHealthiestUser" to false,
             "secret" to false
         )
     )

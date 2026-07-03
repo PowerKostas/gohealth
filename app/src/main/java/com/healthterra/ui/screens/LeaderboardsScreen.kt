@@ -8,6 +8,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,11 +19,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -50,6 +53,8 @@ import com.healthterra.ui.components.general.InfoDialog
 import com.healthterra.ui.components.screen.LeaderboardBox
 import com.healthterra.ui.components.screen.LeaderboardDialog
 import com.healthterra.ui.components.screen.avatarMap
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 // Have to isolate the animated row so the screen doesn't recompose on every frame and block clicks
 @Composable
@@ -145,7 +150,20 @@ fun LeaderboardsScreen() {
 
     var showHealthiestUserDialog by rememberSaveable { mutableStateOf(false) }
 
-    if (topWaterUser != null && topCaloriesUser != null && topExerciseUser != null && topStepsUser != null && topTotalStepsUser != null && currentUser != null && healthiestUser != null) { // Loading screen
+    // Only shows a spinner if the screen has been loading for more than 1 second
+    val isDataLoaded = topWaterUser != null && topCaloriesUser != null && topExerciseUser != null && topStepsUser != null &&
+            topTotalStepsUser != null && currentUser != null && healthiestUser != null
+
+    var showSpinner by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(isDataLoaded) {
+        if (!isDataLoaded) {
+            delay(1.seconds)
+            showSpinner = true
+        }
+    }
+
+    if (isDataLoaded) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
@@ -241,6 +259,19 @@ fun LeaderboardsScreen() {
         }
     }
 
+    else if (showSpinner) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = Color(0xFFD4AF37),
+                modifier = Modifier.size(80.dp),
+                strokeWidth = 6.dp
+            )
+        }
+    }
+
 
     // Show the LeaderboardDialog, if a category is clicked
     selectedLeaderboardDialog?.let { categoryString ->
@@ -249,6 +280,6 @@ fun LeaderboardsScreen() {
     }
 
     if (showHealthiestUserDialog) {
-        InfoDialog(Icons.Default.Info, Color(0xFFD4AF37), null, AnnotatedString("The 'Healthiest User' is the person with the highest total score. You earn points by completing each of your daily goals."), "Got it", null, true, FontWeight.Bold, { showHealthiestUserDialog = false }, { showHealthiestUserDialog = false })
+        InfoDialog(Icons.Default.Info, Color(0xFFD4AF37), null, AnnotatedString("The 'Healthiest User' is the person with the highest total leaderboards score. You earn points by completing each of your daily goals."), "Got it", null, true, FontWeight.Bold, { showHealthiestUserDialog = false }, { showHealthiestUserDialog = false })
     }
 }

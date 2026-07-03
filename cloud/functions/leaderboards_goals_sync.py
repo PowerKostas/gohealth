@@ -3,7 +3,10 @@ from firebase_functions import firestore_fn
 from google.cloud.firestore import Increment
 from datetime import datetime, timezone
 
-@firestore_fn.on_document_written(document = "users/{uid}/daily_trackings/{logDate}")
+@firestore_fn.on_document_written(
+    document = "users/{uid}/daily_trackings/{logDate}",
+    service_account = "healthterra-functions-sa@gohealth-bbb5c556.iam.gserviceaccount.com"
+)
 def perform_leaderboards_goals_sync(event: firestore_fn.Event[firestore_fn.Change[firestore_fn.DocumentSnapshot]]) -> None: # Triggers on any change on any daily_trackings table
     # If the document was deleted, return instantly
     if not event.data.after or not event.data.after.exists:

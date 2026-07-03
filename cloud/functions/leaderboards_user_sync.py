@@ -3,7 +3,10 @@ from firebase_functions import firestore_fn
 
 # The user sync function is separated from the goals sync function, because users will rarely change their profile and there is no reason to fetch
 # their user document every time
-@firestore_fn.on_document_written(document="users/{uid}")
+@firestore_fn.on_document_written(
+    document = "users/{uid}",
+    service_account = "healthterra-functions-sa@gohealth-bbb5c556.iam.gserviceaccount.com"
+)
 def perform_leaderboards_user_sync(event: firestore_fn.Event[firestore_fn.Change[firestore_fn.DocumentSnapshot]]) -> None:
     leaderboards_ref = firestore.client().collection("leaderboards").document(event.params["uid"])
 

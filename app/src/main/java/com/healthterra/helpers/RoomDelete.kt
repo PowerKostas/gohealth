@@ -11,7 +11,7 @@ fun roomDelete(characteristicsViewModel: CharacteristicsViewModel, settingsViewM
     val userCharacteristics = characteristicsViewModel.characteristics.value.firstOrNull()
     val userSettings = settingsViewModel.settings.value.firstOrNull()
     val userTodayTrackings = todayTrackingsViewModel.todayTrackings.value.firstOrNull()
-    val userAchievements = achievementsViewModel.achievements.value.firstOrNull()
+    val userAchievements = achievementsViewModel.leaderboardsAchievements.value.firstOrNull()
 
     if (userCharacteristics == null || userSettings == null || userTodayTrackings == null || userAchievements == null) {
         return
@@ -55,12 +55,12 @@ fun roomDelete(characteristicsViewModel: CharacteristicsViewModel, settingsViewM
 
     achievementsViewModel.updateUserAchievements(
         userAchievements.copy(
-            appearedOnWaterLeaderboards = false,
-            appearedOnCaloriesLeaderboards = false,
-            appearedOnExerciseLeaderboards = false,
-            appearedOnStepsLeaderboards = false,
-            appearedOnTotalStepsLeaderboards = false,
-            appearedOnHealthiestUser = false,
+            appearWaterLeaderboards = false,
+            appearCaloriesLeaderboards = false,
+            appearExerciseLeaderboards = false,
+            appearStepsLeaderboards = false,
+            appearTotalStepsLeaderboards = false,
+            appearHealthiestUser = false,
             secret = false
         )
     )

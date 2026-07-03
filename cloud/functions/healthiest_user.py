@@ -11,7 +11,10 @@ def create_healthiest_user_payload(data):
     }
 
 
-@firestore_fn.on_document_written(document="leaderboards/{uid}")
+@firestore_fn.on_document_written(
+    document = "leaderboards/{uid}",
+    service_account = "healthterra-functions-sa@gohealth-bbb5c556.iam.gserviceaccount.com"
+)
 def calculate_healthiest_user(event: firestore_fn.Event[firestore_fn.Change[firestore_fn.DocumentSnapshot]]) -> None:
     db = firestore.client()
     healthiest_user_document = db.collection("app_state").document("healthiest_user")
@@ -40,3 +43,6 @@ def calculate_healthiest_user(event: firestore_fn.Event[firestore_fn.Change[fire
     # If the healthiest user gained points or if this user suprassed the healthiest user, updates the document
     if user_uid == healthiest_user_uid or user_score > healthiest_user_score:
         healthiest_user_document.set(create_healthiest_user_payload(user_data))
+
+        # Grants achievement
+        db.collection("users").document(user_data["uid"]).set({"achievements": {"appearHealthiestUser": True}}, merge = True)

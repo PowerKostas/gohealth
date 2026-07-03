@@ -62,7 +62,7 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
     val userCharacteristics = userCharacteristicsList.firstOrNull()
 
     val achievementsViewModel = viewModel<AchievementsViewModel>(factory = AchievementsViewModel.Factory)
-    val achievementsData by achievementsViewModel.achievementsData.collectAsState()
+    val otherAchievements by achievementsViewModel.otherAchievements.collectAsState()
 
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM")
 
@@ -141,17 +141,17 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
 
     // For the streaks
     val activeStreaks = listOf(
-        achievementsData?.activeWaterStreak ?: 0,
-        achievementsData?.activeCaloriesStreak ?: 0,
-        achievementsData?.activeExerciseStreak ?: 0,
-        achievementsData?.activeStepsStreak ?: 0
+        otherAchievements?.activeWaterStreak ?: 0,
+        otherAchievements?.activeCaloriesStreak ?: 0,
+        otherAchievements?.activeExerciseStreak ?: 0,
+        otherAchievements?.activeStepsStreak ?: 0
     )
 
     val maxStreaks = listOf(
-        achievementsData?.maxWaterStreak ?: 0,
-        achievementsData?.maxCaloriesStreak ?: 0,
-        achievementsData?.maxExerciseStreak ?: 0,
-        achievementsData?.maxStepsStreak ?: 0
+        otherAchievements?.maxWaterStreak ?: 0,
+        otherAchievements?.maxCaloriesStreak ?: 0,
+        otherAchievements?.maxExerciseStreak ?: 0,
+        otherAchievements?.maxStepsStreak ?: 0
     )
 
 
@@ -346,7 +346,7 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
                 )
 
                 Text(
-                    text = (achievementsData?.maxSteps ?: 0).toString(),
+                    text = (otherAchievements?.maxSteps ?: 0).toString(),
                     style = MaterialTheme.typography.headlineSmall,
                     color = Color(0xFFD4AF37),
                     fontWeight = FontWeight.Bold

@@ -5,14 +5,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.healthterra.data.UserDatabase
 import com.healthterra.data.daos.AchievementsDao
 import com.healthterra.data.daos.CharacteristicsDao
 import com.healthterra.data.daos.DailyTrackingsDao
 import com.healthterra.data.daos.TodayTrackingsDao
 import com.healthterra.data.entities.Achievements
-import com.healthterra.helpers.AchievementsData
-import com.healthterra.helpers.calculateAchievementsData
+import com.healthterra.helpers.OtherAchievements
+import com.healthterra.helpers.calculateOtherAchievements
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -44,7 +46,7 @@ class AchievementsViewModel(
         }
     }
 
-    val achievements: StateFlow<List<Achievements>> = achievementsDao.getAll().stateIn(
+    val leaderboardsAchievements: StateFlow<List<Achievements>> = achievementsDao.getAll().stateIn(
         scope = viewModelScope,
         initialValue = emptyList(),
         started = SharingStarted.WhileSubscribed(5000)
@@ -52,7 +54,7 @@ class AchievementsViewModel(
 
     // Some of the Achievements fields (total goals met, streaks and max steps) can be derived from the other tables, for that reason they are
     // not included in the Achievements table, but they are fetched and provided from this view model
-    val achievementsData: StateFlow<AchievementsData?> = combine(
+    val otherAchievements: StateFlow<OtherAchievements?> = combine(
         dailyTrackingsDao.getDailyTrackings(),
         todayTrackingsDao.getAll(),
         characteristicsDao.getAll().map { it.firstOrNull() }
@@ -61,7 +63,7 @@ class AchievementsViewModel(
             return@combine null
         }
 
-        calculateAchievementsData(
+        calculateOtherAchievements(
             dailyTrackingsList = dailyTrackingsList,
             todayTrackings = todayTrackings.firstOrNull(),
             userCharacteristics = userCharacteristics
@@ -71,6 +73,49 @@ class AchievementsViewModel(
         initialValue = null,
         started = SharingStarted.WhileSubscribed(5000)
     )
+
+    // The leaderboards achievements are handled only by the cloud functions, for that reason a listener to the user's Firestore document
+    // is set up, and it's waiting for any changes in the achievements field to update the local database
+    fun startFirestoreAchievementsListener() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            // If the user has unlocked all leaderboards achievements, there is no reason to set up the listener
+            val leaderboardsAchievements = achievementsDao.getAll().first().firstOrNull()
+
+            val hasAllAchievements = leaderboardsAchievements?.appearWaterLeaderboards ?: false &&
+                leaderboardsAchievements.appearCaloriesLeaderboards && leaderboardsAchievements.appearExerciseLeaderboards &&
+                leaderboardsAchievements.appearStepsLeaderboards && leaderboardsAchievements.appearTotalStepsLeaderboards &&
+                leaderboardsAchievements.secret
+
+            if (hasAllAchievements) {
+                return@launch
+            }
+
+            FirebaseFirestore.getInstance().collection("users").document(uid).addSnapshotListener { snapshot, error ->
+                if (error != null || snapshot == null || !snapshot.exists()) return@addSnapshotListener
+                val firestoreUserAchievements = snapshot.get("achievements") as? Map<*, *> ?: return@addSnapshotListener
+
+                viewModelScope.launch {
+                    val localAchievementsData = achievementsDao.getAll().first().firstOrNull() ?: return@launch
+
+                    // The first part of the OR statement guarantees that if a field is true, it will never go to false
+                    val updatedAchievements = localAchievementsData.copy(
+                        appearWaterLeaderboards = localAchievementsData.appearWaterLeaderboards || firestoreUserAchievements["appearWaterLeaderboards"] as? Boolean ?: false,
+                        appearCaloriesLeaderboards = localAchievementsData.appearCaloriesLeaderboards ||firestoreUserAchievements["appearCaloriesLeaderboards"] as? Boolean ?: false,
+                        appearExerciseLeaderboards = localAchievementsData.appearExerciseLeaderboards || firestoreUserAchievements["appearExerciseLeaderboards"] as? Boolean ?: false,
+                        appearStepsLeaderboards = localAchievementsData.appearStepsLeaderboards|| firestoreUserAchievements["appearStepsLeaderboards"] as? Boolean ?: false,
+                        appearTotalStepsLeaderboards = localAchievementsData.appearTotalStepsLeaderboards || firestoreUserAchievements["appearTotalStepsLeaderboards"] as? Boolean ?: false,
+                        secret = localAchievementsData.secret || firestoreUserAchievements["secret"] as? Boolean ?: false
+                    )
+
+                    if (localAchievementsData != updatedAchievements) {
+                        achievementsDao.update(updatedAchievements)
+                    }
+                }
+            }
+        }
+    }
 
     fun initializeUserAchievements(userId: Int) {
         viewModelScope.launch {

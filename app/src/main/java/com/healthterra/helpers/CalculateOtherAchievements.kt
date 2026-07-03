@@ -6,7 +6,7 @@ import com.healthterra.data.entities.TodayTrackings
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-data class AchievementsData(
+data class OtherAchievements(
     val totalWaterGoals: Int, val totalCaloriesGoals: Int, val totalExerciseGoals: Int, val totalStepsGoals: Int, val totalSteps: Int,
     val activeWaterStreak: Int, val activeCaloriesStreak: Int, val activeExerciseStreak: Int, val activeStepsStreak: Int,
     val maxWaterStreak: Int, val maxCaloriesStreak: Int, val maxExerciseStreak: Int, val maxStepsStreak: Int, val maxSteps: Int
@@ -14,7 +14,7 @@ data class AchievementsData(
 
 // Goes through every row of DailyTrackings and finds the total completed category goals, the total steps, the active categories streaks, the
 // max categories streaks and the max steps, also injects today's data to the above
-fun calculateAchievementsData(dailyTrackingsList: List<DailyTrackings>, todayTrackings: TodayTrackings?, userCharacteristics: Characteristics): AchievementsData {
+fun calculateOtherAchievements(dailyTrackingsList: List<DailyTrackings>, todayTrackings: TodayTrackings?, userCharacteristics: Characteristics): OtherAchievements {
     var totalWaterGoals = 0; var totalCaloriesGoals = 0; var totalExerciseGoals = 0; var totalStepsGoals = 0; var totalSteps = 0
     var activeWaterStreak = 0; var activeCaloriesStreak = 0 ; var activeExerciseStreak = 0; var activeStepsStreak = 0
     var maxWaterStreak = 0; var maxCaloriesStreak = 0; var maxExerciseStreak = 0; var maxStepsStreak = 0; var maxSteps = 0
@@ -100,7 +100,7 @@ fun calculateAchievementsData(dailyTrackingsList: List<DailyTrackings>, todayTra
     val exerciseStreakFinal = processToday(exerciseGoalToday, activeExerciseStreak, maxExerciseStreak)
     val stepsStreakFinal = processToday(stepsGoalToday, activeStepsStreak, maxStepsStreak)
 
-    return AchievementsData(
+    return OtherAchievements(
         totalWaterGoals + if (waterGoalToday) 1 else 0, totalCaloriesGoals + if (caloriesGoalToday) 1 else 0,
         totalExerciseGoals + if (exerciseGoalToday) 1 else 0, totalStepsGoals + if (stepsGoalToday) 1 else 0,
         totalSteps + (todayTrackings?.stepsProgress ?: 0), waterStreakFinal.first, caloriesStreakFinal.first, exerciseStreakFinal.first,

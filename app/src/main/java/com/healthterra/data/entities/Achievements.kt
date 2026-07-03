@@ -19,11 +19,11 @@ import androidx.room.PrimaryKey
 
 data class Achievements(
     @PrimaryKey val userId: Int,
-    @ColumnInfo(name = "appeared_on_water_leaderboards") val appearedOnWaterLeaderboards: Boolean = false,
-    @ColumnInfo(name = "appeared_on_calories_leaderboards") val appearedOnCaloriesLeaderboards: Boolean = false,
-    @ColumnInfo(name = "appeared_on_exercise_leaderboards") val appearedOnExerciseLeaderboards: Boolean = false,
-    @ColumnInfo(name = "appeared_on_steps_leaderboards") val appearedOnStepsLeaderboards: Boolean = false,
-    @ColumnInfo(name = "appeared_on_total_steps_leaderboards") val appearedOnTotalStepsLeaderboards: Boolean = false,
-    @ColumnInfo(name = "appeared_on_healthiest_user") val appearedOnHealthiestUser: Boolean = false,
+    @ColumnInfo(name = "apper_water_leaderboards") val appearWaterLeaderboards: Boolean = false,
+    @ColumnInfo(name = "appear_calories_leaderboards") val appearCaloriesLeaderboards: Boolean = false,
+    @ColumnInfo(name = "appear_exercise_leaderboards") val appearExerciseLeaderboards: Boolean = false,
+    @ColumnInfo(name = "appear_steps_leaderboards") val appearStepsLeaderboards: Boolean = false,
+    @ColumnInfo(name = "appear_total_steps_leaderboards") val appearTotalStepsLeaderboards: Boolean = false,
+    @ColumnInfo(name = "appear_healthiest_user") val appearHealthiestUser: Boolean = false,
     @ColumnInfo(name = "secret") val secret: Boolean = false,
 )
