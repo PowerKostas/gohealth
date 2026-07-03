@@ -1,7 +1,6 @@
-package com.healthterra.services
+package com.healthterra.helpers
 
 import android.content.Context
-import com.healthterra.helpers.generateRandomProfilePictureString
 import com.healthterra.ui.viewModels.AchievementsViewModel
 import com.healthterra.ui.viewModels.CharacteristicsViewModel
 import com.healthterra.ui.viewModels.DailyTrackingsViewModel

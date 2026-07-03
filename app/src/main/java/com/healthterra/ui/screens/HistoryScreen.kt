@@ -33,10 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthterra.R
 import com.healthterra.data.entities.DailyTrackings
-import com.healthterra.helpers.calculateCaloriesGoal
-import com.healthterra.helpers.calculateExerciseGoal
-import com.healthterra.helpers.calculateStepsGoal
-import com.healthterra.helpers.calculateWaterGoal
 import com.healthterra.helpers.generateContributionsMap
 import com.healthterra.helpers.processGraphData
 import com.healthterra.ui.components.general.ContributionCalendar
@@ -66,8 +62,7 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
     val userCharacteristics = userCharacteristicsList.firstOrNull()
 
     val achievementsViewModel = viewModel<AchievementsViewModel>(factory = AchievementsViewModel.Factory)
-    val userAchievementsList by achievementsViewModel.achievements.collectAsState()
-    val userAchievements = userAchievementsList.firstOrNull()
+    val achievementsData by achievementsViewModel.achievementsData.collectAsState()
 
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM")
 
@@ -144,28 +139,19 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
     val options = listOf("Combined", "Water", "Calories", "Exercise", "Steps")
     val iconsList = listOf(R.drawable.combined, R.drawable.water, R.drawable.calories, R.drawable.exercise, R.drawable.steps)
 
-    // Injects today's data to the streaks
-    val goalMet = if (userTodayTrackings != null && userCharacteristics != null) {
-        listOf(
-            if (userTodayTrackings.waterProgress.sum() >= calculateWaterGoal(userCharacteristics)) 1 else 0,
-            if (userTodayTrackings.caloriesProgress.sum() >= calculateCaloriesGoal(userCharacteristics)) 1 else 0,
-            if (userTodayTrackings.exerciseProgress.sum() >= calculateExerciseGoal(userCharacteristics)) 1 else 0,
-            if (userTodayTrackings.stepsProgress >= calculateStepsGoal(userCharacteristics)) 1 else 0
-        )
-    } else listOf(0, 0, 0, 0)
-
+    // For the streaks
     val activeStreaks = listOf(
-        (userAchievements?.activeWaterStreak ?: 0) + goalMet[0],
-        (userAchievements?.activeCaloriesStreak ?: 0) + goalMet[1],
-        (userAchievements?.activeExerciseStreak ?: 0) + goalMet[2],
-        (userAchievements?.activeStepsStreak ?: 0) + goalMet[3]
+        achievementsData?.activeWaterStreak ?: 0,
+        achievementsData?.activeCaloriesStreak ?: 0,
+        achievementsData?.activeExerciseStreak ?: 0,
+        achievementsData?.activeStepsStreak ?: 0
     )
 
     val maxStreaks = listOf(
-        maxOf(activeStreaks[0], userAchievements?.maxWaterStreak ?: 0),
-        maxOf(activeStreaks[1], userAchievements?.maxCaloriesStreak ?: 0),
-        maxOf(activeStreaks[2], userAchievements?.maxExerciseStreak ?: 0),
-        maxOf(activeStreaks[3], userAchievements?.maxStepsStreak ?: 0)
+        achievementsData?.maxWaterStreak ?: 0,
+        achievementsData?.maxCaloriesStreak ?: 0,
+        achievementsData?.maxExerciseStreak ?: 0,
+        achievementsData?.maxStepsStreak ?: 0
     )
 
 
@@ -360,7 +346,7 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
                 )
 
                 Text(
-                    text = userAchievements?.maxSteps.toString(),
+                    text = (achievementsData?.maxSteps ?: 0).toString(),
                     style = MaterialTheme.typography.headlineSmall,
                     color = Color(0xFFD4AF37),
                     fontWeight = FontWeight.Bold

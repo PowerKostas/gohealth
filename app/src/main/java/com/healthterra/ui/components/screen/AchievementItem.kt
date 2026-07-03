@@ -29,7 +29,7 @@ import com.healthterra.helpers.drawShieldShape
 import com.healthterra.helpers.drawStarburstShape
 
 @Composable
-fun AchievementItem(icon: ImageVector, title: String, description: String, tier: String, isUnlocked: Boolean) {
+fun AchievementItem(icon: ImageVector, title: String, description: String, tier: String, isUnlocked: Boolean, progress: Int, goal: Int) {
     var showDialog by remember { mutableStateOf(false) }
 
     val shape = when (tier) {
@@ -50,7 +50,7 @@ fun AchievementItem(icon: ImageVector, title: String, description: String, tier:
     }
 
     // Makes all locked achievements gray, used in Modifier.graphicsLayer
-    val colorMatrix = remember {
+    val colorMatrix = remember(isUnlocked) {
         ColorMatrix().apply {
             if (!isUnlocked) setToSaturation(0f)
         }
@@ -81,6 +81,6 @@ fun AchievementItem(icon: ImageVector, title: String, description: String, tier:
     }
 
     if (showDialog) {
-        AchievementDialog(icon, title, description) { showDialog = false }
+        AchievementDialog(icon, title, description, progress, goal) { showDialog = false }
     }
 }

@@ -51,7 +51,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.healthterra.helpers.generateRandomUsername
 import com.healthterra.services.FirebaseDeleteWorker
-import com.healthterra.services.roomDelete
+import com.healthterra.helpers.roomDelete
 import com.healthterra.ui.components.general.ActionButton
 import com.healthterra.ui.components.general.CustomDropdownMenu
 import com.healthterra.ui.components.general.CustomSurface

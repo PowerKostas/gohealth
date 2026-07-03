@@ -18,9 +18,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.healthterra.ui.components.general.ProgressBar
+import kotlin.math.min
 
 @Composable
-fun AchievementDialog(icon: ImageVector, title: String, description: String, progress: Int = 150, goal: Int = 365, onDismiss: () -> Unit) {
+fun AchievementDialog(icon: ImageVector, title: String, description: String, progress: Int, goal: Int, onDismiss: () -> Unit) {
+    val textProgress = min(progress, goal) // Caps text progress value at goal value
+
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = {
@@ -61,7 +64,7 @@ fun AchievementDialog(icon: ImageVector, title: String, description: String, pro
                     ProgressBar(12.dp, MaterialTheme.colorScheme.primary, progress.toFloat() / goal.toFloat())
 
                     Text(
-                        text = "$progress / $goal",
+                        text = "$textProgress / $goal",
                         style = MaterialTheme.typography.labelLarge
                     )
                 }
