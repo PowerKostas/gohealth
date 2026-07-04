@@ -7,7 +7,7 @@ import com.healthterra.ui.viewModels.DailyTrackingsViewModel
 import com.healthterra.ui.viewModels.SettingsViewModel
 import com.healthterra.ui.viewModels.TodayTrackingsViewModel
 
-fun roomDelete(characteristicsViewModel: CharacteristicsViewModel, settingsViewModel: SettingsViewModel, todayTrackingsViewModel: TodayTrackingsViewModel, dailyTrackingsViewModel: DailyTrackingsViewModel, achievementsViewModel: AchievementsViewModel, randomUsername: String, context: Context) {
+fun performRoomDelete(characteristicsViewModel: CharacteristicsViewModel, settingsViewModel: SettingsViewModel, todayTrackingsViewModel: TodayTrackingsViewModel, dailyTrackingsViewModel: DailyTrackingsViewModel, achievementsViewModel: AchievementsViewModel, randomUsername: String, context: Context) {
     val userCharacteristics = characteristicsViewModel.characteristics.value.firstOrNull()
     val userSettings = settingsViewModel.settings.value.firstOrNull()
     val userTodayTrackings = todayTrackingsViewModel.todayTrackings.value.firstOrNull()

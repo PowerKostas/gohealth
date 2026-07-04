@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +46,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.healthterra.R
 import com.healthterra.helpers.calculateCaloriesGoal
 import com.healthterra.helpers.calculateExerciseGoal
@@ -95,9 +98,11 @@ fun HomeScreen(onNavigate: (String) -> Unit) {
     val completedGoals = listOf(waterProgressSum >= waterGoal, caloriesProgressSum in minCaloriesValue..maxCaloriesValue, exerciseProgressSum >= exerciseGoal, stepsProgress >= stepsGoal).count { it }
 
     val isProfileIncomplete = userCharacteristics.gender == null || userCharacteristics.age == null || userCharacteristics.height == null || userCharacteristics.weight == null || userCharacteristics.activityLevel == null
-    val isAnonymous = userSettings.leaderboardsVisibility == "Anonymous"
+    val isSignedInAnonymously = Firebase.auth.currentUser?.isAnonymous ?: true
+    val isLeaderboardsAnonymous = userSettings.leaderboardsVisibility == "Anonymous"
 
     var showProfileIncompleteDialog by rememberSaveable { mutableStateOf(false) }
+    var showSignedInAnonymouslyDialog by rememberSaveable { mutableStateOf(false) }
     var showAnonymousDialog by rememberSaveable { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -147,7 +152,7 @@ fun HomeScreen(onNavigate: (String) -> Unit) {
                     )
 
                     // Only adds the row if one of the warnings is present
-                    if (isProfileIncomplete || isAnonymous) {
+                    if (isProfileIncomplete || isSignedInAnonymously || isLeaderboardsAnonymous) {
                         Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
                             // If the user hasn't filled all the characteristics in their profile
                             if (isProfileIncomplete) {
@@ -161,7 +166,18 @@ fun HomeScreen(onNavigate: (String) -> Unit) {
                                 )
                             }
 
-                            if (isAnonymous) {
+                            if (isSignedInAnonymously) {
+                                Icon(
+                                    imageVector = Icons.Default.PersonOutline,
+                                    contentDescription = "Warning Button 2",
+                                    tint = Color(0xFF757575),
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .clickable { showSignedInAnonymouslyDialog = true }
+                                )
+                            }
+
+                            if (isLeaderboardsAnonymous) {
                                 Icon(
                                     imageVector = Icons.Default.VisibilityOff,
                                     contentDescription = "Warning Button 3",
@@ -236,10 +252,14 @@ fun HomeScreen(onNavigate: (String) -> Unit) {
     }
 
     if (showProfileIncompleteDialog) {
-        InfoDialog(Icons.Default.Error, Color(0xFFFFA000), null, AnnotatedString("Complete your Profile for more personalized results."), "Got it", null, true, FontWeight.Bold, { showProfileIncompleteDialog = false }, { showProfileIncompleteDialog= false })
+        InfoDialog(Icons.Default.Error, Color(0xFFFFA000), null, AnnotatedString("Fill in your missing details in the Profile tab for more personalized results."), "Got it", null, true, FontWeight.Bold, { showProfileIncompleteDialog = false }, { showProfileIncompleteDialog = false })
+    }
+
+    if (showSignedInAnonymouslyDialog) {
+        InfoDialog(Icons.Default.PersonOutline, Color(0xFF757575), null, AnnotatedString("This is a guest profile. Sign in from your Profile to securely sync your progress across devices."), "Got it", null, true, FontWeight.Bold, { showSignedInAnonymouslyDialog = false }, { showSignedInAnonymouslyDialog = false })
     }
 
     if (showAnonymousDialog) {
-        InfoDialog(Icons.Default.VisibilityOff, MaterialTheme.colorScheme.primary, null, AnnotatedString("You are currently anonymous on the Leaderboards. Manage your visibility in your Profile."), "Got it", null, true, FontWeight.Bold, { showAnonymousDialog = false }, { showAnonymousDialog = false })
+        InfoDialog(Icons.Default.VisibilityOff, MaterialTheme.colorScheme.primary, null, AnnotatedString("You are currently anonymous on the Leaderboards. Manage your visibility in your Profile settings."), "Got it", null, true, FontWeight.Bold, { showAnonymousDialog = false }, { showAnonymousDialog = false })
     }
 }

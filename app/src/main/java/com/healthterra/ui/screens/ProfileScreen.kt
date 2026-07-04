@@ -23,10 +23,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,19 +44,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.credentials.ClearCredentialStateRequest
+import androidx.credentials.CredentialManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.healthterra.helpers.generateRandomUsername
+import com.healthterra.helpers.performRoomDelete
 import com.healthterra.services.FirebaseDeleteWorker
-import com.healthterra.helpers.roomDelete
+import com.healthterra.services.linkWithGoogleSignIn
 import com.healthterra.ui.components.general.ActionButton
 import com.healthterra.ui.components.general.CustomDropdownMenu
 import com.healthterra.ui.components.general.CustomSurface
+import com.healthterra.ui.components.general.GoogleSignInButton
 import com.healthterra.ui.components.general.InfoDialog
 import com.healthterra.ui.components.general.NumberTextField
 import com.healthterra.ui.components.general.RadioButtonGroup
@@ -65,6 +72,8 @@ import com.healthterra.ui.viewModels.CharacteristicsViewModel
 import com.healthterra.ui.viewModels.DailyTrackingsViewModel
 import com.healthterra.ui.viewModels.SettingsViewModel
 import com.healthterra.ui.viewModels.TodayTrackingsViewModel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,6 +85,7 @@ fun ProfileScreen() {
 
     // Uses the same instance of SettingsViewModel as MainActivity to fix bug on non-essential user settings Firestore syncing
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val activity = context as ComponentActivity
 
     val settingsViewModel: SettingsViewModel = viewModel(viewModelStoreOwner = activity, factory = SettingsViewModel.Factory)
@@ -87,10 +97,13 @@ fun ProfileScreen() {
     val userTodayTrackings = userTodayTrackingsList.firstOrNull()
 
     val dailyTrackingsViewModel: DailyTrackingsViewModel = viewModel(factory = DailyTrackingsViewModel.Factory)
+
     val achievementsViewModel: AchievementsViewModel = viewModel(factory = AchievementsViewModel.Factory)
+    val userAchievementsList by achievementsViewModel.leaderboardsAchievements.collectAsState()
+    val userAchievements = userAchievementsList.firstOrNull()
 
     // Waits for the database to load
-    if (userCharacteristics == null || userSettings == null || userTodayTrackings == null) {
+    if (userCharacteristics == null || userSettings == null || userTodayTrackings == null || userAchievements == null) {
         return
     }
 
@@ -108,9 +121,27 @@ fun ProfileScreen() {
     var height by remember { mutableStateOf(formatNumber(userCharacteristics.height)) }
     var weight by remember { mutableStateOf(formatNumber(userCharacteristics.weight)) }
 
+    var showSignOutDialog by rememberSaveable { mutableStateOf(false) }
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
-    var uidText by remember { mutableStateOf(Firebase.auth.currentUser?.uid ?: "None") }
+    // Listens to Firebase auth changes and when the uid changes, the text redraws
+    var currentUser by remember { mutableStateOf(Firebase.auth.currentUser) }
+
+    DisposableEffect(Unit) {
+        val authListener = FirebaseAuth.AuthStateListener { auth ->
+            currentUser = auth.currentUser
+        }
+
+        Firebase.auth.addAuthStateListener(authListener)
+
+        onDispose {
+            Firebase.auth.removeAuthStateListener(authListener)
+        }
+    }
+
+    var googleAuthError by rememberSaveable { mutableStateOf(false) }
+
+    val uidText = currentUser?.uid ?: "None"
 
     val focusManager = LocalFocusManager.current
 
@@ -136,8 +167,7 @@ fun ProfileScreen() {
 
         Text(
             text = "Personal Details",
-            modifier = Modifier
-                .align(Alignment.Start)
+            modifier = Modifier.align(Alignment.Start)
         )
 
         CustomSurface(startPadding = 0.dp, topPadding = 4.dp, endPadding = 0.dp) {
@@ -313,8 +343,7 @@ fun ProfileScreen() {
 
         Text(
             text = "Settings",
-            modifier = Modifier
-                .align(Alignment.Start)
+            modifier = Modifier.align(Alignment.Start)
         )
 
         CustomSurface(startPadding = 0.dp, topPadding = 4.dp, endPadding = 0.dp) {
@@ -372,6 +401,29 @@ fun ProfileScreen() {
             }
         }
 
+        Spacer(modifier = Modifier.height(24.dp))
+
+        GoogleSignInButton(
+            modifier = Modifier.align(Alignment.Start),
+            error = googleAuthError,
+
+            onSignInClick = {
+                googleAuthError = false
+
+                coroutineScope.launch {
+                    val success = linkWithGoogleSignIn(context)
+                    if (!success) {
+                        googleAuthError = true
+                    }
+                }
+            },
+
+            onSignOutClick = {
+                googleAuthError = false
+                showSignOutDialog = true
+            }
+        )
+
         Spacer(modifier = Modifier.height(64.dp))
 
         Row(
@@ -412,6 +464,7 @@ fun ProfileScreen() {
         }
     }
 
+
     if (showDeleteDialog) {
         InfoDialog(
             icon = Icons.Default.Error,
@@ -434,7 +487,7 @@ fun ProfileScreen() {
                 weight = ""
 
                 // UI and local database delete
-                roomDelete(characteristicsViewModel, settingsViewModel, todayTrackingsViewModel, dailyTrackingsViewModel, achievementsViewModel, randomUsername, context)
+                performRoomDelete(characteristicsViewModel, settingsViewModel, todayTrackingsViewModel, dailyTrackingsViewModel, achievementsViewModel, randomUsername, context)
 
                 // Firebase delete, needs network
                 val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
@@ -446,10 +499,56 @@ fun ProfileScreen() {
                 WorkManager.getInstance(context).enqueue(deleteRequest)
 
                 showDeleteDialog = false
-                uidText = "None"
             },
 
             onDismiss = { showDeleteDialog = false }
+        )
+    }
+
+    if (showSignOutDialog) {
+        InfoDialog(
+            icon = Icons.Default.Error,
+            iconColour = Color(0xFFFFA000),
+            title = null,
+            text = AnnotatedString("Your progress is backed up to this account. Do you want to sign out and continue as a guest?"),
+            confirmText = "Confirm",
+            dismissText = "Cancel",
+            isCancelable = true,
+            fontWeight = FontWeight.Bold,
+
+            onConfirm = {
+                showSignOutDialog = false
+
+                coroutineScope.launch {
+                    try {
+                        // Signs out from Firebase
+                        Firebase.auth.signOut()
+
+                        // Signs out from Google
+                        val credentialManager = CredentialManager.create(context)
+                        credentialManager.clearCredentialState(ClearCredentialStateRequest())
+
+                        // Text fields UI delete
+                        val randomUsername = generateRandomUsername()
+                        username = randomUsername
+                        age = ""
+                        height = ""
+                        weight = ""
+
+                        // UI and local database delete
+                        performRoomDelete(characteristicsViewModel, settingsViewModel, todayTrackingsViewModel, dailyTrackingsViewModel, achievementsViewModel, randomUsername, context)
+
+                        // Signs in the user anonymously
+                        Firebase.auth.signInAnonymously().await()
+                    }
+
+                    catch (e: Exception) {
+                        googleAuthError = true
+                    }
+                }
+            },
+
+            onDismiss = { showSignOutDialog = false }
         )
     }
 }

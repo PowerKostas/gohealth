@@ -104,9 +104,9 @@ fun ProfilePicture(profilePictureString: String, onImageSelected: (String) -> Un
                         contentDescription = "Animal Choice",
                         modifier = Modifier
                             .aspectRatio(1f)
-                            .border(width = 2.dp, color = MaterialTheme.colorScheme.onPrimary, shape = CircleShape)
+                            .border(width = 2.dp, color = MaterialTheme.colorScheme.onSurface, shape = CircleShape)
                             .padding(2.dp)
-                            .background(color = MaterialTheme.colorScheme.onPrimary, shape = CircleShape)
+                            .background(color = MaterialTheme.colorScheme.onSurface, shape = CircleShape) // Fixes glitching on dark photos
                             .clip(CircleShape)
                             .clickable {
                                 onImageSelected(imageString)
