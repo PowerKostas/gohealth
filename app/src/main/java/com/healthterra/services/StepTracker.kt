@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class StepTrackerService : Service(), SensorEventListener {
+class StepTracker: Service(), SensorEventListener {
     // Initializations
     private lateinit var sensorManager: SensorManager
     private var stepSensor: Sensor? = null

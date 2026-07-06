@@ -28,7 +28,7 @@
         </activity>
 
         <service
-            android:name=".services.StepTrackerService"
+            android:name=".services.StepTracker"
             android:exported="false"
             android:foregroundServiceType="health">
         </service>

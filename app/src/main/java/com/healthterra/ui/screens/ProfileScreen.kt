@@ -1,5 +1,6 @@
 package com.healthterra.ui.screens
 
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -54,10 +56,13 @@ import androidx.work.WorkManager
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.healthterra.data.UserDatabase
 import com.healthterra.helpers.generateRandomUsername
 import com.healthterra.helpers.performRoomDelete
 import com.healthterra.services.FirebaseDeleteWorker
+import com.healthterra.services.SyncDailyTrackingsWorker
 import com.healthterra.services.linkWithGoogleSignIn
+import com.healthterra.services.syncFirestoreUserToRoom
 import com.healthterra.ui.components.general.ActionButton
 import com.healthterra.ui.components.general.CustomDropdownMenu
 import com.healthterra.ui.components.general.CustomSurface
@@ -73,7 +78,6 @@ import com.healthterra.ui.viewModels.DailyTrackingsViewModel
 import com.healthterra.ui.viewModels.SettingsViewModel
 import com.healthterra.ui.viewModels.TodayTrackingsViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,34 +120,39 @@ fun ProfileScreen() {
     }
 
     // Initializes the variables that are used in text fields with the values from the database
-    var username by remember { mutableStateOf(userSettings.username) }
-    var age by remember { mutableStateOf(formatNumber(userCharacteristics.age)) }
-    var height by remember { mutableStateOf(formatNumber(userCharacteristics.height)) }
-    var weight by remember { mutableStateOf(formatNumber(userCharacteristics.weight)) }
+    var username by remember(userSettings.username) { mutableStateOf(userSettings.username) }
+    var age by remember(userCharacteristics.age) { mutableStateOf(formatNumber(userCharacteristics.age)) }
+    var height by remember(userCharacteristics.height) { mutableStateOf(formatNumber(userCharacteristics.height)) }
+    var weight by remember(userCharacteristics.weight) { mutableStateOf(formatNumber(userCharacteristics.weight)) }
 
     var showSignOutDialog by rememberSaveable { mutableStateOf(false) }
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
-    // Listens to Firebase auth changes and when the uid changes, the text redraws
-    var currentUser by remember { mutableStateOf(Firebase.auth.currentUser) }
+    // Listens to Firebase auth changes and when the uid changes, the uid text redraws, also uses an integer to force recompositions when a new
+    // Google account is created and the uid stays the same
+    var authStateTrigger by remember { mutableIntStateOf(0) }
 
     DisposableEffect(Unit) {
-        val authListener = FirebaseAuth.AuthStateListener { auth ->
-            currentUser = auth.currentUser
+        val authListener = FirebaseAuth.IdTokenListener {
+            authStateTrigger += 1
         }
 
-        Firebase.auth.addAuthStateListener(authListener)
+        Firebase.auth.addIdTokenListener(authListener)
 
         onDispose {
-            Firebase.auth.removeAuthStateListener(authListener)
+            Firebase.auth.removeIdTokenListener(authListener)
         }
     }
 
-    var googleAuthError by rememberSaveable { mutableStateOf(false) }
+    val tempAuthStateTrigger = authStateTrigger // It's needed for recomposition to happen
 
+    val currentUser = Firebase.auth.currentUser
     val uidText = currentUser?.uid ?: "None"
 
+    var googleAuthError by rememberSaveable { mutableStateOf(false) }
+
     val focusManager = LocalFocusManager.current
+
 
     // Draws the screen
     Column(
@@ -411,8 +420,31 @@ fun ProfileScreen() {
                 googleAuthError = false
 
                 coroutineScope.launch {
-                    val success = linkWithGoogleSignIn(context)
-                    if (!success) {
+                    val returnCode = linkWithGoogleSignIn(context)
+
+                    if (returnCode == 2 || returnCode == 3) {
+                        syncFirestoreUserToRoom(UserDatabase.getDatabase(context), context)
+
+                        // Uploads the merged local daily trackings to Firestore, because that's the only table on the cloud that can change
+                        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+                        val syncTrackingsRequest = OneTimeWorkRequestBuilder<SyncDailyTrackingsWorker>()
+                            .setConstraints(constraints)
+                            .build()
+
+                        WorkManager.getInstance(context).enqueue(syncTrackingsRequest)
+
+                        val message = if (returnCode == 2) {
+                            "Google account linked! Your progress is now synced."
+                        }
+
+                        else {
+                            "Account found. Personal information restored, progress updated."
+                        }
+
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                    }
+
+                    else if (returnCode == 0) {
                         googleAuthError = true
                     }
                 }
@@ -537,9 +569,6 @@ fun ProfileScreen() {
 
                         // UI and local database delete
                         performRoomDelete(characteristicsViewModel, settingsViewModel, todayTrackingsViewModel, dailyTrackingsViewModel, achievementsViewModel, randomUsername, context)
-
-                        // Signs in the user anonymously
-                        Firebase.auth.signInAnonymously().await()
                     }
 
                     catch (e: Exception) {

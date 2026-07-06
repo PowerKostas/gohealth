@@ -20,7 +20,7 @@ import com.healthterra.helpers.calculateCaloriesGoal
 import com.healthterra.helpers.calculateExerciseGoal
 import com.healthterra.helpers.calculateStepsGoal
 import com.healthterra.helpers.calculateWaterGoal
-import com.healthterra.services.StepTrackerService
+import com.healthterra.services.StepTracker
 import com.healthterra.services.SyncUserDailyTrackingsWorker
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -75,7 +75,7 @@ class CharacteristicsViewModel(private val characteristicsDao: CharacteristicsDa
             val newStepGoal = calculateStepsGoal(newCharacteristics)
 
             if (oldStepGoal != newStepGoal) {
-                val intent = Intent(context, StepTrackerService::class.java).apply {
+                val intent = Intent(context, StepTracker::class.java).apply {
                     action = "UPDATE_STEP_GOAL"
                     putExtra("NEW_STEP_GOAL", newStepGoal)
                 }

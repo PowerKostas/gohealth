@@ -32,8 +32,8 @@ class BootReceiver : BroadcastReceiver() {
                     val userSettings = userSettingsList.firstOrNull()
 
                     if (userSettings != null && !userSettings.showMandatoryDialog && userSettings.stepTracking == "Enabled") {
-                        StepTrackerService.isForegroundServiceActive = true
-                        context.startForegroundService(Intent(context, StepTrackerService::class.java))
+                        StepTracker.isForegroundServiceActive = true
+                        context.startForegroundService(Intent(context, StepTracker::class.java))
                     }
                 }
 

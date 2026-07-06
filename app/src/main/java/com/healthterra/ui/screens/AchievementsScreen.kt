@@ -2,9 +2,11 @@ package com.healthterra.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
@@ -61,6 +63,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthterra.R
@@ -119,41 +123,66 @@ fun AchievementsScreen() {
     val totalAchievements = if (isEarlyPlaytesterVisible) 47 else 46
     val totalLegendary = if (isEarlyPlaytesterVisible) 7 else 6
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
+    // Because normal Arrangement.SpaceBetween doesn't offer minimum spacing between items, a custom one is created. A 12dp horizontal padding
+    // between items is only applied if everything fits on the screen, otherwise SpaceBetween is applied
+    val spaceBetweenWithMinSpacing = object : Arrangement.Horizontal {
+        override val spacing = 12.dp
+
+        override fun Density.arrange(
+            totalSize: Int,
+            sizes: IntArray,
+            layoutDirection: LayoutDirection,
+            outPositions: IntArray
+        ) {
+            with(Arrangement.SpaceBetween) {
+                arrange(totalSize, sizes, layoutDirection, outPositions)
+            }
+        }
+    }
+
+
+    // Uses a box with constraints to vertically space around the achievements in the scrollable column
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val minScrollHeight = maxHeight
+
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primary)
+                .verticalScroll(rememberScrollState())
+                .heightIn(min = minScrollHeight)
         ) {
-            Text(
-                text = "Collected: ${achievementsStatus.count { it }} / $totalAchievements",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.padding(32.dp)
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primary)
+            ) {
+                Text(
+                    text = "Collected: ${achievementsStatus.count { it }} / $totalAchievements",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.padding(32.dp)
+                )
 
-            HorizontalDivider(color = MaterialTheme.colorScheme.onSurface)
-        }
+                HorizontalDivider(color = MaterialTheme.colorScheme.onSurface)
+            }
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(32.dp),
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+            ) {
                 Text(
                     text = "Common: ${achievementsStatus.subList(0, 10).count { it }} / 10",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
 
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = spaceBetweenWithMinSpacing
+                ) {
                     item { AchievementItem(Icons.Filled.Shower, "Sipper", "Complete 10 Water Goals", "Common", achievementsStatus[0], otherAchievements.totalWaterGoals, 10) }
                     item { AchievementItem(Icons.Filled.LocalDining, "Mindful Eater", "Complete 10 Calorie Goals", "Common", achievementsStatus[1], otherAchievements.totalCaloriesGoals, 10) }
                     item { AchievementItem(Icons.AutoMirrored.Filled.DirectionsBike, "The Active One", "Complete 10 Exercise Goals", "Common", achievementsStatus[2], otherAchievements.totalExerciseGoals, 10) }
@@ -167,14 +196,20 @@ fun AchievementsScreen() {
                 }
             }
 
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+            ) {
                 Text(
                     text = "Rare: ${achievementsStatus.subList(10, 20).count { it }} / 10",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
 
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = spaceBetweenWithMinSpacing
+                ) {
                     item { AchievementItem(Icons.Filled.LocalCafe, "Water Regular", "Complete 100 Water Goals", "Rare", achievementsStatus[10], otherAchievements.totalWaterGoals, 100) }
                     item { AchievementItem(Icons.Filled.SoupKitchen, "Nutritionist", "Complete 100 Calorie Goals", "Rare", achievementsStatus[11], otherAchievements.totalCaloriesGoals, 100) }
                     item { AchievementItem(Icons.Filled.SportsTennis, "Athlete", "Complete 100 Exercise Goals", "Rare", achievementsStatus[12], otherAchievements.totalExerciseGoals, 100) }
@@ -188,14 +223,20 @@ fun AchievementsScreen() {
                 }
             }
 
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+            ) {
                 Text(
                     text = "Epic: ${achievementsStatus.subList(20, 30).count { it }} / 10",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
 
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = spaceBetweenWithMinSpacing
+                ) {
                     item { AchievementItem(Icons.Filled.Waves, "Reservoir", "Complete 365 Water Goals", "Epic", achievementsStatus[20], otherAchievements.totalWaterGoals, 365) }
                     item { AchievementItem(Icons.Filled.OutdoorGrill, "Master Chef", "Complete 365 Calorie Goals", "Epic", achievementsStatus[21], otherAchievements.totalCaloriesGoals, 365) }
                     item { AchievementItem(Icons.Filled.Power, "Power House", "Complete 365 Exercise Goals", "Epic", achievementsStatus[22], otherAchievements.totalExerciseGoals, 365) }
@@ -209,14 +250,20 @@ fun AchievementsScreen() {
                 }
             }
 
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+            ) {
                 Text(
                     text = "Legendary: ${achievementsStatus.subList(30, 37).count { it }} / $totalLegendary",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
 
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = spaceBetweenWithMinSpacing
+                ) {
                     item { AchievementItem(Icons.Filled.Anchor, "Hall of Famer", "Appear on the Water Leaderboards", "Legendary", achievementsStatus[30], if (achievementsStatus[30]) 1 else 0, 1) }
                     item { AchievementItem(Icons.Filled.LocationCity, "Household Name", "Appear on the Calories Leaderboards", "Legendary", achievementsStatus[31], if (achievementsStatus[31]) 1 else 0, 1) }
                     item { AchievementItem(Icons.Filled.HotelClass, "Superstar", "Appear on the Exercise Leaderboards", "Legendary", achievementsStatus[32], if (achievementsStatus[32]) 1 else 0, 1) }
@@ -230,14 +277,20 @@ fun AchievementsScreen() {
                 }
             }
 
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+            ) {
                 Text(
                     text = "Impossible: ${achievementsStatus.subList(37, 47).count { it }} / 10",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
 
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = spaceBetweenWithMinSpacing
+                ) {
                     item { AchievementItem(ImageVector.vectorResource(id = R.drawable.leviathan), "Leviathan", "Complete 1000 Water Goals", "Impossible", achievementsStatus[37], otherAchievements.totalWaterGoals, 1000) }
                     item { AchievementItem(Icons.AutoMirrored.Filled.MenuBook, "Alchemist", "Complete 1000 Calorie Goals", "Impossible", achievementsStatus[38], otherAchievements.totalCaloriesGoals, 1000) }
                     item { AchievementItem(ImageVector.vectorResource(id = R.drawable.juggernaut), "Juggernaut", "Complete 1000 Exercise Goals", "Impossible", achievementsStatus[39], otherAchievements.totalExerciseGoals, 1000) }

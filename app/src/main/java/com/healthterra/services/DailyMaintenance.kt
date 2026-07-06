@@ -53,7 +53,7 @@ suspend fun performDailyMaintenance(context: Context) {
 
                 // Sends a reset signal to the StepTrackerService
                 if (userSettings.stepTracking == "Enabled") {
-                    val resetIntent = Intent(context, StepTrackerService::class.java).apply {
+                    val resetIntent = Intent(context, StepTracker::class.java).apply {
                         action = "RESET_STEPS_MIDNIGHT"
                     }
 

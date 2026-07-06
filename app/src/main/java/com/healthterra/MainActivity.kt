@@ -37,7 +37,7 @@ import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderF
 import com.google.firebase.auth.auth
 import com.google.firebase.initialize
 import com.healthterra.services.NotificationWorker
-import com.healthterra.services.StepTrackerService
+import com.healthterra.services.StepTracker
 import com.healthterra.services.SyncDailyTrackingsWorker
 import com.healthterra.services.SyncUserWorker
 import com.healthterra.services.createInitialUserDocument
@@ -71,8 +71,8 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val activityRecognitionGranted = permissions[Manifest.permission.ACTIVITY_RECOGNITION] ?: false
             if (activityRecognitionGranted) {
-                val serviceIntent = Intent(this, StepTrackerService::class.java)
-                StepTrackerService.isForegroundServiceActive = true
+                val serviceIntent = Intent(this, StepTracker::class.java)
+                StepTracker.isForegroundServiceActive = true
                 startForegroundService(serviceIntent)
             }
         }
@@ -173,19 +173,19 @@ class MainActivity : ComponentActivity() {
             // Handles edge case where, with the app on the background, the user allows activity recognition permissions and reopens the
             // app, this opens the foreground service in that instance
             if (userSettings.stepTracking == "Enabled") {
-                val serviceIntent = Intent(this@MainActivity, StepTrackerService::class.java)
+                val serviceIntent = Intent(this@MainActivity, StepTracker::class.java)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
-                        if (!StepTrackerService.isForegroundServiceActive) {
-                            StepTrackerService.isForegroundServiceActive = true
+                        if (!StepTracker.isForegroundServiceActive) {
+                            StepTracker.isForegroundServiceActive = true
                             startForegroundService(serviceIntent)
                         }
                     }
                 }
 
                 else {
-                    if (!StepTrackerService.isForegroundServiceActive) {
-                        StepTrackerService.isForegroundServiceActive = true
+                    if (!StepTracker.isForegroundServiceActive) {
+                        StepTracker.isForegroundServiceActive = true
                         startForegroundService(serviceIntent)
                     }
                 }
@@ -277,11 +277,11 @@ class MainActivity : ComponentActivity() {
                 // Starts the foreground step tracking service, only if the step tracking setting and the physical activity permissions
                 // are enabled. Steps are only counted if the foreground service is active
                 if (userSettings?.stepTracking == "Enabled") {
-                    val serviceIntent = Intent(this@MainActivity, StepTrackerService::class.java)
+                    val serviceIntent = Intent(this@MainActivity, StepTracker::class.java)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
-                            if (!StepTrackerService.isForegroundServiceActive) {
-                                StepTrackerService.isForegroundServiceActive = true
+                            if (!StepTracker.isForegroundServiceActive) {
+                                StepTracker.isForegroundServiceActive = true
                                 startForegroundService(serviceIntent)
                             }
                         }
@@ -289,8 +289,8 @@ class MainActivity : ComponentActivity() {
 
                     // Below this version, permissions are not needed
                     else {
-                        if (!StepTrackerService.isForegroundServiceActive) {
-                            StepTrackerService.isForegroundServiceActive = true
+                        if (!StepTracker.isForegroundServiceActive) {
+                            StepTracker.isForegroundServiceActive = true
                             startForegroundService(serviceIntent)
                         }
                     }
@@ -298,7 +298,7 @@ class MainActivity : ComponentActivity() {
 
                 // Kills the service if the user disables the setting
                 else if (userSettings?.stepTracking == "Disabled") {
-                    val stopIntent = Intent(this@MainActivity, StepTrackerService::class.java)
+                    val stopIntent = Intent(this@MainActivity, StepTracker::class.java)
                     stopService(stopIntent)
                 }
             }
