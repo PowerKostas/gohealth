@@ -118,6 +118,8 @@ suspend fun syncFirestoreUserToRoom(userDatabase: UserDatabase, context: Context
                     caloriesProgress = max(cloudCaloriesProgress, localCaloriesProgress),
                     exerciseProgress = max(cloudExerciseProgress, localExerciseProgress),
                     stepsProgress = max(cloudStepsProgress, localStepsProgress),
+
+                    // The corresponding goal of the winner of local vs remote is selected
                     waterGoal = if (cloudWaterProgress >= localWaterProgress) cloudWaterGoal else (localDailyTracking?.waterGoal ?: cloudWaterGoal),
                     caloriesGoal = if (cloudCaloriesProgress >= localCaloriesProgress) cloudCaloriesGoal else (localDailyTracking?.caloriesGoal ?: cloudCaloriesGoal),
                     exerciseGoal = if (cloudExerciseProgress >= localExerciseProgress) cloudExerciseGoal else (localDailyTracking?.exerciseGoal ?: cloudExerciseGoal),

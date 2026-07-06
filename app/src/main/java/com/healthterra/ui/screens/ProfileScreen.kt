@@ -60,8 +60,8 @@ import com.healthterra.data.UserDatabase
 import com.healthterra.helpers.generateRandomUsername
 import com.healthterra.helpers.performRoomDelete
 import com.healthterra.services.FirebaseDeleteWorker
-import com.healthterra.services.SyncDailyTrackingsWorker
 import com.healthterra.services.linkWithGoogleSignIn
+import com.healthterra.services.syncAllTrackingsToFirestore
 import com.healthterra.services.syncFirestoreUserToRoom
 import com.healthterra.ui.components.general.ActionButton
 import com.healthterra.ui.components.general.CustomDropdownMenu
@@ -425,14 +425,6 @@ fun ProfileScreen() {
                     if (returnCode == 2 || returnCode == 3) {
                         syncFirestoreUserToRoom(UserDatabase.getDatabase(context), context)
 
-                        // Uploads the merged local daily trackings to Firestore, because that's the only table on the cloud that can change
-                        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-                        val syncTrackingsRequest = OneTimeWorkRequestBuilder<SyncDailyTrackingsWorker>()
-                            .setConstraints(constraints)
-                            .build()
-
-                        WorkManager.getInstance(context).enqueue(syncTrackingsRequest)
-
                         val message = if (returnCode == 2) {
                             "Google account linked! Your progress is now synced."
                         }
@@ -442,6 +434,12 @@ fun ProfileScreen() {
                         }
 
                         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+
+                        // Uploads the merged local daily and today trackings to Firestore, because that's the only table on the cloud that can
+                        // change, don't have to do it on returnCode = 2 because the UID document stays the same
+                        if (returnCode == 3) {
+                            syncAllTrackingsToFirestore(UserDatabase.getDatabase(context))
+                        }
                     }
 
                     else if (returnCode == 0) {

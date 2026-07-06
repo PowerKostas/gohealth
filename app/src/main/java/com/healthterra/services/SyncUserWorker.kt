@@ -10,8 +10,8 @@ import com.healthterra.data.UserDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
 
-// The function is triggered from SettingsViewModel and MainActivity.onStop, profilePictureString and username are for the leaderboards, the
-// others are for backup
+// The function is triggered from SettingsViewModel, MainActivity.onStop and DailyMaintenance, profilePictureString and username are for the
+// leaderboards, the others are for backup
 class SyncUserWorker(appContext: Context, workerParams: WorkerParameters) : CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return Result.success()

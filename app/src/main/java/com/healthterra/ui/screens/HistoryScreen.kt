@@ -323,35 +323,5 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
                 }
             }
         }
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(32.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = "Most Steps in a Day",
-                fontWeight = FontWeight.Bold
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.steps),
-                    contentDescription = "Steps",
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(36.dp)
-                )
-
-                Text(
-                    text = (otherAchievements?.maxSteps ?: 0).toString(),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = Color(0xFFD4AF37),
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
     }
 }

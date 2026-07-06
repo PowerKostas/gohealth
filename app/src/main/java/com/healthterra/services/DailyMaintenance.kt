@@ -121,6 +121,16 @@ suspend fun performDailyMaintenance(context: Context) {
 
                 val updateUserSettings = userSettings.copy(lastSavedDate = LocalDate.now().toString())
                 settingsDao.update(updateUserSettings)
+
+                val syncUserRequest = OneTimeWorkRequestBuilder<SyncUserWorker>()
+                    .setConstraints(constraints)
+                    .build()
+
+                WorkManager.getInstance(context).enqueueUniqueWork(
+                    "SyncUserWorker",
+                    ExistingWorkPolicy.REPLACE,
+                    syncUserRequest
+                )
             }
 
             catch (e: Exception) {
