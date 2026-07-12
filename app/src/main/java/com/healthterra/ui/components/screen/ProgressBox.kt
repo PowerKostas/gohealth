@@ -19,7 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.healthterra.helpers.roundGoal
+import com.healthterra.helpers.roundValue
 import com.healthterra.ui.components.general.ProgressBar
 import kotlin.math.roundToInt
 
@@ -58,8 +58,8 @@ fun ProgressBox(modifier: Modifier = Modifier, iconId: Int, category: String, pr
                 style = MaterialTheme.typography.labelLarge
             )
 
-            val minCaloriesValue = roundGoal((goal - goal * 0.1).roundToInt())
-            val maxCaloriesValue = roundGoal((goal + goal * 0.1).roundToInt())
+            val minCaloriesValue = roundValue((goal - goal * 0.1).roundToInt())
+            val maxCaloriesValue = roundValue((goal + goal * 0.1).roundToInt())
 
             // Calculates percentage from the minimum value, not the average
             val progressPercentage = if (category == "Calories") {

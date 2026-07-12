@@ -19,6 +19,8 @@ import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Anchor
 import androidx.compose.material.icons.filled.Balance
 import androidx.compose.material.icons.filled.Blind
+import androidx.compose.material.icons.filled.ElectricBolt
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.HotelClass
 import androidx.compose.material.icons.filled.Landscape
@@ -44,7 +46,6 @@ import androidx.compose.material.icons.filled.SoupKitchen
 import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material.icons.filled.SportsTennis
 import androidx.compose.material.icons.filled.Waves
-import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.HorizontalDivider
@@ -102,7 +103,8 @@ fun AchievementsScreen() {
             // Legendary
             leaderboardsAchievements.appearWaterLeaderboards, leaderboardsAchievements.appearCaloriesLeaderboards,
             leaderboardsAchievements.appearExerciseLeaderboards, leaderboardsAchievements.appearStepsLeaderboards,
-            leaderboardsAchievements.appearTotalStepsLeaderboards, leaderboardsAchievements.secret, userSettings.username == "TheWalkingDemi®",
+            leaderboardsAchievements.appearTotalStepsLeaderboards, leaderboardsAchievements.appearHealthiestUser, leaderboardsAchievements.secret,
+            userSettings.username == "TheWalkingDemi®",
 
             // Impossible
             otherAchievements.totalWaterGoals >= 1000, otherAchievements.totalCaloriesGoals >= 1000, otherAchievements.totalExerciseGoals >= 1000,
@@ -112,9 +114,9 @@ fun AchievementsScreen() {
     }
 
     // Early Playtester achievement only shows up if it's true
-    val isEarlyPlaytesterVisible = achievementsStatus[36]
-    val totalAchievements = if (isEarlyPlaytesterVisible) 43 else 42
-    val totalLegendary = if (isEarlyPlaytesterVisible) 7 else 6
+    val isEarlyPlaytesterVisible = achievementsStatus[34]
+    val totalAchievements = if (isEarlyPlaytesterVisible) 44 else 43
+    val totalLegendary = if (isEarlyPlaytesterVisible) 8 else 7
 
     // Because normal Arrangement.SpaceBetween doesn't offer minimum spacing between items, a custom one is created. A 12dp horizontal padding
     // between items is only applied if everything fits on the screen, otherwise SpaceBetween is applied
@@ -183,7 +185,7 @@ fun AchievementsScreen() {
                     item { AchievementItem(Icons.Filled.Explore, "Wanderer", "Walk 100000 Steps", "Common", achievementsStatus[4], otherAchievements.totalSteps, 100000) }
                     item { AchievementItem(Icons.Filled.LocalFlorist, "Well Watered", "Maintain a 5-Day Water Goal Streak", "Common", achievementsStatus[5], otherAchievements.maxWaterStreak, 5) }
                     item { AchievementItem(Icons.Filled.Balance, "Dietitian", "Maintain a 5-Day Calorie Goal Streak", "Common", achievementsStatus[6], otherAchievements.maxCaloriesStreak, 5) }
-                    item { AchievementItem(Icons.Filled.WbSunny, "Early Riser", "Maintain a 5-Day Exercise Goal Streak", "Common", achievementsStatus[7], otherAchievements.maxExerciseStreak, 5) }
+                    item { AchievementItem(Icons.Filled.ElectricBolt, "Catalyst", "Maintain a 5-Day Exercise Goal Streak", "Common", achievementsStatus[7], otherAchievements.maxExerciseStreak, 5) }
                     item { AchievementItem(Icons.Filled.NaturePeople, "Road Warrior", "Maintain a 5-Day Step Goal Streak", "Common", achievementsStatus[8], otherAchievements.maxStepsStreak, 5) }
                 }
             }
@@ -245,7 +247,7 @@ fun AchievementsScreen() {
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
                 Text(
-                    text = "Legendary: ${achievementsStatus.subList(27, 34).count { it }} / $totalLegendary",
+                    text = "Legendary: ${achievementsStatus.subList(27, 35).count { it }} / $totalLegendary",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -254,15 +256,16 @@ fun AchievementsScreen() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = spaceBetweenWithMinSpacing
                 ) {
-                    item { AchievementItem(Icons.Filled.Anchor, "Hall of Famer", "Appear on the Water Leaderboards", "Legendary", achievementsStatus[27], if (achievementsStatus[27]) 1 else 0, 1) }
-                    item { AchievementItem(Icons.Filled.LocationCity, "Household Name", "Appear on the Calories Leaderboards", "Legendary", achievementsStatus[28], if (achievementsStatus[28]) 1 else 0, 1) }
-                    item { AchievementItem(Icons.Filled.HotelClass, "Superstar", "Appear on the Exercise Leaderboards", "Legendary", achievementsStatus[29], if (achievementsStatus[29]) 1 else 0, 1) }
-                    item { AchievementItem(Icons.Filled.WorkspacePremium, "Record Holder", "Appear on the Steps Leaderboards", "Legendary", achievementsStatus[30], if (achievementsStatus[30]) 1 else 0, 1) }
-                    item { AchievementItem(Icons.Filled.Public, "Healthterra's Finest", "Become the \"Healthiest User\"", "Legendary", achievementsStatus[31], if (achievementsStatus[31]) 1 else 0, 1) }
-                    item { AchievementItem(Icons.Filled.QuestionMark, "Secret", if (achievementsStatus[32]) "Take the top spot on every single leaderboard. You might be the only person to ever achieve this!" else "???", "Legendary", achievementsStatus[32], if (achievementsStatus[32]) 1 else 0, 1) }
+                    item { AchievementItem(Icons.Filled.Anchor, "Hall of Famer", "Appear on the Water Leaderboard", "Legendary", achievementsStatus[27], if (achievementsStatus[27]) 1 else 0, 1) }
+                    item { AchievementItem(Icons.Filled.LocationCity, "Household Name", "Appear on the Calories Leaderboard", "Legendary", achievementsStatus[28], if (achievementsStatus[28]) 1 else 0, 1) }
+                    item { AchievementItem(Icons.Filled.HotelClass, "Superstar", "Appear on the Exercise Leaderboard", "Legendary", achievementsStatus[29], if (achievementsStatus[29]) 1 else 0, 1) }
+                    item { AchievementItem(Icons.Filled.WorkspacePremium, "Record Holder", "Appear on the Steps Leaderboard", "Legendary", achievementsStatus[30], if (achievementsStatus[30]) 1 else 0, 1) }
+                    item { AchievementItem(Icons.Filled.EmojiEvents, "Global Icon", "Appear on the Total Steps Leaderboard", "Legendary", achievementsStatus[31], if (achievementsStatus[31]) 1 else 0, 1) }
+                    item { AchievementItem(Icons.Filled.Public, "Healthterra's Finest", "Become the \"Healthiest User\"", "Legendary", achievementsStatus[32], if (achievementsStatus[32]) 1 else 0, 1) }
+                    item { AchievementItem(Icons.Filled.QuestionMark, "Secret", if (achievementsStatus[33]) "Take the top spot on every single leaderboard. You might be the only person to ever achieve this!" else "???", "Legendary", achievementsStatus[33], if (achievementsStatus[33]) 1 else 0, 1) }
 
                     if (isEarlyPlaytesterVisible) {
-                        item { AchievementItem(Icons.Filled.Science, "Early Playtester", "We couldn't have done it without you!", "Legendary", achievementsStatus[33], if (achievementsStatus[33]) 1 else 0, 1) }
+                        item { AchievementItem(Icons.Filled.Science, "Early Playtester", "We couldn't have done it without you!", "Legendary", achievementsStatus[34], if (achievementsStatus[34]) 1 else 0, 1) }
                     }
                 }
             }
@@ -272,7 +275,7 @@ fun AchievementsScreen() {
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
                 Text(
-                    text = "Impossible: ${achievementsStatus.subList(34, 43).count { it }} / 9",
+                    text = "Impossible: ${achievementsStatus.subList(35, 44).count { it }} / 9",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -281,15 +284,15 @@ fun AchievementsScreen() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = spaceBetweenWithMinSpacing
                 ) {
-                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.leviathan), "Leviathan", "Complete 1000 Water Goals", "Impossible", achievementsStatus[34], otherAchievements.totalWaterGoals, 1000) }
-                    item { AchievementItem(Icons.AutoMirrored.Filled.MenuBook, "Alchemist", "Complete 1000 Calorie Goals", "Impossible", achievementsStatus[35], otherAchievements.totalCaloriesGoals, 1000) }
-                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.juggernaut), "Juggernaut", "Complete 1000 Exercise Goals", "Impossible", achievementsStatus[36], otherAchievements.totalExerciseGoals, 1000) }
-                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.griffin), "Griffin", "Complete 1000 Step Goals", "Impossible", achievementsStatus[37], otherAchievements.totalStepsGoals, 1000) }
-                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.phoenix), "Phoenix", "Walk 10000000 Steps", "Impossible", achievementsStatus[38], otherAchievements.totalSteps, 10000000) }
-                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.hydra), "Hydra", "Maintain a 365-Day Water Goal Streak", "Impossible", achievementsStatus[39], otherAchievements.maxWaterStreak, 365) }
-                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.minotaur), "Minotaur", "Maintain a 365-Day Calorie Goal Streak", "Impossible", achievementsStatus[40], otherAchievements.maxCaloriesStreak, 365) }
-                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.golem), "Golem", "Maintain a 365-Day Exercise Goal Streak", "Impossible", achievementsStatus[41], otherAchievements.maxExerciseStreak, 365) }
-                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.unicorn), "Unicorn", "Maintain a 365-Day Step Goal Streak", "Impossible", achievementsStatus[42], otherAchievements.maxStepsStreak, 365) }
+                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.leviathan), "Leviathan", "Complete 1000 Water Goals", "Impossible", achievementsStatus[35], otherAchievements.totalWaterGoals, 1000) }
+                    item { AchievementItem(Icons.AutoMirrored.Filled.MenuBook, "Alchemist", "Complete 1000 Calorie Goals", "Impossible", achievementsStatus[36], otherAchievements.totalCaloriesGoals, 1000) }
+                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.juggernaut), "Juggernaut", "Complete 1000 Exercise Goals", "Impossible", achievementsStatus[37], otherAchievements.totalExerciseGoals, 1000) }
+                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.griffin), "Griffin", "Complete 1000 Step Goals", "Impossible", achievementsStatus[38], otherAchievements.totalStepsGoals, 1000) }
+                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.phoenix), "Phoenix", "Walk 10000000 Steps", "Impossible", achievementsStatus[39], otherAchievements.totalSteps, 10000000) }
+                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.hydra), "Hydra", "Maintain a 365-Day Water Goal Streak", "Impossible", achievementsStatus[40], otherAchievements.maxWaterStreak, 365) }
+                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.minotaur), "Minotaur", "Maintain a 365-Day Calorie Goal Streak", "Impossible", achievementsStatus[41], otherAchievements.maxCaloriesStreak, 365) }
+                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.golem), "Golem", "Maintain a 365-Day Exercise Goal Streak", "Impossible", achievementsStatus[42], otherAchievements.maxExerciseStreak, 365) }
+                    item { AchievementItem(ImageVector.vectorResource(id = R.drawable.unicorn), "Unicorn", "Maintain a 365-Day Step Goal Streak", "Impossible", achievementsStatus[43], otherAchievements.maxStepsStreak, 365) }
                 }
             }
         }

@@ -53,7 +53,7 @@ import com.healthterra.helpers.calculateCaloriesGoal
 import com.healthterra.helpers.calculateExerciseGoal
 import com.healthterra.helpers.calculateStepsGoal
 import com.healthterra.helpers.calculateWaterGoal
-import com.healthterra.helpers.roundGoal
+import com.healthterra.helpers.roundValue
 import com.healthterra.ui.components.general.InfoDialog
 import com.healthterra.ui.components.screen.ProgressBox
 import com.healthterra.ui.components.screen.ProgressHeader
@@ -93,8 +93,8 @@ fun HomeScreen(onNavigate: (String) -> Unit) {
     val stepsGoal = calculateStepsGoal(userCharacteristics)
 
     // Calculates how many goals are met
-    val minCaloriesValue = roundGoal((caloriesGoal - caloriesGoal * 0.1).roundToInt())
-    val maxCaloriesValue = roundGoal((caloriesGoal + caloriesGoal * 0.1).roundToInt())
+    val minCaloriesValue = roundValue((caloriesGoal - caloriesGoal * 0.1).roundToInt())
+    val maxCaloriesValue = roundValue((caloriesGoal + caloriesGoal * 0.1).roundToInt())
     val completedGoals = listOf(waterProgressSum >= waterGoal, caloriesProgressSum in minCaloriesValue..maxCaloriesValue, exerciseProgressSum >= exerciseGoal, stepsProgress >= stepsGoal).count { it }
 
     val isProfileIncomplete = userCharacteristics.gender == null || userCharacteristics.age == null || userCharacteristics.height == null || userCharacteristics.weight == null || userCharacteristics.activityLevel == null

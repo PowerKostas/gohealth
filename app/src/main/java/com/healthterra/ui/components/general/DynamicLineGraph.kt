@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.healthterra.helpers.roundValue
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
@@ -75,7 +76,7 @@ fun DynamicLineGraph(values: List<Int>, labels: List<String>) {
                 )
             ),
 
-            // y-axis, removes tick, adds horizontal guidelines, adjusts value labels, only allows up to 5 value labels
+            // y-axis, removes tick, adds horizontal guidelines, rounds value labels, only allows up to 5 value labels
             startAxis = VerticalAxis.rememberStart(
                 tick = null,
                 line = rememberLineComponent(fill = Fill(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))),
@@ -92,7 +93,7 @@ fun DynamicLineGraph(values: List<Int>, labels: List<String>) {
                 itemPlacer = VerticalAxis.ItemPlacer.count({ 5 }),
 
                 valueFormatter = CartesianValueFormatter { _, value, _ ->
-                    value.toInt().toString()
+                    roundValue(value.toInt()).toString()
                 }
             ),
 

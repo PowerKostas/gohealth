@@ -22,7 +22,7 @@ fun calculateWaterGoal(userCharacteristics: Characteristics?): Int {
     val activityLevelValue = activityLevelValues.getValue(userCharacteristics?.activityLevel ?: "")
 
     val waterGoal = ((weight * genderValue) * activityLevelValue).roundToInt()
-    return roundGoal(waterGoal)
+    return roundValue(waterGoal)
 }
 
 
@@ -70,11 +70,11 @@ fun calculateCaloriesGoal(userCharacteristics: Characteristics?): Int {
         }
 
         caloriesGoal = maxOf(caloriesGoal, hardFloor)
-        return roundGoal(caloriesGoal)
+        return roundValue(caloriesGoal)
     }
 
     else {
-        return roundGoal(tdee.roundToInt())
+        return roundValue(tdee.roundToInt())
     }
 }
 
@@ -123,7 +123,7 @@ fun calculateExerciseGoal(userCharacteristics: Characteristics?): Int {
     val weightGoalValue = weightGoalValues.getValue(userCharacteristics?.weightGoal ?: "")
 
     val repsGoal = (bmiBasedReps * activityLevelValue * ageValue * genderValue * weightGoalValue).roundToInt()
-    return roundGoal(repsGoal)
+    return roundValue(repsGoal)
 }
 
 

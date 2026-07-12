@@ -42,7 +42,7 @@ import com.healthterra.data.entities.TodayTrackings
 import com.healthterra.helpers.calculateCaloriesGoal
 import com.healthterra.helpers.calculateExerciseGoal
 import com.healthterra.helpers.calculateWaterGoal
-import com.healthterra.helpers.roundGoal
+import com.healthterra.helpers.roundValue
 import com.healthterra.services.SyncDailyTrackingsWorker
 import com.healthterra.ui.components.general.ActionButton
 import com.healthterra.ui.components.general.BulletGraph
@@ -84,7 +84,7 @@ fun CategoriesScreen(categoryName: String, iconId: Int, progressBarColour: Color
     fun checkGoalStatusAndSync(oldCategoryValue: Int, newCategoryValue: Int, updatedTodayTrackings: TodayTrackings) {
         // Uses minimum value for the calories range goal
         val categoryGoalFix = if (categoryName == "Calories") {
-            roundGoal((categoryGoal - categoryGoal * 0.1).roundToInt())
+            roundValue((categoryGoal - categoryGoal * 0.1).roundToInt())
         }
 
         else {
@@ -190,8 +190,8 @@ fun CategoriesScreen(categoryName: String, iconId: Int, progressBarColour: Color
 
         if (categoryName == "Calories") {
             // It does +-10% of the goal because calories use a range
-            val minValue = roundGoal((categoryGoal - categoryGoal * 0.1).roundToInt())
-            val maxValue = roundGoal((categoryGoal + categoryGoal * 0.1).roundToInt())
+            val minValue = roundValue((categoryGoal - categoryGoal * 0.1).roundToInt())
+            val maxValue = roundValue((categoryGoal + categoryGoal * 0.1).roundToInt())
 
             val textColour = if (categoryProgress in minValue..maxValue) Color(0xFF4CAF50) else Color(0xFFE53935)
             val annotatedText = buildAnnotatedString {

@@ -13,8 +13,8 @@ android {
         applicationId = "com.healthterra"
         minSdk = 26
         targetSdk = 37
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 4
+        versionName = "3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -27,6 +27,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE"
+            }
         }
 
         debug {

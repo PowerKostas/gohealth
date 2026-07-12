@@ -5,6 +5,7 @@ import com.healthterra.data.entities.DailyTrackings
 import com.healthterra.data.entities.TodayTrackings
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import kotlin.math.roundToInt
 
 data class OtherAchievements(
     val totalWaterGoals: Int, val totalCaloriesGoals: Int, val totalExerciseGoals: Int, val totalStepsGoals: Int, val totalSteps: Int,
@@ -34,7 +35,8 @@ fun calculateOtherAchievements(dailyTrackingsList: List<DailyTrackings>, todayTr
             activeWaterStreak = 0
         }
 
-        if (day.caloriesProgress >= day.caloriesGoal) {
+        val middleCaloriesGoal = day.caloriesGoal
+        if (day.caloriesProgress >= roundValue((middleCaloriesGoal - middleCaloriesGoal * 0.1).roundToInt())) {
             activeCaloriesStreak = if (isConsecutive) activeCaloriesStreak + 1 else 1
             maxCaloriesStreak = maxOf(activeCaloriesStreak, maxCaloriesStreak)
             totalCaloriesGoals += 1
@@ -90,7 +92,10 @@ fun calculateOtherAchievements(dailyTrackingsList: List<DailyTrackings>, todayTr
     }
 
     val waterGoalToday = (todayTrackings?.waterProgress?.sum() ?: 0) >= calculateWaterGoal(userCharacteristics)
-    val caloriesGoalToday = (todayTrackings?.caloriesProgress?.sum() ?: 0) >= calculateCaloriesGoal(userCharacteristics)
+
+    val middleCaloriesGoal = calculateCaloriesGoal(userCharacteristics)
+    val caloriesGoalToday = (todayTrackings?.caloriesProgress?.sum() ?: 0) >= roundValue((middleCaloriesGoal - middleCaloriesGoal * 0.1).roundToInt())
+
     val exerciseGoalToday = (todayTrackings?.exerciseProgress?.sum() ?: 0) >= calculateExerciseGoal(userCharacteristics)
     val stepsGoalToday = (todayTrackings?.stepsProgress ?: 0) >= calculateStepsGoal(userCharacteristics)
 

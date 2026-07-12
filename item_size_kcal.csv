@@ -44,7 +44,7 @@ Amaranth Seeds,100g,371
 Amaretti Cookie,1 Piece,72
 Amaretto,1 Portion,110
 Amatriciana Pasta,1 Portion,480
-Ambrosia Salad,1 Cup,320
+Ambrosia Salad,1 Portion,320
 American Cheese,1 Slice,104
 Americano,1 Cup,15
 Anasazi Beans,1 Cup,215
@@ -337,18 +337,21 @@ Beef Vindaloo,1 Portion,534
 Beef Wellington,1 Portion,650
 Beef Wrap,1 Item,325
 Beef Yellow Curry,1 Portion,595
-Beer Ale,1 Portion,180
+Beer Ale,1 Cup,150
 Beer Bread,1 Slice,140
+Cheese Bread,1 Slice,120
+Olive Bread,1 Slice,100
 Beer Cheese Dip,2 Tablespoons,70
-Beer Dark Lager,1 Portion,175
-Beer Ipa,1 Portion,200
-Beer Lager,1 Portion,145
-Beer Light,1 Portion,103
-Beer Pale Ale,1 Portion,175
-Beer Pilsner,1 Portion,145
-Beer Regular,1 Portion,153
-Beer Stout,1 Portion,210
-Beer Wheat,1 Portion,180
+Beer Dark Lager,1 Cup,145
+Beer Ipa,1 Cup,170
+Beer Lager,1 Cup,115
+Beer Light,1 Cup,103
+Beer Pale Ale,1 Cup,145
+Beer Pilsner,1 Cup,115
+Beer Regular,1 Cup,123
+Beer Stout,1 Cup,180
+Beer Wheat,1 Cup,150
+Beer Radler,1 Cup,170
 Beet,1 Cup,58
 Beet Greens,1 Cup,8
 Beet Juice,1 Cup,100
@@ -621,7 +624,7 @@ Cacio E Pepe,1 Portion,430
 Cactus Pad,1 Cup,14
 Cactus Pear,1 Item,42
 Caesar Dressing,2 Tablespoons,163
-Caesar Salad,1 Cup,190
+Caesar Salad,1 Portion,190
 Caesar Salad with Dressing,1 Portion,311
 Cajun Catfish,1 Portion,280
 Cajun Fried Turkey,100g,190
@@ -696,7 +699,7 @@ Caramel Cupcake,1 Item,218
 Caramel Frappe,1 Item,198
 Caramel Frozen Yogurt,1 Item,118
 Caramel Gelato,1 Item,206
-Caramel Ice Cream,1 Item,161
+Caramel Ice Cream,1 Cup,161
 Caramel Latte,1 Item,210
 Caramel Macchiato,1 Item,243
 Caramel Milkshake,1 Cup,355
@@ -856,7 +859,7 @@ Cherry Cookie,1 Item,156
 Cherry Cupcake,1 Item,301
 Cherry Frozen Yogurt,1 Item,129
 Cherry Gelato,1 Item,155
-Cherry Ice Cream,1 Item,125
+Cherry Ice Cream,1 Cup,125
 Cherry Jam,1 Tablespoon,50
 Cherry Juice,1 Cup,134
 Cherry Milkshake,1 Cup,331
@@ -926,7 +929,7 @@ Chicken Rice Soup,1 Cup,109
 Chicken Risotto,1 Portion,222
 Chicken Rogan Josh,1 Portion,379
 Chicken Saag,1 Portion,484
-Chicken Salad,1 Cup,350
+Chicken Salad,1 Portion,350
 Chicken Salad Sandwich,1 Item,480
 Chicken Sandwich Club,1 Item,570
 Chicken Satay,2 Items,200
@@ -1036,14 +1039,14 @@ Chocolate Cupcake,1 Item,331
 Chocolate Frozen Yogurt,1 Item,139
 Chocolate Gelato,1 Item,176
 Chocolate Hazelnut Spread,2 Tablespoons,200
-Chocolate Ice Cream,1 Item,178
+Chocolate Ice Cream,1 Cup,178
 Chocolate Lava Cake,1 Piece,350
 Chocolate Milk,1 Cup,208
 Chocolate Milkshake,1 Cup,373
 Chocolate Mousse,1 Cup,240
 Chocolate Muffin,1 Item,260
 Chocolate Pie,1 Slice,375
-Chocolate Sandwich Cookie,1 Item,53
+Chocolate Sandwich Cookie,1 Item,90
 Chocolate Scone,1 Item,229
 Chocolate Sorbet,1 Item,120
 Chocolate Souffle,1 Piece,185
@@ -1066,7 +1069,7 @@ Choy Sum,100g,22
 Chrysanthemum Greens,100g,22
 Chuan Skewer Chinese,1 Item,90
 Churrasco,1 Portion,480
-Churro Ice Cream,1 Portion,450
+Churro Ice Cream,1 Cup,450
 Churros,1 Piece,116
 Churros Con Chocolate,1 Portion,350
 Ciabatta,1 Slice,100
@@ -1122,7 +1125,7 @@ Coconut Flakes Sweetened,1 Cup,524
 Coconut Flakes Unsweetened,1 Cup,412
 Coconut Frozen Yogurt,1 Item,144
 Coconut Gelato,1 Item,166
-Coconut Ice Cream,1 Item,144
+Coconut Ice Cream,1 Cup,144
 Coconut Ice Cream Thai,1 Cup,330
 Coconut Meat,1 Cup,283
 Coconut Milk,1 Cup,229
@@ -1144,7 +1147,7 @@ Coffee Cookie,1 Item,167
 Coffee Cupcake,1 Item,238
 Coffee Frozen Yogurt,1 Item,148
 Coffee Gelato,1 Item,207
-Coffee Ice Cream,1 Item,133
+Coffee Ice Cream,1 Cup,133
 Coffee Milkshake,1 Cup,353
 Coffee Muffin,1 Item,306
 Coffee Pie,1 Slice,384
@@ -1180,7 +1183,7 @@ Cookie Chocolate Chip,1 Item,78
 Cookie Double Chocolate,1 Item,140
 Cookie Dough Frozen Yogurt,1 Item,118
 Cookie Dough Gelato,1 Item,191
-Cookie Dough Ice Cream,1 Item,134
+Cookie Dough Ice Cream,1 Cup,134
 Cookie Dough Milkshake,1 Cup,343
 Cookie Dough Sorbet,1 Item,90
 Cookie Dough Sundae,1 Item,426
@@ -1480,7 +1483,7 @@ Egg Noodles,1 Portion,219
 Egg Pasta,1 Portion,221
 Egg Risotto,1 Portion,105
 Egg Roll,1 Piece,222
-Egg Salad,1 Cup,530
+Egg Salad,1 Portion,530
 Egg Salad Sandwich,1 Item,440
 Egg Skewer,1 Item,85
 Egg Soup,1 Portion,85
@@ -1744,7 +1747,7 @@ Fruit Cake,1 Slice,302
 Fruit Cup,1 Cup,70
 Fruit Leather,1 Item,50
 Fruit Punch,1 Cup,120
-Fruit Salad,1 Cup,74
+Fruit Salad,1 Portion,74
 Fruit Snacks,1 Item,80
 Fruit Tart,1 Slice,350
 Fudge Bar,1 Item,90
@@ -2022,7 +2025,7 @@ Halwa Semolina,1 Piece,290
 Ham,100g,145
 Ham Honey,100g,163
 Ham Pizza,1 Slice,280
-Ham Salad,1 Cup,560
+Ham Salad,1 Portion,560
 Salami Sandwich,1 Item,290
 Ham Smoked,100g,185
 Ham Steak,100g,152
@@ -2200,7 +2203,7 @@ Jasmine Rice,1 Cup,205
 Jamun,100g,60
 Jeera Rice,1 Cup,220
 Jello Cup,1 Cup,80
-Jello Salad,1 Cup,150
+Jello Salad,1 Portion,150
 Jelly Beans,10 Pieces,41
 Jelly,1 Tablespoon,50
 Jellyfish Dried,100g,32
@@ -2393,7 +2396,7 @@ Lemon Drizzle Cake,1 Slice,380
 Lemon Frozen Yogurt,1 Item,138
 Lemon Gelato,1 Item,168
 Lemon Grass,100g,99
-Lemon Ice Cream,1 Item,181
+Lemon Ice Cream,1 Cup,181
 Lemon Meringue Pie,1 Slice,362
 Lemon Milkshake,1 Cup,358
 Lemon Muffin,1 Item,303
@@ -2494,7 +2497,7 @@ Macaron,1 Piece,100
 Macaron French,1 Item,70
 Plain Pasta,1 Portion,200
 Plain Whole Grain Pasta,1 Portion,170
-Macaroni Salad,1 Cup,371
+Macaroni Salad,1 Portion,371
 Macaroni with Sauce,1 Portion,320
 Pasta Alfredo,1 Portion,500
 Pasta Arrabbiata,1 Portion,320
@@ -3357,7 +3360,7 @@ Potato Chunky Soup,1 Cup,135
 Potato Cream of Soup,1 Cup,245
 Potato Noodle Soup,1 Cup,230
 Potato Rice Soup,1 Cup,215
-Potato Salad,1 Cup,358
+Potato Salad,1 Portion,358
 Potato Soup,1 Portion,250
 Potato Spicy Soup,1 Cup,216
 Potato Stew Soup,1 Cup,199
@@ -3526,7 +3529,7 @@ Raspberry Cookie,1 Item,138
 Raspberry Cupcake,1 Item,221
 Raspberry Frozen Yogurt,1 Item,142
 Raspberry Gelato,1 Item,208
-Raspberry Ice Cream,1 Item,170
+Raspberry Ice Cream,1 Cup,170
 Raspberry Milkshake,1 Cup,365
 Raspberry Muffin,1 Item,284
 Raspberry Pie,1 Slice,295
@@ -3896,7 +3899,7 @@ Seafood Taco,1 Item,180
 Seafood Wrap,1 Item,195
 Seaweed Nori,100g,35
 Seaweed Rice Crackers,1 Portion,115
-Seaweed Salad,1 Cup,70
+Seaweed Salad,1 Portion,70
 Seitan,100g,150
 Seltzer,1 Cup,0
 Semla Cardamom Bun,1 Piece,450
@@ -4090,7 +4093,7 @@ Grape Soda,1 Item,160
 Soda Lemon Lime,1 Item,140
 Mountain Dew,1 Item,170
 Soda Orange,1 Item,180
-Root Beer,1 Item,160
+Root Beer,1 Cup,130
 Sofrito,1 Tablespoon,25
 Soft Boiled Egg,1 Item,72
 Soft Pretzel Sweet,1 Item,280
@@ -4433,7 +4436,7 @@ Thanksgiving Turkey,100g,165
 Thieboudienne,1 Portion,550
 Thit Kho,1 Cup,340
 Thousand Island Dressing,2 Tablespoons,118
-Three Bean Salad,1 Cup,160
+Three Bean Salad,1 Portion,160
 Thyme Dried,1 Teaspoon,3
 Tic Tac,1 Item,38
 Tiger Nuts,1 Portion,120
@@ -4531,7 +4534,7 @@ Tuna Casserole,1 Portion,460
 Tuna and Roll,1 Item,154
 Tuna Melt,1 Item,430
 Tuna Pasta Salad,1 Portion,350
-Tuna Salad,1 Cup,380
+Tuna Salad,1 Portion,380
 Tuna Salad Sandwich,1 Item,420
 Tuna Soup,1 Portion,245
 Tuna Spicy Roll,1 Piece,50
@@ -4999,6 +5002,7 @@ Squid Ink Pasta,1 Portion,400
 Pasta Al Pomodoro,1 Portion,350
 Cauliflower Pasta,1 Portion,350
 Tomato and Feta Pasta,1 Portion,400
+Feta Pasta,1 Portion,370
 Truffle Pasta,1 Portion,600
 Barbecue Bacon Burger,1 Item,750
 Mushrooms Swiss Burger,1 Item,650

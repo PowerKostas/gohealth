@@ -34,15 +34,13 @@ suspend fun performDailyMaintenance(context: Context) {
                 val settingsDao = database.settingsDao()
                 val characteristicsDao = database.characteristicsDao()
                 val dailyTrackingsDao = database.dailyTrackingsDao()
-                val achievementsDao = database.achievementsDao()
 
                 val userTodayTrackings = todayTrackingsDao.getAll().first().firstOrNull()
                 val userSettings = settingsDao.getAll().first().firstOrNull()
                 val userCharacteristics = characteristicsDao.getAll().first().firstOrNull()
-                val userAchievements = achievementsDao.getAll().first().firstOrNull()
 
                 // Triggers on a fresh install
-                if (userTodayTrackings == null || userSettings == null || userCharacteristics == null || userAchievements == null) {
+                if (userTodayTrackings == null || userSettings == null || userCharacteristics == null) {
                     return@withContext
                 }
 
