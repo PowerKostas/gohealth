@@ -18,6 +18,7 @@ import androidx.compose.material.icons.automirrored.filled.FollowTheSigns
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Anchor
 import androidx.compose.material.icons.filled.Balance
+import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.Blind
 import androidx.compose.material.icons.filled.ElectricBolt
 import androidx.compose.material.icons.filled.EmojiEvents
@@ -27,7 +28,6 @@ import androidx.compose.material.icons.filled.Landscape
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.LocalDining
-import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.LocalFlorist
 import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material.icons.filled.MonitorHeart
@@ -183,7 +183,7 @@ fun AchievementsScreen() {
                     item { AchievementItem(Icons.AutoMirrored.Filled.DirectionsBike, "The Active One", "Complete 10 Exercise Goals", "Common", achievementsStatus[2], otherAchievements.totalExerciseGoals, 10) }
                     item { AchievementItem(Icons.AutoMirrored.Filled.DirectionsRun, "Foot Soldier", "Complete 10 Step Goals", "Common", achievementsStatus[3], otherAchievements.totalStepsGoals, 10) }
                     item { AchievementItem(Icons.Filled.Explore, "Wanderer", "Walk 100000 Steps", "Common", achievementsStatus[4], otherAchievements.totalSteps, 100000) }
-                    item { AchievementItem(Icons.Filled.LocalFlorist, "Well Watered", "Maintain a 5-Day Water Goal Streak", "Common", achievementsStatus[5], otherAchievements.maxWaterStreak, 5) }
+                    item { AchievementItem(Icons.Filled.LocalFlorist, "Well-Watered", "Maintain a 5-Day Water Goal Streak", "Common", achievementsStatus[5], otherAchievements.maxWaterStreak, 5) }
                     item { AchievementItem(Icons.Filled.Balance, "Dietitian", "Maintain a 5-Day Calorie Goal Streak", "Common", achievementsStatus[6], otherAchievements.maxCaloriesStreak, 5) }
                     item { AchievementItem(Icons.Filled.ElectricBolt, "Catalyst", "Maintain a 5-Day Exercise Goal Streak", "Common", achievementsStatus[7], otherAchievements.maxExerciseStreak, 5) }
                     item { AchievementItem(Icons.Filled.NaturePeople, "Road Warrior", "Maintain a 5-Day Step Goal Streak", "Common", achievementsStatus[8], otherAchievements.maxStepsStreak, 5) }
@@ -210,7 +210,7 @@ fun AchievementsScreen() {
                     item { AchievementItem(Icons.Filled.Blind, "Pathfinder", "Complete 100 Step Goals", "Rare", achievementsStatus[12], otherAchievements.totalStepsGoals, 100) }
                     item { AchievementItem(Icons.Filled.Navigation, "Voyager", "Walk 1000000 Steps", "Rare", achievementsStatus[13], otherAchievements.totalSteps, 1000000) }
                     item { AchievementItem(Icons.Filled.Spa, "Oasis", "Maintain a 50-Day Water Goal Streak", "Rare", achievementsStatus[14], otherAchievements.maxWaterStreak, 50) }
-                    item { AchievementItem(Icons.Filled.Whatshot, "Metabolizer", "Maintain a 50-Day Calorie Goal Streak", "Rare", achievementsStatus[15], otherAchievements.maxCaloriesStreak, 50) }
+                    item { AchievementItem(Icons.Filled.BatteryChargingFull, "Fully Fueled", "Maintain a 50-Day Calorie Goal Streak", "Rare", achievementsStatus[15], otherAchievements.maxCaloriesStreak, 50) }
                     item { AchievementItem(Icons.Filled.MonitorHeart, "Hard-Wired", "Maintain a 50-Day Exercise Goal Streak", "Rare", achievementsStatus[16], otherAchievements.maxExerciseStreak, 50) }
                     item { AchievementItem(Icons.AutoMirrored.Filled.FollowTheSigns, "Marathoner", "Maintain a 50-Day Step Goal Streak", "Rare", achievementsStatus[17], otherAchievements.maxStepsStreak, 50) }
                 }
@@ -236,7 +236,7 @@ fun AchievementsScreen() {
                     item { AchievementItem(Icons.Filled.NordicWalking, "Trailblazer", "Complete 365 Step Goals", "Epic", achievementsStatus[21], otherAchievements.totalStepsGoals, 365) }
                     item { AchievementItem(Icons.Filled.Language, "Globetrotter", "Walk 5000000 Steps", "Epic", achievementsStatus[22], otherAchievements.totalSteps, 5000000) }
                     item { AchievementItem(Icons.Filled.Pool, "Tidal Force", "Maintain a 100-Day Water Goal Streak", "Epic", achievementsStatus[23], otherAchievements.maxWaterStreak, 100) }
-                    item { AchievementItem(Icons.Filled.LocalFireDepartment, "Metabolic Monster", "Maintain a 100-Day Calorie Goal Streak", "Epic", achievementsStatus[24], otherAchievements.maxCaloriesStreak, 100) }
+                    item { AchievementItem(Icons.Filled.Whatshot, "Metabolic Monster", "Maintain a 100-Day Calorie Goal Streak", "Epic", achievementsStatus[24], otherAchievements.maxCaloriesStreak, 100) }
                     item { AchievementItem(Icons.Filled.Security, "Ironclad", "Maintain a 100-Day Exercise Goal Streak", "Epic", achievementsStatus[25], otherAchievements.maxExerciseStreak, 100) }
                     item { AchievementItem(Icons.Filled.Landscape, "Scout", "Maintain a 100-Day Step Goal Streak", "Epic", achievementsStatus[26], otherAchievements.maxStepsStreak, 100) }
                 }

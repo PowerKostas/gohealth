@@ -93,8 +93,8 @@ fun HomeScreen(onNavigate: (String) -> Unit) {
     val stepsGoal = calculateStepsGoal(userCharacteristics)
 
     // Calculates how many goals are met
-    val minCaloriesValue = roundValue((caloriesGoal - caloriesGoal * 0.1).roundToInt())
-    val maxCaloriesValue = roundValue((caloriesGoal + caloriesGoal * 0.1).roundToInt())
+    val minCaloriesValue = roundValue((caloriesGoal * 0.9).roundToInt())
+    val maxCaloriesValue = roundValue((caloriesGoal * 1.1).roundToInt())
     val completedGoals = listOf(waterProgressSum >= waterGoal, caloriesProgressSum in minCaloriesValue..maxCaloriesValue, exerciseProgressSum >= exerciseGoal, stepsProgress >= stepsGoal).count { it }
 
     val isProfileIncomplete = userCharacteristics.gender == null || userCharacteristics.age == null || userCharacteristics.height == null || userCharacteristics.weight == null || userCharacteristics.activityLevel == null

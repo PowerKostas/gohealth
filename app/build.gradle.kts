@@ -13,8 +13,8 @@ android {
         applicationId = "com.healthterra"
         minSdk = 26
         targetSdk = 37
-        versionCode = 4
-        versionName = "3.1"
+        versionCode = 5
+        versionName = "3.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -98,6 +98,7 @@ suspend fun syncFirestoreUserToRoom(userDatabase: UserDatabase, context: Context
                 val cloudCaloriesProgress = dailyDocument.getLong("caloriesProgress")?.toInt() ?: 0
                 val cloudExerciseProgress = dailyDocument.getLong("exerciseProgress")?.toInt() ?: 0
                 val cloudStepsProgress = dailyDocument.getLong("stepsProgress")?.toInt() ?: 0
+                val cloudCaloriesBurned = dailyDocument.getLong("caloriesBurned")?.toInt() ?: 0
 
                 val cloudWaterGoal = dailyDocument.getLong("waterGoal")?.toInt() ?: 0
                 val cloudCaloriesGoal = dailyDocument.getLong("caloriesGoal")?.toInt() ?: 0
@@ -110,6 +111,7 @@ suspend fun syncFirestoreUserToRoom(userDatabase: UserDatabase, context: Context
                 val localCaloriesProgress = localDailyTracking?.caloriesProgress ?: 0
                 val localExerciseProgress = localDailyTracking?.exerciseProgress ?: 0
                 val localStepsProgress = localDailyTracking?.stepsProgress ?: 0
+                val localCaloriesBurned = localDailyTracking?.caloriesBurned ?: 0
 
                 DailyTrackings(
                     userId = 1,
@@ -123,7 +125,10 @@ suspend fun syncFirestoreUserToRoom(userDatabase: UserDatabase, context: Context
                     waterGoal = if (cloudWaterProgress >= localWaterProgress) cloudWaterGoal else (localDailyTracking?.waterGoal ?: cloudWaterGoal),
                     caloriesGoal = if (cloudCaloriesProgress >= localCaloriesProgress) cloudCaloriesGoal else (localDailyTracking?.caloriesGoal ?: cloudCaloriesGoal),
                     exerciseGoal = if (cloudExerciseProgress >= localExerciseProgress) cloudExerciseGoal else (localDailyTracking?.exerciseGoal ?: cloudExerciseGoal),
-                    stepsGoal = if (cloudStepsProgress >= localStepsProgress) cloudStepsGoal else (localDailyTracking?.stepsGoal ?: cloudStepsGoal)
+                    stepsGoal = if (cloudStepsProgress >= localStepsProgress) cloudStepsGoal else (localDailyTracking?.stepsGoal ?: cloudStepsGoal),
+
+                    caloriesBurned = max(cloudCaloriesBurned, localCaloriesBurned
+                    )
                 )
             }
 
@@ -141,17 +146,20 @@ suspend fun syncFirestoreUserToRoom(userDatabase: UserDatabase, context: Context
             val cloudCaloriesProgress = todayDocument.getLong("caloriesProgress")?.toInt() ?: 0
             val cloudExerciseProgress = todayDocument.getLong("exerciseProgress")?.toInt() ?: 0
             val cloudStepsProgress = todayDocument.getLong("stepsProgress")?.toInt() ?: 0
+            val cloudCaloriesBurned = todayDocument.getLong("caloriesBurned")?.toInt() ?: 0
 
             val localWaterSum = userTodayTrackings.waterProgress.sum()
             val localCaloriesSum = userTodayTrackings.caloriesProgress.sum()
             val localExerciseSum = userTodayTrackings.exerciseProgress.sum()
+            val localCaloriesBurned = userTodayTrackings.caloriesBurned
 
             val todayTrackings = TodayTrackings(
                 userId = 1,
                 waterProgress = if (cloudWaterProgress > localWaterSum) listOf(cloudWaterProgress) else userTodayTrackings.waterProgress,
                 caloriesProgress = if (cloudCaloriesProgress > localCaloriesSum) listOf(cloudCaloriesProgress) else userTodayTrackings.caloriesProgress,
                 exerciseProgress = if (cloudExerciseProgress > localExerciseSum) listOf(cloudExerciseProgress) else userTodayTrackings.exerciseProgress,
-                stepsProgress = max(cloudStepsProgress, userTodayTrackings.stepsProgress)
+                stepsProgress = max(cloudStepsProgress, userTodayTrackings.stepsProgress),
+                caloriesBurned = max(cloudCaloriesBurned, localCaloriesBurned)
             )
 
             userDatabase.todayTrackingsDao().update(todayTrackings)

@@ -116,8 +116,7 @@ fun DynamicLineGraph(values: List<Int>, labels: List<String>) {
 
         ),
 
-        model =
-            chartModel,
-            scrollState = rememberVicoScrollState(scrollEnabled = false) // Makes the graph horizontally unscrollable
+        model = chartModel,
+        scrollState = rememberVicoScrollState(scrollEnabled = false) // Makes the graph horizontally unscrollable
     )
 }

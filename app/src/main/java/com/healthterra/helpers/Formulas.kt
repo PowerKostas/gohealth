@@ -6,20 +6,18 @@ import kotlin.math.roundToInt
 fun calculateWaterGoal(userCharacteristics: Characteristics?): Int {
     val weight = userCharacteristics?.weight ?: 70f
 
-    val genderValues = mapOf(
-        "Male" to 35,
-        "Female" to 31
-    ).withDefault { 33 }
+    val genderValue = when (userCharacteristics?.gender) {
+        "Male" -> 35
+        "Female" -> 31
+        else -> 33
+    }
 
-    val genderValue = genderValues.getValue(userCharacteristics?.gender ?: "")
-
-    val activityLevelValues = mapOf(
-        "Sedentary" to 1.0f,
-        "Moderate" to 1.2f,
-        "High" to 1.4f
-    ).withDefault { 1.2f }
-
-    val activityLevelValue = activityLevelValues.getValue(userCharacteristics?.activityLevel ?: "")
+    val activityLevelValue = when (userCharacteristics?.activityLevel) {
+        "Sedentary" -> 1.0f
+        "Moderate" -> 1.2f
+        "High" -> 1.4f
+        else -> 1.2f
+    }
 
     val waterGoal = ((weight * genderValue) * activityLevelValue).roundToInt()
     return roundValue(waterGoal)
@@ -33,26 +31,24 @@ fun calculateCaloriesGoal(userCharacteristics: Characteristics?): Int {
     val kgGoal = userCharacteristics?.kgGoal ?: 0
     val daysGoal = userCharacteristics?.daysGoal ?: 0
 
-    val genderValues = mapOf(
-        "Male" to 5,
-        "Female" to -161
-    ).withDefault { -78 }
+    val genderValue = when (userCharacteristics?.gender) {
+        "Male" -> 5
+        "Female" -> -161
+        else -> -78
+    }
 
-    val genderValue = genderValues.getValue(userCharacteristics?.gender ?: "")
-
-    val activityLevelValues = mapOf(
-        "Sedentary" to 1.2f,
-        "Moderate" to 1.55f,
-        "High" to 1.725f
-    ).withDefault { 1.55f }
-
-    val activityLevelValue = activityLevelValues.getValue(userCharacteristics?.activityLevel ?: "")
+    val activityLevelValue = when (userCharacteristics?.activityLevel) {
+        "Sedentary" -> 1.2f
+        "Moderate" -> 1.55f
+        "High" -> 1.725f
+        else -> 1.55f
+    }
 
     val bmr = (10f * weight) + (6.25f * height) - (5f * age) + genderValue
     val tdee = bmr * activityLevelValue
 
     if (kgGoal != 0 && daysGoal != 0) { // If the user has set a calories lose/gain goal
-        val maxDailyCaloriesDeficit = -(tdee * 0.30f)
+        val maxDailyCaloriesDeficit = -(tdee * 0.25f)
         val maxDailyCaloriesSurplus = tdee * 0.20f
 
         // You need to eat 7700 less/more kcal to lose/gain 1kg, divide that number by the timeframe the user selected and get the daily
@@ -60,17 +56,7 @@ fun calculateCaloriesGoal(userCharacteristics: Characteristics?): Int {
         val caloriesChange = kgGoal * 7700
         val dailyCaloriesAdjustment = (caloriesChange / daysGoal.toFloat()).coerceIn(maxDailyCaloriesDeficit, maxDailyCaloriesSurplus)
 
-        var caloriesGoal = (tdee + dailyCaloriesAdjustment).roundToInt()
-
-        // It should 1500 and 1200, but upped it by 100, because of the 100 calories range
-        val hardFloor = when (userCharacteristics?.gender) {
-            "Male" -> 1600
-            "Female" -> 1300
-            else -> 1450
-        }
-
-        caloriesGoal = maxOf(caloriesGoal, hardFloor)
-        return roundValue(caloriesGoal)
+        return (tdee + dailyCaloriesAdjustment).roundToInt()
     }
 
     else {
@@ -99,28 +85,25 @@ fun calculateExerciseGoal(userCharacteristics: Characteristics?): Int {
         else -> 1.0f
     }
 
-    val genderValues = mapOf(
-        "Male" to 1.0f,
-        "Female" to 0.65f
-    ).withDefault { 0.825f }
+    val genderValue = when (userCharacteristics?.gender) {
+        "Male" -> 1.0f
+        "Female" -> 0.65f
+        else -> 0.825f
+    }
 
-    val genderValue = genderValues.getValue(userCharacteristics?.gender ?: "")
+    val activityLevelValue = when (userCharacteristics?.activityLevel) {
+        "Sedentary" -> 1.0f
+        "Moderate" -> 1.5f
+        "High" -> 2f
+        else -> 1.5f
+    }
 
-    val activityLevelValues = mapOf(
-        "Sedentary" to 1.0f,
-        "Moderate" to 1.5f,
-        "High" to 2f
-    ).withDefault { 1.5f }
-
-    val activityLevelValue = activityLevelValues.getValue(userCharacteristics?.activityLevel ?: "")
-
-    val weightGoalValues = mapOf(
-        "Lose" to 1.2f,
-        "Maintain" to 1.0f,
-        "Gain" to 1.0f
-    ).withDefault { 1.0f }
-
-    val weightGoalValue = weightGoalValues.getValue(userCharacteristics?.weightGoal ?: "")
+    val weightGoalValue = when (userCharacteristics?.weightGoal) {
+        "Lose" -> 1.2f
+        "Maintain" -> 1.0f
+        "Gain" -> 1.0f
+        else -> 1.0f
+    }
 
     val repsGoal = (bmiBasedReps * activityLevelValue * ageValue * genderValue * weightGoalValue).roundToInt()
     return roundValue(repsGoal)
@@ -128,21 +111,19 @@ fun calculateExerciseGoal(userCharacteristics: Characteristics?): Int {
 
 
 fun calculateStepsGoal(userCharacteristics: Characteristics?): Int {
-    val activityLevelValues = mapOf(
-        "Sedentary" to 6000,
-        "Moderate" to 8000,
-        "High" to 11000
-    ).withDefault { 8000 }
+    val activityLevelBasedSteps = when (userCharacteristics?.activityLevel) {
+        "Sedentary" -> 6000
+        "Moderate" -> 8000
+        "High" -> 11000
+        else -> 8000
+    }
 
-    val activityLevelBasedSteps = activityLevelValues.getValue(userCharacteristics?.activityLevel ?: "")
-
-    val weightGoalValues = mapOf(
-        "Lose" to 2000,
-        "Maintain" to 0,
-        "Gain" to 0
-    ).withDefault { 0 }
-
-    val weightGoalValue = weightGoalValues.getValue(userCharacteristics?.weightGoal ?: "")
+    val weightGoalValue = when (userCharacteristics?.weightGoal) {
+        "Lose" -> 2000
+        "Maintain" -> 0
+        "Gain" -> 0
+        else -> 0
+    }
 
     val age = userCharacteristics?.age ?: 30f
 
@@ -153,4 +134,27 @@ fun calculateStepsGoal(userCharacteristics: Characteristics?): Int {
     }
 
     return activityLevelBasedSteps + weightGoalValue + ageValue
+}
+
+
+fun calculateCaloriesBurned(userCharacteristics: Characteristics?, reps: Int, steps: Int): Int {
+    val weight = userCharacteristics?.weight ?: 70f
+    val height = userCharacteristics?.height ?: 170f
+
+    val genderModifier = when (userCharacteristics?.gender) {
+        "Male" -> 1.05f
+        "Female" -> 0.95f
+        else -> 1f
+    }
+
+    val strideLengthMeters = (height * 0.415f) / 100f
+    val distanceKm = (steps * strideLengthMeters) / 1000f
+    val caloriesBurnedFromSteps = (distanceKm * weight * 0.735f) * genderModifier
+
+    val exerciseMET = 6.0f
+    val secondsPerRep = 3f
+    val exerciseDurationMinutes = (reps * secondsPerRep) / 60f
+    val caloriesBurnedFromExercise = (exerciseMET * weight * 0.0175f * exerciseDurationMinutes) * genderModifier
+
+    return (caloriesBurnedFromSteps + caloriesBurnedFromExercise).roundToInt()
 }

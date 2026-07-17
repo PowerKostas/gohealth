@@ -36,7 +36,9 @@ fun calculateOtherAchievements(dailyTrackingsList: List<DailyTrackings>, todayTr
         }
 
         val middleCaloriesGoal = day.caloriesGoal
-        if (day.caloriesProgress >= roundValue((middleCaloriesGoal - middleCaloriesGoal * 0.1).roundToInt())) {
+        val minCaloriesGoal = roundValue((middleCaloriesGoal * 0.9).roundToInt())
+        val maxCaloriesGoal = roundValue((middleCaloriesGoal * 1.1).roundToInt())
+        if (day.caloriesProgress in minCaloriesGoal..maxCaloriesGoal) {
             activeCaloriesStreak = if (isConsecutive) activeCaloriesStreak + 1 else 1
             maxCaloriesStreak = maxOf(activeCaloriesStreak, maxCaloriesStreak)
             totalCaloriesGoals += 1
@@ -94,7 +96,9 @@ fun calculateOtherAchievements(dailyTrackingsList: List<DailyTrackings>, todayTr
     val waterGoalToday = (todayTrackings?.waterProgress?.sum() ?: 0) >= calculateWaterGoal(userCharacteristics)
 
     val middleCaloriesGoal = calculateCaloriesGoal(userCharacteristics)
-    val caloriesGoalToday = (todayTrackings?.caloriesProgress?.sum() ?: 0) >= roundValue((middleCaloriesGoal - middleCaloriesGoal * 0.1).roundToInt())
+    val minCaloriesGoal = roundValue((middleCaloriesGoal * 0.9).roundToInt())
+    val maxCaloriesGoal = roundValue((middleCaloriesGoal * 1.1).roundToInt())
+    val caloriesGoalToday = (todayTrackings?.caloriesProgress?.sum() ?: 0) in minCaloriesGoal..maxCaloriesGoal
 
     val exerciseGoalToday = (todayTrackings?.exerciseProgress?.sum() ?: 0) >= calculateExerciseGoal(userCharacteristics)
     val stepsGoalToday = (todayTrackings?.stepsProgress ?: 0) >= calculateStepsGoal(userCharacteristics)

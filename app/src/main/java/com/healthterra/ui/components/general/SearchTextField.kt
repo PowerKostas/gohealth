@@ -35,8 +35,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SearchTextField(modifier: Modifier, placeholder: String, buttonColor: Color, minCharacters: Int, onInputChange: () -> Unit, onSearch: (String) -> Unit) {
-    var query by rememberSaveable { mutableStateOf("") }
+fun SearchTextField(query: String, modifier: Modifier, placeholder: String, buttonColor: Color, minCharacters: Int, onQueryChange: (String) -> Unit, onSearch: (String) -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     var showError by rememberSaveable { mutableStateOf(false) }
@@ -57,8 +56,7 @@ fun SearchTextField(modifier: Modifier, placeholder: String, buttonColor: Color,
         value = query,
 
         onValueChange = {
-            query = it
-            onInputChange()
+            onQueryChange(it)
 
             if (showError && it.length >= minCharacters) {
                 showError = false
@@ -93,8 +91,7 @@ fun SearchTextField(modifier: Modifier, placeholder: String, buttonColor: Color,
                                 showError = false
                             }
 
-                            query = ""
-                            onInputChange()
+                            onQueryChange("")
                         }
                     )
                 }

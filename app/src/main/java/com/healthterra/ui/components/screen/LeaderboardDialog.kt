@@ -1,6 +1,5 @@
 package com.healthterra.ui.components.screen
 
-import android.icu.text.CompactDecimalFormat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -23,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
@@ -35,6 +33,7 @@ import coil3.compose.AsyncImage
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.healthterra.data.documents.LeaderboardEntry
+import com.healthterra.helpers.formatNumber
 
 @Composable
 fun LeaderboardDialog(categoryString: String, categoryLeaderboard: List<LeaderboardEntry>, avatarMap: Map<String, Int>, onDismiss: () -> Unit) {
@@ -45,16 +44,6 @@ fun LeaderboardDialog(categoryString: String, categoryLeaderboard: List<Leaderbo
         "stepsGoalsCompleted" -> "Daily Steps Goals Completed"
         "totalSteps" -> "Total Steps"
         else -> ""
-    }
-
-    val currentLocale = LocalConfiguration.current.locales.get(0)
-
-    // Turns "173938" to "173.9K"
-    val formatter = CompactDecimalFormat.getInstance(
-        currentLocale,
-        CompactDecimalFormat.CompactStyle.SHORT
-    ).apply {
-        maximumFractionDigits = 1
     }
 
     val currentUserId = Firebase.auth.currentUser?.uid
@@ -152,7 +141,7 @@ fun LeaderboardDialog(categoryString: String, categoryLeaderboard: List<Leaderbo
                                 )
 
                                 Text(
-                                    text = formatter.format(score),
+                                    text = formatNumber(score.toInt()),
                                     style = MaterialTheme.typography.bodyLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = Color(0xFFD4AF37)

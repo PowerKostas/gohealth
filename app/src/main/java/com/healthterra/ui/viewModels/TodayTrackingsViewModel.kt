@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.healthterra.data.UserDatabase
 import com.healthterra.data.daos.TodayTrackingsDao
+import com.healthterra.data.entities.Characteristics
 import com.healthterra.data.entities.TodayTrackings
+import com.healthterra.helpers.calculateCaloriesBurned
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -44,9 +46,10 @@ class TodayTrackingsViewModel(private val todayTrackingsDao: TodayTrackingsDao) 
         }
     }
 
-    fun updateUserTodayTrackings(todayTrackings: TodayTrackings) {
+    fun updateUserTodayTrackings(todayTrackings: TodayTrackings, userCharacteristics: Characteristics?) {
         viewModelScope.launch {
-            todayTrackingsDao.update(todayTrackings)
+            val updatedBurntCalories = calculateCaloriesBurned(userCharacteristics, reps = todayTrackings.exerciseProgress.sum(), steps = todayTrackings.stepsProgress)
+            todayTrackingsDao.update(todayTrackings.copy(caloriesBurned = updatedBurntCalories))
         }
     }
 }

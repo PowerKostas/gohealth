@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,6 +44,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -56,12 +58,17 @@ import com.healthterra.ui.components.general.InfoDialog
 import com.healthterra.ui.components.screen.LeaderboardBox
 import com.healthterra.ui.components.screen.LeaderboardDialog
 import com.healthterra.ui.components.screen.avatarMap
+import com.healthterra.ui.viewModels.SettingsViewModel
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 // Have to isolate the animated row so the screen doesn't recompose on every frame and block clicks
 @Composable
-fun HealthiestUserAnimatedRow(avatarMap: Map<String, Int>, healthiestUser: HealthiestUser) {
+fun HealthiestUserAnimatedRow(avatarMap: Map<String, Int>, healthiestUser: HealthiestUser, isCurrentUser: Boolean) {
+    val settingsViewModel = viewModel<SettingsViewModel>(factory = SettingsViewModel.Factory)
+    val userSettingsList by settingsViewModel.settings.collectAsState(initial = emptyList())
+    val userSettings = userSettingsList.firstOrNull()
+
     // Creates a float number that counts from 0 to 1 at a steady speed (LinearEasing), it takes durationMillis seconds to
     // hit 1, it reverses to 0, the moment it reaches 1 (RepeatMode.Reverse)
     val infiniteTransition = rememberInfiniteTransition()
@@ -73,6 +80,21 @@ fun HealthiestUserAnimatedRow(avatarMap: Map<String, Int>, healthiestUser: Healt
             repeatMode = RepeatMode.Reverse
         )
     )
+
+    // If the user is the healthiest user and is anonymous, the username field will be "You"
+    val displayUsername = if (isCurrentUser) {
+        if (userSettings?.leaderboardsVisibility == "Anonymous") {
+            "You"
+        }
+
+        else {
+            healthiestUser.username
+        }
+    }
+
+    else {
+        healthiestUser.username
+    }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -103,7 +125,7 @@ fun HealthiestUserAnimatedRow(avatarMap: Map<String, Int>, healthiestUser: Healt
         )
 
         Text(
-            text = healthiestUser.username,
+            text = displayUsername,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
 
@@ -281,7 +303,7 @@ fun LeaderboardsScreen() {
                         HorizontalDivider(modifier = Modifier.weight(1f), color = Color(0xFFD4AF37), thickness = 2.dp)
                     }
 
-                    HealthiestUserAnimatedRow(healthiestUser = healthiestUser, avatarMap = avatarMap)
+                    HealthiestUserAnimatedRow(healthiestUser = healthiestUser, avatarMap = avatarMap, isCurrentUser = (healthiestUser.uid == currentUserId))
 
                     HorizontalDivider(color = Color(0xFFD4AF37), thickness = 2.dp)
                 }
@@ -310,6 +332,6 @@ fun LeaderboardsScreen() {
     }
 
     if (showHealthiestUserDialog) {
-        InfoDialog(Icons.Default.Info, Color(0xFFD4AF37), null, AnnotatedString("The 'Healthiest User' is the person with the highest total leaderboards score. You earn points by completing each of your daily goals."), "Got it", null, true, FontWeight.Bold, { showHealthiestUserDialog = false }, { showHealthiestUserDialog = false })
+        InfoDialog(Icons.Default.Info, Color(0xFFD4AF37), null, AnnotatedString("The 'Healthiest User' is the person with the highest total leaderboards score. You earn points by completing your daily goals, plus a proportional bonus for any steps taken beyond your daily goal."), "Got it", null, true, FontWeight.Bold, { showHealthiestUserDialog = false }, { showHealthiestUserDialog = false })
     }
 }

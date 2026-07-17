@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -84,7 +85,7 @@ fun CategoriesScreen(categoryName: String, iconId: Int, progressBarColour: Color
     fun checkGoalStatusAndSync(oldCategoryValue: Int, newCategoryValue: Int, updatedTodayTrackings: TodayTrackings) {
         // Uses minimum value for the calories range goal
         val categoryGoalFix = if (categoryName == "Calories") {
-            roundValue((categoryGoal - categoryGoal * 0.1).roundToInt())
+            roundValue((categoryGoal * 0.9).roundToInt())
         }
 
         else {
@@ -135,7 +136,7 @@ fun CategoriesScreen(categoryName: String, iconId: Int, progressBarColour: Color
                 else -> throw IllegalStateException("Invalid Input")
             }
 
-            todayTrackingsViewModel.updateUserTodayTrackings(updatedTodayTrackings)
+            todayTrackingsViewModel.updateUserTodayTrackings(updatedTodayTrackings, userCharacteristics)
 
             val newCategoryValue = oldCategoryValue + amount
             checkGoalStatusAndSync(oldCategoryValue, newCategoryValue, updatedTodayTrackings) // Uses updatedTrackings instead of userTrackings to avoid synchronization bugs
@@ -158,7 +159,7 @@ fun CategoriesScreen(categoryName: String, iconId: Int, progressBarColour: Color
                 else -> throw IllegalStateException("Invalid Input")
             }
 
-            todayTrackingsViewModel.updateUserTodayTrackings(updatedTodayTrackings)
+            todayTrackingsViewModel.updateUserTodayTrackings(updatedTodayTrackings, userCharacteristics)
 
             val newCategoryValue = when (categoryName) {
                 "Water" -> updatedTodayTrackings.waterProgress.sum()
@@ -190,8 +191,8 @@ fun CategoriesScreen(categoryName: String, iconId: Int, progressBarColour: Color
 
         if (categoryName == "Calories") {
             // It does +-10% of the goal because calories use a range
-            val minValue = roundValue((categoryGoal - categoryGoal * 0.1).roundToInt())
-            val maxValue = roundValue((categoryGoal + categoryGoal * 0.1).roundToInt())
+            val minValue = roundValue((categoryGoal * 0.9).roundToInt())
+            val maxValue = roundValue((categoryGoal * 1.1).roundToInt())
 
             val textColour = if (categoryProgress in minValue..maxValue) Color(0xFF4CAF50) else Color(0xFFE53935)
             val annotatedText = buildAnnotatedString {
@@ -242,14 +243,25 @@ fun CategoriesScreen(categoryName: String, iconId: Int, progressBarColour: Color
                     ActionButton(modifier = modifier, colour = Color(0xFFE53935), text = "Undo", fontSize = 16.sp) { handleDeletePrevious() }
                 }
 
+                var searchQuery by rememberSaveable { mutableStateOf("") }
                 var hasSearched by rememberSaveable { mutableStateOf(false) }
+
+                // To restore the food table if the app was closed for a long time
+                LaunchedEffect(Unit) {
+                    if (hasSearched && searchQuery.isNotEmpty() && searchResults.isEmpty()) {
+                        foodViewModel.searchFood(searchQuery)
+                    }
+                }
+
                 SearchTextField(
+                    searchQuery,
                     Modifier.fillMaxWidth(),
                     "Enter a food item...",
                     progressBarColour,
                     3,
 
-                    onInputChange = {
+                    onQueryChange = {
+                        searchQuery = it
                         hasSearched = false
                     },
 

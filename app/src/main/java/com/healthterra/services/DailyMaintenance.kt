@@ -66,6 +66,7 @@ suspend fun performDailyMaintenance(context: Context) {
                 val caloriesProgress = userTodayTrackings.caloriesProgress.sum()
                 val exerciseProgress = userTodayTrackings.exerciseProgress.sum()
                 val stepsProgress = userTodayTrackings.stepsProgress
+                val caloriesBurned = userTodayTrackings.caloriesBurned
                 val lastSavedDate = userSettings.lastSavedDate
 
                 // Local sync for the daily trackings table
@@ -79,7 +80,8 @@ suspend fun performDailyMaintenance(context: Context) {
                     waterGoal = waterGoal,
                     caloriesGoal = caloriesGoal,
                     exerciseGoal = exerciseGoal,
-                    stepsGoal = stepsGoal
+                    stepsGoal = stepsGoal,
+                    caloriesBurned = caloriesBurned
                 )
 
                 dailyTrackingsDao.upsert(yesterdayTracking)
@@ -112,7 +114,8 @@ suspend fun performDailyMaintenance(context: Context) {
                     waterProgress = emptyList(),
                     caloriesProgress = emptyList(),
                     exerciseProgress = emptyList(),
-                    stepsProgress = 0
+                    stepsProgress = 0,
+                    caloriesBurned = 0
                 )
 
                 todayTrackingsDao.update(updateUserTodayTrackings)

@@ -232,7 +232,7 @@ fun WeightGoalSelector(userCharacteristics: Characteristics, userSettings: Setti
             val showError = isCaloriesPlanExtreme(userCharacteristics)
             if (showError) {
                 Text(
-                    text = "To ensure safe calorie intake, your daily goal has been set to the recommended amount!",
+                    text = "To maintain safe limits, your daily calorie goal has been set to the recommended amount.",
                     style = MaterialTheme.typography.labelSmall,
                     color = Color(0xFFE53935),
                     textAlign = TextAlign.Center

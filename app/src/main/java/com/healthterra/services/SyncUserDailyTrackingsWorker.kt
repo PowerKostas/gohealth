@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.healthterra.data.UserDatabase
+import com.healthterra.helpers.calculateCaloriesBurned
 import com.healthterra.helpers.calculateCaloriesGoal
 import com.healthterra.helpers.calculateExerciseGoal
 import com.healthterra.helpers.calculateStepsGoal
@@ -65,7 +66,8 @@ class SyncUserDailyTrackingsWorker(appContext: Context, workerParams: WorkerPara
                 "waterProgress" to userTodayTrackings.waterProgress.sum(),
                 "caloriesProgress" to userTodayTrackings.caloriesProgress.sum(),
                 "exerciseProgress" to userTodayTrackings.exerciseProgress.sum(),
-                "stepsProgress" to userTodayTrackings.stepsProgress
+                "stepsProgress" to userTodayTrackings.stepsProgress,
+                "caloriesBurned" to calculateCaloriesBurned(userCharacteristics, userTodayTrackings.exerciseProgress.sum(), userTodayTrackings.stepsProgress)
             )
 
             // Adds the daily trackings goals update to the batch

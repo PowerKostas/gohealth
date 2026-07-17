@@ -121,11 +121,10 @@ Barbecue Peanuts,1 Portion,175
 Barbecue Pistachios,1 Portion,153
 Barbecue Popcorn,1 Portion,134
 Barbecue Pork Rinds,1 Portion,199
-Barbecue Potato Chips,1 Portion,188
+Barbecue Chips,1 Portion,188
 Barbecue Pretzels,1 Portion,187
 Barbecue Pumpkin Seeds,1 Portion,164
 Barbecue Sunflower Seeds,1 Portion,163
-Barbecue Tortilla Chips,1 Portion,150
 Barbecue Walnuts,1 Portion,195
 BLT Sandwich,1 Item,381
 Baba Ganoush,2 Tablespoons,52
@@ -821,7 +820,7 @@ Cheese Pizza,1 Slice,250
 Cheese Plate,1 Portion,392
 Cheese Popcorn,1 Portion,157
 Cheese Pork Rinds,1 Portion,198
-Cheese Potato Chips,1 Portion,188
+Cheese Chips,1 Portion,188
 Cheese Pretzels,1 Portion,166
 Cheese Puffs,1 Portion,160
 Cheese Pumpkin Seeds,1 Portion,154
@@ -837,7 +836,6 @@ Cheese Stew,1 Portion,364
 Cheese Stick,1 Item,110
 Cheese Sunflower Seeds,1 Portion,147
 Cheese Taco,1 Item,336
-Cheese Tortilla Chips,1 Portion,195
 Cheese Walnuts,1 Portion,149
 Cheese Wrap,1 Item,364
 Cheeseburger,1 Item,399
@@ -901,7 +899,7 @@ Chicken Fried Steak,1 Piece,450
 Chicken Fritter,1 Piece,230
 Chicken Gizzard,100g,154
 Chicken Green Curry,1 Portion,584
-Chicken Gyro Sandwich,1 Item,510
+Chicken Gyros Sandwich,1 Item,510
 Chicken Heart,100g,185
 Chicken Jalfrezi,1 Portion,574
 Chicken Jambalaya,1 Portion,335
@@ -988,19 +986,16 @@ Chinese Five Spice,1 Teaspoon,7
 Chinese Long Bean,100g,47
 Chinese Water Chestnut,100g,97
 Chip Butty,1 Item,450
-Chips Apple,1 Portion,140
-Chips Barbecue,1 Portion,150
-Chips Cheddar,1 Portion,160
-Chips Jalapeno,1 Portion,150
-Chips Kettle,1 Portion,150
-Chips Pita,1 Portion,130
-Chips Plantain,1 Portion,150
-Chips Potato,1 Portion,152
-Chips Salt and Vinegar,1 Portion,150
-Chips Sour Cream and Onion,1 Portion,160
-Chips Sweet Potato,1 Portion,160
-Chips Tortilla,1 Portion,142
-Chips Vegetable,1 Portion,150
+Apple Chips,1 Portion,140
+Cheddar Chips,1 Portion,160
+Jalapeno Chips,1 Portion,150
+Kettle Chips,1 Portion,150
+Pita Chips,1 Portion,130
+Plantain Chips,1 Portion,150
+Potato Chips,1 Portion,120
+Salt and Vinegar Chips,1 Portion,150
+Sour Cream and Onion Chips,1 Portion,160
+Sweet Potato Chips,1 Portion,160
 Chives,1 Tablespoon,1
 Chocolate and Fruit Smoothie,1 Cup,253
 Chocolate and Chia Smoothie,1 Cup,216
@@ -1100,7 +1095,7 @@ Clotted Cream,1 Tablespoon,60
 Cloud Eggs,1 Portion,100
 Cloudberry,100g,51
 Cloves,1 Teaspoon,7
-Club Sandwich,1 Item,470
+Club Sandwich,1 Item,700
 Cobb Salad,1 Portion,530
 Cobb Salad with Dressing,1 Portion,356
 Cobbler Apple,1 Portion,280
@@ -2008,7 +2003,7 @@ Gummy Bears,10 Pieces,87
 Gummy Worms,10 Pieces,110
 Gyoza Pork,4 Pieces,240
 Gyoza Vegetable,4 Pieces,200
-Pork Gyro Sandwich,1 Item,593
+Pork Gyros Sandwich,1 Item,650
 Gyudon,1 Portion,650
 Habanero Pepper,1 Item,18
 Haddock,100g,87
@@ -2079,11 +2074,10 @@ Honey Roasted Peanuts,1 Portion,164
 Honey Roasted Pistachios,1 Portion,160
 Honey Roasted Popcorn,1 Portion,145
 Honey Roasted Pork Rinds,1 Portion,144
-Honey Roasted Potato Chips,1 Portion,135
+Honey Roasted Chips,1 Portion,135
 Honey Roasted Pretzels,1 Portion,190
 Honey Roasted Pumpkin Seeds,1 Portion,172
 Honey Roasted Sunflower Seeds,1 Portion,130
-Honey Roasted Tortilla Chips,1 Portion,174
 Honey Roasted Walnuts,1 Portion,135
 Honey Smacks Cereal,1 Cup,133
 Honey Walnut Shrimp,1 Cup,470
@@ -2792,9 +2786,17 @@ Mutton,100g,294
 Mysore Pak,1 Piece,150
 Naan,1 Piece,262
 Naan Plain,1 Piece,262
-Nacho Cheese Tortilla Chips,1 Portion,140
-Nachos Supreme,1 Portion,569
-Nachos with Cheese,1 Portion,346
+Tortilla Chips,1 Portion,140
+Loaded Nachos,1 Portion,650
+Salted Nachos,1 Portion,150
+Cheese Nachos,1 Portion,160
+Barbecue Nachos,1 Portion,155
+Chili Nachos,1 Portion,155
+Sour Cream and Onion Nachos,1 Portion,160
+Nachos with Cheese Dip,1 Portion,380
+Nachos with Guacamole Dip,1 Portion,350
+Nachos with Salsa Dip,1 Portion,300
+Cheese Nachos,1 Portion,346
 Naengmyeon,1 Portion,450
 Naengmyeon Cold Noodles,1 Portion,390
 Nam Prik,1 Tablespoon,15
@@ -3352,9 +3354,8 @@ Pot Stickers,5 Pieces,230
 Potatoes,1 Portion,163
 Potato Bisque Soup,1 Cup,309
 Potato Broth Soup,1 Cup,223
-Potato Chips Plain,1 Portion,110
-Potato Chips Salt,1 Portion,120
-Potato Chips Oregano,1 Portion,130
+Salted Chips,1 Portion,120
+Oregano Chips,1 Portion,130
 Potato Chowder Soup,1 Cup,284
 Potato Chunky Soup,1 Cup,135
 Potato Cream of Soup,1 Cup,245
@@ -3763,11 +3764,9 @@ Salted Peanuts,1 Portion,155
 Salted Pistachios,1 Portion,174
 Salted Popcorn,1 Portion,196
 Salted Pork Rinds,1 Portion,145
-Salted Potato Chips,1 Portion,185
 Salted Pretzels,1 Portion,165
 Salted Pumpkin Seeds,1 Portion,141
 Salted Sunflower Seeds,1 Portion,157
-Salted Tortilla Chips,1 Portion,131
 Salted Walnuts,1 Portion,176
 Saltfish Fritters,1 Piece,310
 Saltimbocca,1 Portion,340
@@ -4123,8 +4122,10 @@ Sourdough Bread,1 Slice,90
 Soursop,1 Cup,148
 Southern Fried Catfish,1 Portion,400
 Southern Style Collard Greens,1 Cup,130
-Souvlaki Chicken,1 Item,150
-Souvlaki Pork,1 Item,180
+Chicken Souvlaki,1 Item,150
+Pork Souvlaki,1 Item,180
+Chicken Souvlaki Sandwich,450,1 Item
+Pork Souvlaki Sandiwhc,520,1 Item
 Soy Milk,1 Cup,140
 Soy Sauce,1 Tablespoon,9
 Soybeans,1 Cup,298
@@ -4559,6 +4560,7 @@ Turkey Sandwich,1 Item,330
 Turkey Thigh,100g,170
 Turkey Whole Roasted,100g,189
 Turkish Borek,1 Piece,350
+Greek Coffee,1 Cup,11
 Turkish Coffee,1 Cup,12
 Turkish Delight,1 Piece,67
 Turmeric,1 Teaspoon,8
@@ -4908,12 +4910,12 @@ Pork Ribs with French Fries,1 Portion,695
 Kebab with Rice,1 Portion,635
 Kebab with Potatoes,1 Portion,593
 Kebab with French Fries,1 Portion,795
-Pork Gyro with Rice,1 Portion,740
-Pork Gyro with Potatoes,1 Portion,703
-Pork Gyro with French Fries,1 Portion,912
-Chicken Gyro with Rice,1 Portion,715
-Chicken Gyro with Potatoes,1 Portion,673
-Chicken Gyro with French Fries,1 Portion,875
+Pork Gyros with Rice,1 Portion,740
+Pork Gyros with Potatoes,1 Portion,703
+Pork Gyros with French Fries,1 Portion,912
+Chicken Gyros with Rice,1 Portion,715
+Chicken Gyros with Potatoes,1 Portion,673
+Chicken Gyros with French Fries,1 Portion,875
 Lamb Chop with Vegetables,1 Portion,357
 Chicken Breast with Vegetables,1 Portion,228
 Shrimp with Vegetables,1 Portion,162
@@ -4940,8 +4942,8 @@ Chicken Meatballs with Vegetables,1 Portion,224
 Beef Ribs with Vegetables,1 Portion,415
 Pork Ribs with Vegetables,1 Portion,393
 Kebab with Vegetables,1 Portion,493
-Pork Gyro with Vegetables,1 Portion,603
-Chicken Gyro with Vegetables,1 Portion,573
+Pork Gyros with Vegetables,1 Portion,603
+Chicken Gyros with Vegetables,1 Portion,573
 Stuffed Chicken Roll,1 Portion,420
 Stuffed Pork Roll,1 Portion,520
 Stuffed Beef Roll,1 Portion,550
@@ -5416,3 +5418,8 @@ Shrimp Burrito,1 Item,720
 Chorizo Burrito,1 Item,850
 Mince Pie,1 Item,289
 Fakes,1 Portion,360
+Batzina,1 Slice,300
+Skepasti with Pork Gyros,1 Item,1200
+Skepasti with Chicken Gyros,1 Item,900
+Skepasti with Pork Souvlaki,1 Item,1050
+Skepasti with Chicken Souvlaki,1 Item,810

@@ -30,14 +30,12 @@ fun isCaloriesPlanExtreme(userCharacteristics: Characteristics?): Boolean {
         val bmr = (10f * weight) + (6.25f * height) - (5f * age) + genderValue
         val tdee = bmr * activityLevelValue
 
-        val maxDailyCaloriesDeficit = -(tdee * 0.30f)
+        val maxDailyCaloriesDeficit = -(tdee * 0.25f)
         val maxDailyCaloriesSurplus = tdee * 0.20f
 
         val caloriesChange = kgGoal * 7700f
         val dailyCaloriesAdjustment = caloriesChange / daysGoal.toFloat()
 
-        // If the daily calories adjustment is outside the deficit surplus range, it will get coerced in the calculateCaloriesGoal function, show
-        // the error
         return dailyCaloriesAdjustment !in maxDailyCaloriesDeficit..maxDailyCaloriesSurplus
     }
 

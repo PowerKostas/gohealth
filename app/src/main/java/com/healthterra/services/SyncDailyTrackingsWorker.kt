@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.healthterra.data.UserDatabase
+import com.healthterra.helpers.calculateCaloriesBurned
 import com.healthterra.helpers.calculateCaloriesGoal
 import com.healthterra.helpers.calculateExerciseGoal
 import com.healthterra.helpers.calculateStepsGoal
@@ -50,6 +51,7 @@ class SyncDailyTrackingsWorker(appContext: Context, workerParams: WorkerParamete
                 "caloriesGoal" to (snapshotCaloriesGoal ?: calculateCaloriesGoal(userCharacteristics)),
                 "exerciseGoal" to (snapshotExerciseGoal ?: calculateExerciseGoal(userCharacteristics)),
                 "stepsGoal" to (snapshotStepsGoal ?: calculateStepsGoal(userCharacteristics)),
+                "caloriesBurned" to calculateCaloriesBurned(userCharacteristics, reps = snapshotExercise ?: userTodayTrackings.exerciseProgress.sum(), steps = snapshotSteps ?: userTodayTrackings.stepsProgress)
             )
 
             val snapshotDate = inputData.getString("snapshot_date")

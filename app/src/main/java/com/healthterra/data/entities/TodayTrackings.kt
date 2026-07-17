@@ -25,4 +25,5 @@ data class TodayTrackings(
     @ColumnInfo(name = "calories_progress") val caloriesProgress: List<Int> = emptyList(),
     @ColumnInfo(name = "exercise_progress") val exerciseProgress: List<Int> = emptyList(),
     @ColumnInfo(name = "steps_progress") val stepsProgress: Int = 0,
+    @ColumnInfo(name = "calories_burned", defaultValue = "0") val caloriesBurned: Int = 0
 )

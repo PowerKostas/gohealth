@@ -58,8 +58,8 @@ fun ProgressBox(modifier: Modifier = Modifier, iconId: Int, category: String, pr
                 style = MaterialTheme.typography.labelLarge
             )
 
-            val minCaloriesValue = roundValue((goal - goal * 0.1).roundToInt())
-            val maxCaloriesValue = roundValue((goal + goal * 0.1).roundToInt())
+            val minCaloriesValue = roundValue((goal * 0.9).roundToInt())
+            val maxCaloriesValue = roundValue((goal * 1.1).roundToInt())
 
             // Calculates percentage from the minimum value, not the average
             val progressPercentage = if (category == "Calories") {

@@ -34,7 +34,8 @@ suspend fun syncAllTrackingsToFirestore(userDatabase: UserDatabase) {
                 "waterGoal" to tracking.waterGoal,
                 "caloriesGoal" to tracking.caloriesGoal,
                 "exerciseGoal" to tracking.exerciseGoal,
-                "stepsGoal" to tracking.stepsGoal
+                "stepsGoal" to tracking.stepsGoal,
+                "caloriesBurned" to tracking.caloriesBurned
             )
         )
     }
@@ -50,7 +51,8 @@ suspend fun syncAllTrackingsToFirestore(userDatabase: UserDatabase) {
                 "waterGoal" to calculateWaterGoal(userCharacteristics),
                 "caloriesGoal" to calculateCaloriesGoal(userCharacteristics),
                 "exerciseGoal" to calculateExerciseGoal(userCharacteristics),
-                "stepsGoal" to calculateStepsGoal(userCharacteristics)
+                "stepsGoal" to calculateStepsGoal(userCharacteristics),
+                "caloriesBurned" to userTodayTrackings.caloriesBurned
             )
         )
     }

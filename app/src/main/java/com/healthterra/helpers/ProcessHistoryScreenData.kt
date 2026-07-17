@@ -14,16 +14,18 @@ import kotlin.math.roundToInt
 fun generateContributionsMap(dailyTrackingsList: List<DailyTrackings>, userTodayTrackings: TodayTrackings?, userCharacteristics: Characteristics?, selectedCategory: String): Map<String, Int> {
     val map = dailyTrackingsList.associate { dailyTracking ->
         val middleCaloriesGoal = dailyTracking.caloriesGoal
+        val minCaloriesGoal = roundValue((middleCaloriesGoal * 0.9).roundToInt())
+        val maxCaloriesGoal = roundValue((middleCaloriesGoal * 1.1).roundToInt())
         val goalsMetCount = when (selectedCategory) {
             "Combined" -> listOf(
                 dailyTracking.waterProgress >= dailyTracking.waterGoal,
-                dailyTracking.caloriesProgress >= roundValue((middleCaloriesGoal - middleCaloriesGoal * 0.1).roundToInt()),
+                dailyTracking.caloriesProgress in minCaloriesGoal..maxCaloriesGoal,
                 dailyTracking.exerciseProgress >= dailyTracking.exerciseGoal,
                 dailyTracking.stepsProgress >= dailyTracking.stepsGoal
             ).count { it }
 
             "Water" -> if (dailyTracking.waterProgress >= dailyTracking.waterGoal) 1 else 0
-            "Calories" -> if (dailyTracking.caloriesProgress >= roundValue((middleCaloriesGoal - middleCaloriesGoal * 0.1).roundToInt())) 1 else 0
+            "Calories" -> if (dailyTracking.caloriesProgress in minCaloriesGoal..maxCaloriesGoal) 1 else 0
             "Exercise" -> if (dailyTracking.exerciseProgress >= dailyTracking.exerciseGoal) 1 else 0
             "Steps" -> if (dailyTracking.stepsProgress >= dailyTracking.stepsGoal) 1 else 0
             else -> 0
@@ -39,7 +41,8 @@ fun generateContributionsMap(dailyTrackingsList: List<DailyTrackings>, userToday
         val waterGoal = calculateWaterGoal(userCharacteristics)
 
         val middleCaloriesGoal = calculateCaloriesGoal(userCharacteristics)
-        val minCaloriesGoal = roundValue((middleCaloriesGoal - middleCaloriesGoal * 0.1).roundToInt())
+        val minCaloriesGoal = roundValue((middleCaloriesGoal * 0.9).roundToInt())
+        val maxCaloriesGoal = roundValue((middleCaloriesGoal * 1.1).roundToInt())
 
         val exerciseGoal = calculateExerciseGoal(userCharacteristics)
         val stepsGoal = calculateStepsGoal(userCharacteristics)
@@ -52,13 +55,13 @@ fun generateContributionsMap(dailyTrackingsList: List<DailyTrackings>, userToday
         val todayGoalsMetCount = when (selectedCategory) {
             "Combined" -> listOf(
                 waterProgress >= waterGoal,
-                caloriesProgress >= minCaloriesGoal,
+                caloriesProgress in minCaloriesGoal..maxCaloriesGoal,
                 exerciseProgress >= exerciseGoal,
                 stepsProgress >= stepsGoal
             ).count { it }
 
             "Water" -> if (waterProgress >= waterGoal) 1 else 0
-            "Calories" -> if (caloriesProgress >= minCaloriesGoal) 1 else 0
+            "Calories" -> if (caloriesProgress in minCaloriesGoal..maxCaloriesGoal) 1 else 0
             "Exercise" -> if (exerciseProgress >= exerciseGoal) 1 else 0
             "Steps" -> if (stepsProgress >= stepsGoal) 1 else 0
             else -> 0
@@ -71,7 +74,7 @@ fun generateContributionsMap(dailyTrackingsList: List<DailyTrackings>, userToday
 }
 
 
-fun processGraphData(dailyTrackingsList: List<DailyTrackings>, userTodayTrackings: TodayTrackings?, graphTimeRange: String, selectedCategory: String): Pair<List<Int>, List<String>> {
+fun processGraphData(dailyTrackingsList: List<DailyTrackings>, userTodayTrackings: TodayTrackings?, userCharacteristics: Characteristics? , graphTimeRange: String, selectedCategory: String): Pair<List<Int>, List<String>> {
     val today = LocalDate.now()
     if (dailyTrackingsList.isEmpty() && userTodayTrackings == null) return Pair(emptyList(), emptyList())
 

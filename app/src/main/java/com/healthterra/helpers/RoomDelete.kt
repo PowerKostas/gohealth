@@ -47,8 +47,11 @@ fun performRoomDelete(characteristicsViewModel: CharacteristicsViewModel, settin
             waterProgress = emptyList(),
             caloriesProgress = emptyList(),
             exerciseProgress = emptyList(),
-            stepsProgress = 0
-        )
+            stepsProgress = 0,
+            caloriesBurned = 0
+        ),
+
+        userCharacteristics
     )
 
     dailyTrackingsViewModel.deleteUserDailyTrackings()

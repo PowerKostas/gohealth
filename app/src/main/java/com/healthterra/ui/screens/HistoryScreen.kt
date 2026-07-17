@@ -1,6 +1,5 @@
 package com.healthterra.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,11 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,20 +24,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.healthterra.R
 import com.healthterra.data.entities.DailyTrackings
+import com.healthterra.helpers.formatNumber
 import com.healthterra.helpers.generateContributionsMap
 import com.healthterra.helpers.processGraphData
 import com.healthterra.ui.components.general.ContributionCalendar
-import com.healthterra.ui.components.general.CustomSurface
 import com.healthterra.ui.components.general.DynamicLineGraph
+import com.healthterra.ui.components.general.InfoDialog
 import com.healthterra.ui.components.general.PillButtonGroup
 import com.healthterra.ui.components.general.RadioButtonGroup
+import com.healthterra.ui.components.general.StatCard
 import com.healthterra.ui.components.screen.ColorCodingHelper
 import com.healthterra.ui.viewModels.AchievementsViewModel
 import com.healthterra.ui.viewModels.CharacteristicsViewModel
@@ -126,18 +126,18 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
         }
     }
 
+    val contributionCalendarOptions = listOf("Combined", "Water", "Calories", "Exercise", "Steps")
+    val contributionCalendarIcons = listOf(R.drawable.combined, R.drawable.water, R.drawable.calories, R.drawable.exercise, R.drawable.steps)
+
     // Data preparation for the graphs, works similar to the ContributionCalendar one above
     val dailyTrackingsList by dailyTrackingsViewModel.dailyTrackings().collectAsState(initial = emptyList())
-    var selectedGraphRange by remember { mutableStateOf("Week") }
+    var selectedGraphRange by rememberSaveable { mutableStateOf("Week") }
     var selectedCategoryGraph by rememberSaveable { mutableStateOf("Steps") }
 
     // Returns a pair instead of a map because non-unique keys can happen
-    val (chartValues, chartLabels) = remember(dailyTrackingsList, userTodayTrackings, selectedGraphRange, selectedCategoryGraph) {
-        processGraphData(dailyTrackingsList, userTodayTrackings, selectedGraphRange, selectedCategoryGraph)
+    val (chartValues, chartLabels) = rememberSaveable(dailyTrackingsList, userTodayTrackings, userCharacteristics, selectedGraphRange, selectedCategoryGraph) {
+        processGraphData(dailyTrackingsList, userTodayTrackings, userCharacteristics, selectedGraphRange, selectedCategoryGraph)
     }
-
-    val options = listOf("Combined", "Water", "Calories", "Exercise", "Steps")
-    val iconsList = listOf(R.drawable.combined, R.drawable.water, R.drawable.calories, R.drawable.exercise, R.drawable.steps)
 
     // For the streaks
     val activeStreaks = listOf(
@@ -153,6 +153,12 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
         otherAchievements?.maxExerciseStreak ?: 0,
         otherAchievements?.maxStepsStreak ?: 0
     )
+
+    val careerStatsOptions = listOf("Water", "Calories", "Exercise", "Steps", "Calories Burned")
+    val careerStatsIcons = listOf(R.drawable.water, R.drawable.calories, R.drawable.exercise, R.drawable.steps, R.drawable.calories_burned)
+    val allTimeTrackingsList by dailyTrackingsViewModel.allTimeTrackingsList.collectAsState()
+
+    var showCaloriesBurnedDialog by rememberSaveable { mutableStateOf(false) }
 
 
     Column(
@@ -190,9 +196,9 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
                 ) {
                     RadioButtonGroup(
                         modifier = Modifier.weight(1f),
-                        options = options,
+                        options = contributionCalendarOptions,
                         selectedOption = selectedCategoryContributionCalendar,
-                        iconsList = iconsList,
+                        iconsList = contributionCalendarIcons,
                         showText = false
                     ) { newCategory ->
                         selectedCategoryContributionCalendar = newCategory
@@ -209,10 +215,10 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 val graphTitle = when (selectedCategoryGraph) {
-                    "Water" -> "Water Graph (ml)"
-                    "Calories" -> "Calories Graph (kcal)"
-                    "Exercise" -> "Exercise Graph (reps)"
-                    else -> "Step Count Graph"
+                    "Water" -> "Water Intake (ml)"
+                    "Calories" -> "Calories Consumed (kcal)"
+                    "Exercise" -> "Exercise Volume (reps)"
+                    else -> "Step Count"
                 }
 
                 Text(
@@ -256,7 +262,8 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
 
                 PillButtonGroup(
                     options = listOf("Week", "Month", "Year", "All Time"),
-                    selectedRange = selectedGraphRange,
+                    rows = 2,
+                    selectedOption = selectedGraphRange,
                     onOptionSelected = { selectedGraphRange = it }
                 )
             }
@@ -268,60 +275,41 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "Your Streaks",
+                text = "Career Stats",
                 fontWeight = FontWeight.Bold
             )
 
             Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-                options.slice(1..4).forEachIndexed { index, option ->
-                    CustomSurface(startPadding = 0.dp, endPadding = 0.dp) {
-                        Row(
+                careerStatsOptions.forEachIndexed { index, option ->
+                    if (index != 4) {
+                        StatCard(
+                            icon = careerStatsIcons[index],
+                            title = option,
+                            statValues = listOf(activeStreaks[index].toString(), maxStreaks[index].toString(), formatNumber(allTimeTrackingsList[index])),
+                            statLabels = listOf("Active\nStreak", "Longest\nStreak", "Lifetime\nTotal"),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { onNavigate(option) }
-                                .padding(20.dp)
-                        ) {
-                            // Icon and category name
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = iconsList[index + 1]),
-                                    contentDescription = option,
-                                    tint = Color.Unspecified,
-                                    modifier = Modifier.size(24.dp)
-                                )
+                            titleWeight = 0.4f,
+                            onClick = { onNavigate(option) }
+                        )
+                    }
 
-                                Text(text = option, fontWeight = FontWeight.SemiBold)
-                            }
-
-                            // Active and best stats
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(24.dp)
-                            ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.width(48.dp)
-                                ) {
-                                    Text(text = activeStreaks[index].toString(), fontWeight = FontWeight.Bold)
-                                    Text(text = "Active", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-                                }
-
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.width(48.dp)
-                                ) {
-                                    Text(text = maxStreaks[index].toString(), fontWeight = FontWeight.Bold)
-                                    Text(text = "Best", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-                                }
-                            }
-                        }
+                    else {
+                        StatCard(
+                            icon = careerStatsIcons[index],
+                            title = option,
+                            statValues = listOf(formatNumber(userTodayTrackings?.caloriesBurned ?: 0), formatNumber(allTimeTrackingsList[index])),
+                            statLabels = listOf("Today's\nTotal", "Lifetime\nTotal"),
+                            horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.End),
+                            titleWeight = 0.6f,
+                            onClick = { showCaloriesBurnedDialog = true }
+                        )
                     }
                 }
             }
         }
+    }
+
+    if (showCaloriesBurnedDialog) {
+        InfoDialog(Icons.Default.Info, Color(0xFFD4AF37), null, AnnotatedString("Burned calories are estimated based on your daily steps and exercise reps. Personal profile data is used to ensure this calculation is as accurate as possible."), "Got it", null, true, FontWeight.Bold, { showCaloriesBurnedDialog = false }, { showCaloriesBurnedDialog = false })
     }
 }
