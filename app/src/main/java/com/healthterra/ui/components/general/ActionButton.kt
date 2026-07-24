@@ -20,9 +20,10 @@ import androidx.compose.ui.unit.dp
 
 // Custom button to do any action
 @Composable
-fun ActionButton(modifier: Modifier = Modifier, colour: Color, icon: Int? = null, text: String, fontSize: TextUnit, action: () -> Unit) {
+fun ActionButton(modifier: Modifier = Modifier, colour: Color, icon: Int? = null, text: String, fontSize: TextUnit, enabled: Boolean = true, action: () -> Unit) {
     Button(
         onClick = action,
+        enabled = enabled,
 
         colors = ButtonDefaults.buttonColors(
             containerColor = colour,

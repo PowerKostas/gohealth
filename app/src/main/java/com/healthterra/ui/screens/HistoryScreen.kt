@@ -154,7 +154,7 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
         otherAchievements?.maxStepsStreak ?: 0
     )
 
-    val careerStatsOptions = listOf("Water", "Calories", "Exercise", "Steps", "Calories Burned")
+    val careerStatsOptions = listOf("Water", "Calories", "Exercise", "Steps", "Kcal Burned")
     val careerStatsIcons = listOf(R.drawable.water, R.drawable.calories, R.drawable.exercise, R.drawable.steps, R.drawable.calories_burned)
     val allTimeTrackingsList by dailyTrackingsViewModel.allTimeTrackingsList.collectAsState()
 
@@ -300,7 +300,7 @@ fun HistoryScreen(onNavigate: (String) -> Unit = {}) {
                             statValues = listOf(formatNumber(userTodayTrackings?.caloriesBurned ?: 0), formatNumber(allTimeTrackingsList[index])),
                             statLabels = listOf("Today's\nTotal", "Lifetime\nTotal"),
                             horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.End),
-                            titleWeight = 0.6f,
+                            titleWeight = 0.5f,
                             onClick = { showCaloriesBurnedDialog = true }
                         )
                     }

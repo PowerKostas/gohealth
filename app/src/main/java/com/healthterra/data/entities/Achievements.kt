@@ -25,5 +25,5 @@ data class Achievements(
     @ColumnInfo(name = "appear_steps_leaderboards") val appearStepsLeaderboards: Boolean = false,
     @ColumnInfo(name = "appear_total_steps_leaderboards") val appearTotalStepsLeaderboards: Boolean = false,
     @ColumnInfo(name = "appear_healthiest_user") val appearHealthiestUser: Boolean = false,
-    @ColumnInfo(name = "secret") val secret: Boolean = false,
+    @ColumnInfo(name = "secret") val secret: Boolean = false
 )

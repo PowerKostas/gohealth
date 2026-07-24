@@ -15,8 +15,10 @@ import com.healthterra.data.UserDatabase
 import com.healthterra.data.daos.SettingsDao
 import com.healthterra.data.entities.Settings
 import com.healthterra.services.SyncUserWorker
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -62,14 +64,17 @@ class SettingsViewModel(private val settingsDao: SettingsDao) : ViewModel() {
                 return@launch
             }
 
-            // Leaderboards data
-            val hasChangedEssential = oldSettings.profilePictureString != newSettings.profilePictureString || oldSettings.username != newSettings.username || oldSettings.leaderboardsVisibility != newSettings.leaderboardsVisibility
+            // Leaderboards and achievements data
+            val hasChangedEssential = oldSettings.profilePictureString != newSettings.profilePictureString ||
+                    oldSettings.username != newSettings.username || oldSettings.leaderboardsVisibility != newSettings.leaderboardsVisibility ||
+                    oldSettings.notifiedAchievements != newSettings.notifiedAchievements
 
             // Data only used for backup
-            val hasChangedNonEssential= oldSettings.initialWeightGoalDate != newSettings.initialWeightGoalDate || oldSettings.appearance != newSettings.appearance ||
-                    oldSettings.stepTracking != newSettings.stepTracking || oldSettings.lastSavedDate != newSettings.lastSavedDate
+            val hasChangedNonEssential = oldSettings.initialWeightGoalDate != newSettings.initialWeightGoalDate ||
+                    oldSettings.appearance != newSettings.appearance || oldSettings.stepTracking != newSettings.stepTracking ||
+                    oldSettings.lastSavedDate != newSettings.lastSavedDate
 
-            // Syncs user data to Firestore, if any of the leaderboards data changed, needs network
+            // Syncs user data to Firestore, if any of the leaderboards or achievements data changed, needs network
             if (hasChangedEssential) {
                 val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
                 val syncRequest = OneTimeWorkRequestBuilder<SyncUserWorker>()
@@ -92,5 +97,13 @@ class SettingsViewModel(private val settingsDao: SettingsDao) : ViewModel() {
 
     fun markSyncHandled() {
         pendingSync = false
+    }
+
+    // It's used to avoid all the existing user's achievements popping up when signing in or signing out or deleting an account
+    private val localPendingAction = MutableStateFlow(false)
+    val pendingAction = localPendingAction.asStateFlow()
+
+    fun setPendingAction(isPending: Boolean) {
+        localPendingAction.value = isPending
     }
 }

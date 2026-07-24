@@ -22,17 +22,17 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.healthterra.helpers.AchievementData
 import com.healthterra.helpers.drawCardShape
 import com.healthterra.helpers.drawShieldShape
 import com.healthterra.helpers.drawStarburstShape
 
 @Composable
-fun AchievementItem(icon: ImageVector, title: String, description: String, tier: String, isUnlocked: Boolean, progress: Int, goal: Int) {
+fun AchievementItem(item: AchievementData) {
     var showDialog by remember { mutableStateOf(false) }
 
-    val shape = when (tier) {
+    val shape = when (item.tier) {
         "Common" -> CircleShape
         "Rare" -> RoundedCornerShape(16.dp)
         "Epic" -> drawCardShape()
@@ -41,7 +41,7 @@ fun AchievementItem(icon: ImageVector, title: String, description: String, tier:
         else -> CircleShape
     }
 
-    val brush = when (tier) {
+    val brush = when (item.tier) {
         "Common" -> SolidColor(Color(0xFF2883fe))
         "Rare" -> SolidColor(Color(0xFFd97f40))
         "Epic" -> SolidColor(Color(0xFFbe51f1))
@@ -50,9 +50,9 @@ fun AchievementItem(icon: ImageVector, title: String, description: String, tier:
     }
 
     // Makes all locked achievements gray, used in Modifier.graphicsLayer
-    val colorMatrix = remember(isUnlocked) {
+    val colorMatrix = remember(item.isUnlocked) {
         ColorMatrix().apply {
-            if (!isUnlocked) setToSaturation(0f)
+            if (!item.isUnlocked) setToSaturation(0f)
         }
     }
 
@@ -64,7 +64,7 @@ fun AchievementItem(icon: ImageVector, title: String, description: String, tier:
 
                 .graphicsLayer {
                     colorFilter = ColorFilter.colorMatrix(colorMatrix)
-                    alpha = if (isUnlocked) 1f else 0.4f
+                    alpha = if (item.isUnlocked) 1f else 0.4f
                 }
 
                 .clip(shape)
@@ -72,7 +72,7 @@ fun AchievementItem(icon: ImageVector, title: String, description: String, tier:
                 .clickable { showDialog = true }
         ) {
             Icon(
-                imageVector = icon,
+                imageVector = item.icon,
                 contentDescription = "Achievement Icon",
                 tint = Color.White,
                 modifier = Modifier.size(32.dp)
@@ -81,6 +81,6 @@ fun AchievementItem(icon: ImageVector, title: String, description: String, tier:
     }
 
     if (showDialog) {
-        AchievementDialog(icon, title, description, progress, goal) { showDialog = false }
+        AchievementDialog(item.icon, item.title, item.description, item.currentProgress, item.goal) { showDialog = false }
     }
 }

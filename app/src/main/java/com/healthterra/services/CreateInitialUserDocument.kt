@@ -21,6 +21,7 @@ fun createInitialUserDocument(uid: String, username: String, profilePictureStrin
         "weight" to null,
         "weightGoal" to "Maintain",
         "leaderboardsVisibility" to "Anonymous",
+        "notifiedAchievements" to "",
 
         "achievements" to mapOf(
             "appearWaterLeaderboards" to false,

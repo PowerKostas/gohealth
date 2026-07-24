@@ -33,8 +33,15 @@ suspend fun syncFirestoreUserToRoom(userDatabase: UserDatabase, context: Context
             return
         }
 
-        // Syncs local settings table, it's using .copy because it's the only table with local values that aren't stored in Firestore
         val userSettings = userDatabase.settingsDao().getAll().first().firstOrNull() ?: Settings(userId = 1)
+
+        // Merges local and remote notifiedAchievements to prevent duplicate popups because of guest sessions
+        val localNotifiedAchievements = userSettings.notifiedAchievements
+        val remoteNotifiedAchievements = userDocument.getString("notifiedAchievements") ?: ""
+        val mergedNotifiedAchievementsSet = (localNotifiedAchievements.split(",") + remoteNotifiedAchievements.split(",")).filter { it.isNotEmpty() }.toSet()
+        val mergedNotifiedAchievements = mergedNotifiedAchievementsSet.joinToString(",")
+
+        // Syncs local settings table, it's using .copy because it's the only table with local values that aren't stored in Firestore
         val settings = userSettings.copy(
             profilePictureString = userDocument.getString("profilePictureString") ?: userSettings.profilePictureString,
             username = userDocument.getString("username") ?: userSettings.username,
@@ -43,6 +50,7 @@ suspend fun syncFirestoreUserToRoom(userDatabase: UserDatabase, context: Context
             lastSavedDate = userDocument.getString("lastSavedDate") ?: LocalDate.now().toString(),
             initialWeightGoalDate = userDocument.getString("initialWeightGoalDate"),
             leaderboardsVisibility = userDocument.getString("leaderboardsVisibility") ?: "Anonymous",
+            notifiedAchievements = mergedNotifiedAchievements,
             showMandatoryDialog = false
         )
 
@@ -72,17 +80,18 @@ suspend fun syncFirestoreUserToRoom(userDatabase: UserDatabase, context: Context
 
         context.startService(intent)
 
-        // Syncs local achievements table
-        val achievementsMap = userDocument.get("achievements") as? Map<*, *> ?: emptyMap<Any?, Any?>()
+        // Syncs local achievements table, if one of these achievements was unlocked on a guest account, the existing account will not get
+        // it, because they are different accounts and doesn't make sense to do so
+        val remoteAchievementsMap = userDocument.get("achievements") as? Map<*, *> ?: emptyMap<Any?, Any?>()
         val achievements = Achievements(
             userId = 1,
-            appearWaterLeaderboards = achievementsMap["appearWaterLeaderboards"] as? Boolean ?: false,
-            appearCaloriesLeaderboards = achievementsMap["appearCaloriesLeaderboards"] as? Boolean ?: false,
-            appearExerciseLeaderboards = achievementsMap["appearExerciseLeaderboards"] as? Boolean ?: false,
-            appearStepsLeaderboards = achievementsMap["appearStepsLeaderboards"] as? Boolean ?: false,
-            appearTotalStepsLeaderboards = achievementsMap["appearTotalStepsLeaderboards"] as? Boolean ?: false,
-            appearHealthiestUser = achievementsMap["appearHealthiestUser"] as? Boolean ?: false,
-            secret = achievementsMap["secret"] as? Boolean ?: false
+            appearWaterLeaderboards = remoteAchievementsMap["appearWaterLeaderboards"] as? Boolean ?: false,
+            appearCaloriesLeaderboards = remoteAchievementsMap["appearCaloriesLeaderboards"] as? Boolean ?: false,
+            appearExerciseLeaderboards = remoteAchievementsMap["appearExerciseLeaderboards"] as? Boolean ?: false,
+            appearStepsLeaderboards = remoteAchievementsMap["appearStepsLeaderboards"] as? Boolean ?: false,
+            appearTotalStepsLeaderboards = remoteAchievementsMap["appearTotalStepsLeaderboards"] as? Boolean ?: false,
+            appearHealthiestUser = remoteAchievementsMap["appearHealthiestUser"] as? Boolean ?: false,
+            secret = remoteAchievementsMap["secret"] as? Boolean ?: false
         )
 
         userDatabase.achievementsDao().update(achievements)

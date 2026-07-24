@@ -27,7 +27,8 @@ class SyncUserWorker(appContext: Context, workerParams: WorkerParameters) : Coro
                 "stepTracking" to userSettings.stepTracking,
                 "lastSavedDate" to userSettings.lastSavedDate,
                 "initialWeightGoalDate" to userSettings.initialWeightGoalDate,
-                "leaderboardsVisibility" to userSettings.leaderboardsVisibility
+                "leaderboardsVisibility" to userSettings.leaderboardsVisibility,
+                "notifiedAchievements" to userSettings.notifiedAchievements
             )
 
             FirebaseFirestore.getInstance()

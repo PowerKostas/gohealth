@@ -1773,7 +1773,6 @@ Garlic,1 Item,4
 Garlic Bread,1 Slice,186
 Garlic Mashed Potatoes,1 Portion,237
 Garlic Naan,1 Piece,300
-Garlic Pizza,1 Slice,260
 Garlic Powder,1 Teaspoon,10
 Garlic Scape,100g,73
 Gateau Basque,1 Slice,340
@@ -2038,7 +2037,7 @@ Hashbrown Casserole,1 Cup,350
 Hasselback Potatoes,1 Item,220
 Haupia Coconut Pudding,1 Piece,180
 Havarti,1 Portion,105
-Hawaiian Pizza Slice,1 Slice,260
+Hawaiian Pizza,1 Slice,260
 Hawaiian Poke Bowl,1 Portion,480
 Hayashi Rice,1 Portion,560
 Hazelnut Cappuccino,1 Item,206
@@ -3137,7 +3136,7 @@ Peppermint Mocha,1 Cup,253
 Pepperoncata,1 Item,180
 Pepperoncini,1 Item,10
 Pepperoni,1 Portion,138
-Pepperoni Pizza Slice,1 Slice,298
+Pepperoni Pizza,1 Slice,298
 Perch,100g,91
 Periwinkle,100g,90
 Perkedel,1 Item,150
@@ -3208,28 +3207,28 @@ Pita Bread,1 Piece,165
 Pita Hummus Dip,2 Tablespoons,50
 Pita with Hummus,1 Portion,260
 Pitaya,100g,60
-Pizza Barbecue Chicken,1 Slice,305
-Pizza Buffalo Chicken,1 Slice,295
-Pizza Capricciosa,1 Slice,270
-Pizza Chicago Deep Dish,1 Slice,390
-Pizza Four Cheeses,1 Slice,285
-Pizza Funghi,1 Slice,250
-Pizza Hawaiian,1 Slice,280
-Pizza Margherita,1 Slice,250
-Pizza Meat Lovers,1 Slice,360
-Pizza Napoletana,1 Slice,235
-Pizza Pepperoni,1 Slice,298
-Pizza Prosciutto,1 Slice,260
-Pizza Quattro Stagioni,1 Slice,265
-Pizza Sicilian,1 Slice,350
-Pizza Supreme,1 Slice,320
-Pizza Thin Crust,1 Slice,215
-Pizza Truffle,1 Slice,280
-Pizza Vegan,1 Slice,200
-Pizza Vegetarian,1 Slice,220
+Barbecue Chicken Pizza,1 Slice,305
+Buffalo Chicken Pizza,1 Slice,295
+Capricciosa Pizza,1 Slice,270
+Chicago Deep Dish Pizza,1 Slice,390
+Four Cheeses Pizza,1 Slice,285
+Funghi Pizza,1 Slice,250
+Hawaiian Pizza,1 Slice,280
+Margherita Pizza,1 Slice,250
+Meat Lovers Pizza,1 Slice,360
+Napoletana Pizza,1 Slice,235
+Pepperoni Pizza,1 Slice,298
+Prosciutto Pizza,1 Slice,260
+Quattro Stagioni Pizza,1 Slice,265
+Sicilian Pizza,1 Slice,350
+Supreme Pizza,1 Slice,320
+Thin Crust Pizza,1 Slice,215
+Truffle Pizza,1 Slice,280
+Vegan Pizza,1 Slice,200
+Vegetarian Pizza,1 Slice,220
 Vegetables Pizza,1 Slice,235
-Pizza White Pizza,1 Slice,290
-Pizza Greek,1 Slice,290
+White Pizza,1 Slice,290
+Greek Pizza,1 Slice,290
 Pizzelle,1 Item,47
 Plaice,100g,91
 Plantain,1 Item,218
@@ -4137,7 +4136,7 @@ Spam,100g,315
 Spam Musubi,1 Piece,220
 Spanakopita,1 Piece,200
 Spanakopitaki,1 Piece,60
-Tyropitaki,1 Piece,80
+Tiropitaki,1 Piece,80
 Loukanopitaki,1 Piece,100
 Tiropita,1 Piece,250
 Spanish Omelette,1 Portion,230
@@ -5423,3 +5422,11 @@ Skepasti with Pork Gyros,1 Item,1200
 Skepasti with Chicken Gyros,1 Item,900
 Skepasti with Pork Souvlaki,1 Item,1050
 Skepasti with Chicken Souvlaki,1 Item,810
+Kaymak,1 Portion,375
+Lemon Pound Cake,1 Slice,370
+Orange Pound Cake,1 Slice,390
+Cream Cheese Pound Cake,1 Slice,430
+Sour Cream Pound Cake,1 Slice,350
+Carrot Pound Cake,1 Slice,320
+Almond Pound Cake,1 Slice,290
+Chocolate Pound Cake,1 Slice,440

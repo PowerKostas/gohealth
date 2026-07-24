@@ -23,10 +23,10 @@ import com.healthterra.data.entities.TodayTrackings
 @TypeConverters(Converters::class) // Automatically runs the converters, I can just use the lists as lists in code now
 @Database(
     entities = [Settings::class, Characteristics::class, TodayTrackings::class, DailyTrackings::class, Achievements::class],
-    version = 8,
+    version = 9,
     autoMigrations = [
-        AutoMigration(from = 7, to = 8),
-        //AutoMigration(from = 8, to = 9, spec = UserDatabase.MyRenameMigration::class)
+        AutoMigration(from = 8, to = 9),
+        //AutoMigration(from = 3, to = 4, spec = UserDatabase.MyRenameMigration::class)
     ]
 )
 abstract class UserDatabase : RoomDatabase() {

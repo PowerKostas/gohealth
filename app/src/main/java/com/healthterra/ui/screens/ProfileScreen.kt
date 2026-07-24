@@ -1,5 +1,6 @@
 package com.healthterra.ui.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
@@ -50,16 +51,18 @@ import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.Constraints
+import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.healthterra.data.UserDatabase
 import com.healthterra.helpers.generateRandomUsername
-import com.healthterra.helpers.performRoomDelete
 import com.healthterra.services.FirebaseDeleteWorker
+import com.healthterra.services.RoomDeleteWorker
 import com.healthterra.services.linkWithGoogleSignIn
 import com.healthterra.services.syncAllTrackingsToFirestore
 import com.healthterra.services.syncFirestoreUserToRoom
@@ -74,11 +77,14 @@ import com.healthterra.ui.components.screen.ProfilePicture
 import com.healthterra.ui.components.screen.WeightGoalSelector
 import com.healthterra.ui.viewModels.AchievementsViewModel
 import com.healthterra.ui.viewModels.CharacteristicsViewModel
-import com.healthterra.ui.viewModels.DailyTrackingsViewModel
 import com.healthterra.ui.viewModels.SettingsViewModel
 import com.healthterra.ui.viewModels.TodayTrackingsViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.util.UUID
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,8 +105,6 @@ fun ProfileScreen() {
     val todayTrackingsViewModel: TodayTrackingsViewModel = viewModel(factory = TodayTrackingsViewModel.Factory)
     val userTodayTrackingsList by todayTrackingsViewModel.todayTrackings.collectAsState()
     val userTodayTrackings = userTodayTrackingsList.firstOrNull()
-
-    val dailyTrackingsViewModel: DailyTrackingsViewModel = viewModel(factory = DailyTrackingsViewModel.Factory)
 
     val achievementsViewModel: AchievementsViewModel = viewModel(factory = AchievementsViewModel.Factory)
     val userAchievementsList by achievementsViewModel.leaderboardsAchievements.collectAsState()
@@ -149,9 +153,21 @@ fun ProfileScreen() {
     val currentUser = Firebase.auth.currentUser
     val uidText = currentUser?.uid ?: "None"
 
+    var isGoogleSignInLoading by rememberSaveable { mutableStateOf(false) }
     var googleAuthError by rememberSaveable { mutableStateOf(false) }
 
     val focusManager = LocalFocusManager.current
+
+    var deleteWorkId by rememberSaveable { mutableStateOf<UUID?>(null) }
+
+    // To disable the delete account button, if the heavy Firebase delete worker is already running or if the UID is already null
+    val workInfo by remember(deleteWorkId) {
+        deleteWorkId?.let { id ->
+            WorkManager.getInstance(context).getWorkInfoByIdFlow(id)
+        } ?: flowOf(null)
+    }.collectAsState(initial = null)
+
+    val isDeleteButtonEnabled = workInfo?.state != WorkInfo.State.RUNNING && workInfo?.state != WorkInfo.State.ENQUEUED && currentUser != null
 
 
     // Draws the screen
@@ -417,33 +433,50 @@ fun ProfileScreen() {
             error = googleAuthError,
 
             onSignInClick = {
+                if (isGoogleSignInLoading) return@GoogleSignInButton
+
+                isGoogleSignInLoading = true
                 googleAuthError = false
 
                 coroutineScope.launch {
-                    val returnCode = linkWithGoogleSignIn(context)
+                    try {
+                        val returnCode = linkWithGoogleSignIn(activity)
 
-                    if (returnCode == 2 || returnCode == 3) {
-                        syncFirestoreUserToRoom(UserDatabase.getDatabase(context), context)
+                        if (returnCode == 2 || returnCode == 3) {
+                            settingsViewModel.setPendingAction(true)
 
-                        val message = if (returnCode == 2) {
-                            "Google account linked! Your progress is now synced."
+                            syncFirestoreUserToRoom(UserDatabase.getDatabase(context), context)
+
+                            // Adds an 1-second delay to make sure the Room operations are done
+                            coroutineScope.launch {
+                                delay(1.seconds)
+                                settingsViewModel.setPendingAction(false)
+                            }
+
+                            val message = if (returnCode == 2) {
+                                "Google account linked! Your progress is now synced."
+                            }
+
+                            else {
+                                "Account found. Personal information restored, progress updated."
+                            }
+
+                            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+
+                            // Uploads the merged local daily and today trackings to Firestore, because that's the only table on the cloud that can
+                            // change, don't have to do it on returnCode = 2 because the UID document stays the same
+                            if (returnCode == 3) {
+                                syncAllTrackingsToFirestore(UserDatabase.getDatabase(context))
+                            }
                         }
 
-                        else {
-                            "Account found. Personal information restored, progress updated."
-                        }
-
-                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-
-                        // Uploads the merged local daily and today trackings to Firestore, because that's the only table on the cloud that can
-                        // change, don't have to do it on returnCode = 2 because the UID document stays the same
-                        if (returnCode == 3) {
-                            syncAllTrackingsToFirestore(UserDatabase.getDatabase(context))
+                        else if (returnCode == 0) {
+                            googleAuthError = true
                         }
                     }
 
-                    else if (returnCode == 0) {
-                        googleAuthError = true
+                    finally {
+                        isGoogleSignInLoading = false
                     }
                 }
             },
@@ -487,7 +520,8 @@ fun ProfileScreen() {
             ActionButton(
                 colour = Color(0xFFE53935),
                 text = "Delete Account",
-                fontSize = 12.sp
+                fontSize = 12.sp,
+                enabled = isDeleteButtonEnabled
             ) {
                 showDeleteDialog = true
             }
@@ -508,16 +542,13 @@ fun ProfileScreen() {
 
             onConfirm = {
                 showDeleteDialog = false
-
-                // Text fields UI delete
                 val randomUsername = generateRandomUsername()
-                username = randomUsername
-                age = ""
-                height = ""
-                weight = ""
 
-                // UI and local database delete
-                performRoomDelete(characteristicsViewModel, settingsViewModel, todayTrackingsViewModel, dailyTrackingsViewModel, achievementsViewModel, randomUsername, context)
+                // Cancels all other workers/syncs as to not resurrect the deleted user document
+                val workManager = WorkManager.getInstance(context)
+                workManager.cancelAllWorkByTag("SyncDailyTrackingsWorker_${LocalDate.now()}")
+                workManager.cancelAllWorkByTag("SyncUserDailyTrackingsWorker_${LocalDate.now()}")
+                workManager.cancelAllWorkByTag("SyncUserWorker")
 
                 // Firebase delete, needs network
                 val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
@@ -526,9 +557,28 @@ fun ProfileScreen() {
                     .setConstraints(constraints)
                     .build()
 
-                WorkManager.getInstance(context).enqueue(deleteRequest)
+                // UI and local database delete
+                val roomDeleteData = Data.Builder()
+                    .putString("randomUsername", randomUsername)
+                    .build()
 
-                showDeleteDialog = false
+                val roomDeleteRequest = OneTimeWorkRequestBuilder<RoomDeleteWorker>()
+                    .setInputData(roomDeleteData)
+                    .build()
+
+                WorkManager.getInstance(context)
+                    .beginWith(deleteRequest)
+                    .then(roomDeleteRequest)
+                    .enqueue()
+
+                deleteWorkId = roomDeleteRequest.id
+
+                coroutineScope.launch {
+                    settingsViewModel.markSyncHandled()
+                    settingsViewModel.setPendingAction(true)
+                    delay(1.seconds)
+                    settingsViewModel.setPendingAction(false)
+                }
             },
 
             onDismiss = { showDeleteDialog = false }
@@ -548,9 +598,29 @@ fun ProfileScreen() {
 
             onConfirm = {
                 showSignOutDialog = false
+                val randomUsername = generateRandomUsername()
+
+                // UI and local database delete
+                val roomDeleteData = Data.Builder()
+                    .putString("randomUsername", randomUsername)
+                    .build()
+
+                val roomDeleteRequest = OneTimeWorkRequestBuilder<RoomDeleteWorker>()
+                    .setInputData(roomDeleteData)
+                    .build()
+
+                WorkManager.getInstance(context).enqueue(roomDeleteRequest)
+
+                // Text fields UI delete
+                username = randomUsername
+                age = ""
+                height = ""
+                weight = ""
 
                 coroutineScope.launch {
                     try {
+                        settingsViewModel.setPendingAction(true)
+
                         // Signs out from Firebase
                         Firebase.auth.signOut()
 
@@ -558,19 +628,14 @@ fun ProfileScreen() {
                         val credentialManager = CredentialManager.create(context)
                         credentialManager.clearCredentialState(ClearCredentialStateRequest())
 
-                        // Text fields UI delete
-                        val randomUsername = generateRandomUsername()
-                        username = randomUsername
-                        age = ""
-                        height = ""
-                        weight = ""
-
-                        // UI and local database delete
-                        performRoomDelete(characteristicsViewModel, settingsViewModel, todayTrackingsViewModel, dailyTrackingsViewModel, achievementsViewModel, randomUsername, context)
+                        delay(1.seconds)
+                        settingsViewModel.setPendingAction(false)
                     }
 
                     catch (e: Exception) {
+                        Log.e("Google sign-in", "Failed to sign out", e)
                         googleAuthError = true
+                        settingsViewModel.setPendingAction(false)
                     }
                 }
             },

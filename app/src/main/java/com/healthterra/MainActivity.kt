@@ -15,15 +15,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
@@ -36,6 +44,9 @@ import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.auth.auth
 import com.google.firebase.initialize
+import com.healthterra.helpers.PrepareAchievementSnackbar
+import com.healthterra.helpers.TieredAchievements
+import com.healthterra.helpers.getAchievementsData
 import com.healthterra.services.NotificationWorker
 import com.healthterra.services.StepTracker
 import com.healthterra.services.SyncDailyTrackingsWorker
@@ -43,6 +54,7 @@ import com.healthterra.services.SyncUserWorker
 import com.healthterra.services.createInitialUserDocument
 import com.healthterra.services.performDailyMaintenance
 import com.healthterra.ui.components.central.DrawerMenu
+import com.healthterra.ui.components.general.CustomSnackbar
 import com.healthterra.ui.themes.HealthterraTheme
 import com.healthterra.ui.viewModels.AchievementsViewModel
 import com.healthterra.ui.viewModels.CharacteristicsViewModel
@@ -81,9 +93,22 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            window.isNavigationBarContrastEnforced = false
+        // Enables edge to edge
+        val isSystemDark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+
+        val initialBarStyle = if (isSystemDark) {
+            SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
         }
+
+        else {
+            SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
+        }
+
+        enableEdgeToEdge(
+            statusBarStyle = initialBarStyle,
+            navigationBarStyle = initialBarStyle
+        )
 
         setContent {
             val userSettingsList by settingsViewModel.settings.collectAsState()
@@ -129,7 +154,7 @@ class MainActivity : ComponentActivity() {
 
             val useDynamicColor = userSettings.appearance == "Dynamic"
 
-            // Enables edge to edge and makes the system bars icons white in dark mode
+            // Makes the system bars icons white in dark mode
             val barStyle = if (isDarkTheme) {
                 SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
             }
@@ -147,8 +172,46 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
 
+            // Prepares data for the achievement completed custom snackbar
+            val snackbarHostState = remember { SnackbarHostState() }
+            val otherAchievements by achievementsViewModel.otherAchievements.collectAsState()
+            val leaderboardsList by achievementsViewModel.leaderboardsAchievements.collectAsState()
+            val tempOtherAchievements = otherAchievements // Have to use a local immutable variable
+            val leaderboardsAchievements = leaderboardsList.firstOrNull()
+            val notifiedAchievements = userSettings.notifiedAchievements
+            val pendingSyncFirestoreUserToRoom by settingsViewModel.pendingAction.collectAsState()
+
+            val achievementsStatus = if (tempOtherAchievements != null && leaderboardsAchievements != null) {
+                getAchievementsData(tempOtherAchievements, leaderboardsAchievements, userSettings.username)
+            }
+
+            else {
+                TieredAchievements()
+            }
+
             HealthterraTheme(darkTheme = isDarkTheme, dynamicColor = useDynamicColor) {
-                DrawerMenu()
+                Box(modifier = Modifier.fillMaxSize()) {
+                    DrawerMenu()
+
+                    PrepareAchievementSnackbar(
+                        achievementsData = achievementsStatus,
+                        snackbarHostState = snackbarHostState,
+                        notifiedAchievements = notifiedAchievements,
+                        pendingSyncFirestoreUserToRoom = pendingSyncFirestoreUserToRoom,
+                        onUpdateNotifiedAchievements = { updatedString ->
+                            val newSettings = userSettings.copy(notifiedAchievements = updatedString)
+                            settingsViewModel.updateUserSettings(newSettings, this@MainActivity)
+                        }
+                    )
+
+                    CustomSnackbar(
+                        hostState = snackbarHostState,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .safeDrawingPadding() // To respect edge to edge in landscape mode
+                            .padding(bottom = 8.dp)
+                    )
+                }
             }
         }
     }
@@ -169,28 +232,6 @@ class MainActivity : ComponentActivity() {
             // doesn't rely on inconsistent periodic workers, daily resetting works as intended, but for the daily leaderboards sync to
             // happen, the user has to open the app
             performDailyMaintenance(applicationContext)
-
-            // Handles edge case where, with the app on the background, the user allows activity recognition permissions and reopens the
-            // app, this opens the foreground service in that instance
-            if (userSettings.stepTracking == "Enabled") {
-                val serviceIntent = Intent(this@MainActivity, StepTracker::class.java)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
-                        if (!StepTracker.isForegroundServiceActive) {
-                            StepTracker.isForegroundServiceActive = true
-                            startForegroundService(serviceIntent)
-                        }
-                    }
-                }
-
-                else {
-                    if (!StepTracker.isForegroundServiceActive) {
-                        StepTracker.isForegroundServiceActive = true
-                        startForegroundService(serviceIntent)
-                    }
-                }
-            }
-
         }
     }
 
@@ -271,15 +312,25 @@ class MainActivity : ComponentActivity() {
 
         // Runs every time the settings table changes
         lifecycleScope.launch {
-            settingsViewModel.settings.collect { userSettingsList ->
-                val userSettings = userSettingsList.firstOrNull()
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                settingsViewModel.settings.collect { userSettingsList ->
+                    val userSettings = userSettingsList.firstOrNull()
 
-                // Starts the foreground step tracking service, only if the step tracking setting and the physical activity permissions
-                // are enabled. Steps are only counted if the foreground service is active
-                if (userSettings?.stepTracking == "Enabled") {
-                    val serviceIntent = Intent(this@MainActivity, StepTracker::class.java)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
+                    // Starts the foreground step tracking service, only if the step tracking setting and the physical activity permissions
+                    // are enabled. Steps are only counted if the foreground service is active
+                    if (userSettings?.stepTracking == "Enabled") {
+                        val serviceIntent = Intent(this@MainActivity, StepTracker::class.java)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED) {
+                                if (!StepTracker.isForegroundServiceActive) {
+                                    StepTracker.isForegroundServiceActive = true
+                                    startForegroundService(serviceIntent)
+                                }
+                            }
+                        }
+
+                        // Below this version, permissions are not needed
+                        else {
                             if (!StepTracker.isForegroundServiceActive) {
                                 StepTracker.isForegroundServiceActive = true
                                 startForegroundService(serviceIntent)
@@ -287,19 +338,11 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    // Below this version, permissions are not needed
-                    else {
-                        if (!StepTracker.isForegroundServiceActive) {
-                            StepTracker.isForegroundServiceActive = true
-                            startForegroundService(serviceIntent)
-                        }
+                    // Kills the service if the user disables the setting
+                    else if (userSettings?.stepTracking == "Disabled") {
+                        val stopIntent = Intent(this@MainActivity, StepTracker::class.java)
+                        stopService(stopIntent)
                     }
-                }
-
-                // Kills the service if the user disables the setting
-                else if (userSettings?.stepTracking == "Disabled") {
-                    val stopIntent = Intent(this@MainActivity, StepTracker::class.java)
-                    stopService(stopIntent)
                 }
             }
         }

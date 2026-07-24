@@ -74,7 +74,22 @@ class StepTracker: Service(), SensorEventListener {
         }
 
         createNotificationChannel()
-        startForeground(1, createNotification())
+
+        // Starts foreground service, wrapped in a try-catch block to avoid runtime errors
+        try {
+            startForeground(1, createNotification())
+        }
+
+        catch (e: Exception) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e is android.app.ForegroundServiceStartNotAllowedException) {
+                stopSelf()
+                return START_NOT_STICKY
+            }
+
+            else {
+                throw e
+            }
+        }
 
         // Calls from outside the step tracker service
         when (intent?.action) {
