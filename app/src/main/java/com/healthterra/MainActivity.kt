@@ -41,6 +41,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.firebase.Firebase
 import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.auth.auth
 import com.google.firebase.initialize
@@ -286,9 +287,16 @@ class MainActivity : ComponentActivity() {
 
         // Initializes Firebase App Check
         Firebase.initialize(this)
-        FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
+        val firebaseAppCheck = FirebaseAppCheck.getInstance()
+        val providerFactory = if (BuildConfig.DEBUG) {
+            DebugAppCheckProviderFactory.getInstance()
+        }
+
+        else {
             PlayIntegrityAppCheckProviderFactory.getInstance()
-        )
+        }
+
+        firebaseAppCheck.installAppCheckProviderFactory(providerFactory)
 
         // Authenticates the user anonymously to Firebase when the app first opens, if he doesn't already have a UID, also initializes the
         // according user document

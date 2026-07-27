@@ -86,7 +86,7 @@ class AchievementsViewModel(
             val hasAllAchievements = leaderboardsAchievements?.appearWaterLeaderboards ?: false &&
                 leaderboardsAchievements.appearCaloriesLeaderboards && leaderboardsAchievements.appearExerciseLeaderboards &&
                 leaderboardsAchievements.appearStepsLeaderboards && leaderboardsAchievements.appearTotalStepsLeaderboards &&
-                leaderboardsAchievements.secret
+                leaderboardsAchievements.appearHealthiestUser && leaderboardsAchievements.secret
 
             if (hasAllAchievements) {
                 return@launch
@@ -106,6 +106,7 @@ class AchievementsViewModel(
                         appearExerciseLeaderboards = localAchievementsData.appearExerciseLeaderboards || firestoreUserAchievements["appearExerciseLeaderboards"] as? Boolean ?: false,
                         appearStepsLeaderboards = localAchievementsData.appearStepsLeaderboards|| firestoreUserAchievements["appearStepsLeaderboards"] as? Boolean ?: false,
                         appearTotalStepsLeaderboards = localAchievementsData.appearTotalStepsLeaderboards || firestoreUserAchievements["appearTotalStepsLeaderboards"] as? Boolean ?: false,
+                        appearHealthiestUser = localAchievementsData.appearHealthiestUser || firestoreUserAchievements["appearHealthiestUser"] as? Boolean ?: false,
                         secret = localAchievementsData.secret || firestoreUserAchievements["secret"] as? Boolean ?: false
                     )
 

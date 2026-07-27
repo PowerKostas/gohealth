@@ -129,7 +129,7 @@ fun getAchievementsData(otherAchievements: OtherAchievements, leaderboardsAchiev
 
         // Early Playtester achievement only shows up if it's true
         optional = listOf(
-            AchievementData("Early Playtester", "We couldn't have done it without you!", Icons.Filled.Science, username == "TheWalkingDemi®", if (username == "TheWalkingDemi®") 1 else 0, 1, "Legendary")
+            AchievementData("The Very First Playtester", "We couldn't have done it without you!", Icons.Filled.Science, username == "TheWalkingDemi®", if (username == "TheWalkingDemi®") 1 else 0, 1, "Legendary")
         )
     )
 }
