@@ -75,10 +75,10 @@ fun getAchievementsData(otherAchievements: OtherAchievements, leaderboardsAchiev
             AchievementData("The Active One", "Complete 10 Exercise Goals", Icons.AutoMirrored.Filled.DirectionsBike, otherAchievements.totalExerciseGoals >= 10, otherAchievements.totalExerciseGoals, 10, "Common"),
             AchievementData("Foot Soldier", "Complete 10 Step Goals", Icons.AutoMirrored.Filled.DirectionsRun, otherAchievements.totalStepsGoals >= 10, otherAchievements.totalStepsGoals, 10, "Common"),
             AchievementData("Wanderer", "Walk 100000 Steps", Icons.Filled.Explore, otherAchievements.totalSteps >= 100000, otherAchievements.totalSteps, 100000, "Common"),
-            AchievementData("Well-Watered", "Maintain a 5-Day Water Goal Streak", Icons.Filled.LocalFlorist, otherAchievements.maxWaterStreak >= 5, otherAchievements.maxWaterStreak, 5, "Common"),
-            AchievementData("Dietitian", "Maintain a 5-Day Calorie Goal Streak", Icons.Filled.Balance, otherAchievements.maxCaloriesStreak >= 5, otherAchievements.maxCaloriesStreak, 5, "Common"),
-            AchievementData("Catalyst", "Maintain a 5-Day Exercise Goal Streak", Icons.Filled.ElectricBolt, otherAchievements.maxExerciseStreak >= 5, otherAchievements.maxExerciseStreak, 5, "Common"),
-            AchievementData("Road Warrior", "Maintain a 5-Day Step Goal Streak", Icons.Filled.NaturePeople, otherAchievements.maxStepsStreak >= 5, otherAchievements.maxStepsStreak, 5, "Common")
+            AchievementData("Well-Watered", "Maintain a 5-Day Water Goal Streak", Icons.Filled.LocalFlorist, otherAchievements.maxWaterStreak >= 5, otherAchievements.activeWaterStreak, 5, "Common"),
+            AchievementData("Dietitian", "Maintain a 5-Day Calorie Goal Streak", Icons.Filled.Balance, otherAchievements.maxCaloriesStreak >= 5, otherAchievements.activeCaloriesStreak, 5, "Common"),
+            AchievementData("Catalyst", "Maintain a 5-Day Exercise Goal Streak", Icons.Filled.ElectricBolt, otherAchievements.maxExerciseStreak >= 5, otherAchievements.activeExerciseStreak, 5, "Common"),
+            AchievementData("Road Warrior", "Maintain a 5-Day Step Goal Streak", Icons.Filled.NaturePeople, otherAchievements.maxStepsStreak >= 5, otherAchievements.activeStepsStreak, 5, "Common")
         ),
 
         rare = listOf(
@@ -87,10 +87,10 @@ fun getAchievementsData(otherAchievements: OtherAchievements, leaderboardsAchiev
             AchievementData("Athlete", "Complete 100 Exercise Goals", Icons.Filled.SportsTennis, otherAchievements.totalExerciseGoals >= 100, otherAchievements.totalExerciseGoals, 100, "Rare"),
             AchievementData("Pathfinder", "Complete 100 Step Goals", Icons.Filled.Blind, otherAchievements.totalStepsGoals >= 100, otherAchievements.totalStepsGoals, 100, "Rare"),
             AchievementData("Voyager", "Walk 1000000 Steps", Icons.Filled.Navigation, otherAchievements.totalSteps >= 1000000, otherAchievements.totalSteps, 1000000, "Rare"),
-            AchievementData("Oasis", "Maintain a 50-Day Water Goal Streak", Icons.Filled.Spa, otherAchievements.maxWaterStreak >= 50, otherAchievements.maxWaterStreak, 50, "Rare"),
-            AchievementData("Fully Fueled", "Maintain a 50-Day Calorie Goal Streak", Icons.Filled.BatteryChargingFull, otherAchievements.maxCaloriesStreak >= 50, otherAchievements.maxCaloriesStreak, 50, "Rare"),
-            AchievementData("Hard-Wired", "Maintain a 50-Day Exercise Goal Streak", Icons.Filled.MonitorHeart, otherAchievements.maxExerciseStreak >= 50, otherAchievements.maxExerciseStreak, 50, "Rare"),
-            AchievementData("Marathoner", "Maintain a 50-Day Step Goal Streak", Icons.AutoMirrored.Filled.FollowTheSigns, otherAchievements.maxStepsStreak >= 50, otherAchievements.maxStepsStreak, 50, "Rare")
+            AchievementData("Oasis", "Maintain a 50-Day Water Goal Streak", Icons.Filled.Spa, otherAchievements.maxWaterStreak >= 50, otherAchievements.activeWaterStreak, 50, "Rare"),
+            AchievementData("Fully Fueled", "Maintain a 50-Day Calorie Goal Streak", Icons.Filled.BatteryChargingFull, otherAchievements.maxCaloriesStreak >= 50, otherAchievements.activeCaloriesStreak, 50, "Rare"),
+            AchievementData("Hard-Wired", "Maintain a 50-Day Exercise Goal Streak", Icons.Filled.MonitorHeart, otherAchievements.maxExerciseStreak >= 50, otherAchievements.activeExerciseStreak, 50, "Rare"),
+            AchievementData("Marathoner", "Maintain a 50-Day Step Goal Streak", Icons.AutoMirrored.Filled.FollowTheSigns, otherAchievements.maxStepsStreak >= 50, otherAchievements.activeStepsStreak, 50, "Rare")
         ),
 
         epic = listOf(
@@ -99,10 +99,10 @@ fun getAchievementsData(otherAchievements: OtherAchievements, leaderboardsAchiev
             AchievementData("Power House", "Complete 365 Exercise Goals", Icons.Filled.Power, otherAchievements.totalExerciseGoals >= 365, otherAchievements.totalExerciseGoals, 365, "Epic"),
             AchievementData("Trailblazer", "Complete 365 Step Goals", Icons.Filled.NordicWalking, otherAchievements.totalStepsGoals >= 365, otherAchievements.totalStepsGoals, 365, "Epic"),
             AchievementData("Globetrotter", "Walk 5000000 Steps", Icons.Filled.Language, otherAchievements.totalSteps >= 5000000, otherAchievements.totalSteps, 5000000, "Epic"),
-            AchievementData("Tidal Force", "Maintain a 100-Day Water Goal Streak", Icons.Filled.Pool, otherAchievements.maxWaterStreak >= 100, otherAchievements.maxWaterStreak, 100, "Epic"),
-            AchievementData("Metabolic Monster", "Maintain a 100-Day Calorie Goal Streak", Icons.Filled.Whatshot, otherAchievements.maxCaloriesStreak >= 100, otherAchievements.maxCaloriesStreak, 100, "Epic"),
-            AchievementData("Ironclad", "Maintain a 100-Day Exercise Goal Streak", Icons.Filled.Security, otherAchievements.maxExerciseStreak >= 100, otherAchievements.maxExerciseStreak, 100, "Epic"),
-            AchievementData("Scout", "Maintain a 100-Day Step Goal Streak", Icons.Filled.Landscape, otherAchievements.maxStepsStreak >= 100, otherAchievements.maxStepsStreak, 100, "Epic")
+            AchievementData("Tidal Force", "Maintain a 100-Day Water Goal Streak", Icons.Filled.Pool, otherAchievements.maxWaterStreak >= 100, otherAchievements.activeWaterStreak, 100, "Epic"),
+            AchievementData("Metabolic Monster", "Maintain a 100-Day Calorie Goal Streak", Icons.Filled.Whatshot, otherAchievements.maxCaloriesStreak >= 100, otherAchievements.activeCaloriesStreak, 100, "Epic"),
+            AchievementData("Ironclad", "Maintain a 100-Day Exercise Goal Streak", Icons.Filled.Security, otherAchievements.maxExerciseStreak >= 100, otherAchievements.activeExerciseStreak, 100, "Epic"),
+            AchievementData("Scout", "Maintain a 100-Day Step Goal Streak", Icons.Filled.Landscape, otherAchievements.maxStepsStreak >= 100, otherAchievements.activeStepsStreak, 100, "Epic")
         ),
 
         legendary = listOf(
@@ -121,10 +121,10 @@ fun getAchievementsData(otherAchievements: OtherAchievements, leaderboardsAchiev
             AchievementData("Juggernaut", "Complete 1000 Exercise Goals", ImageVector.vectorResource(id = R.drawable.juggernaut), otherAchievements.totalExerciseGoals >= 1000, otherAchievements.totalExerciseGoals, 1000, "Impossible"),
             AchievementData("Griffin", "Complete 1000 Step Goals", ImageVector.vectorResource(id = R.drawable.griffin), otherAchievements.totalStepsGoals >= 1000, otherAchievements.totalStepsGoals, 1000, "Impossible"),
             AchievementData("Phoenix", "Walk 10000000 Steps", ImageVector.vectorResource(id = R.drawable.phoenix), otherAchievements.totalSteps >= 10000000, otherAchievements.totalSteps, 10000000, "Impossible"),
-            AchievementData("Hydra", "Maintain a 365-Day Water Goal Streak", ImageVector.vectorResource(id = R.drawable.hydra), otherAchievements.maxWaterStreak >= 365, otherAchievements.maxWaterStreak, 365, "Impossible"),
-            AchievementData("Minotaur", "Maintain a 365-Day Calorie Goal Streak", ImageVector.vectorResource(id = R.drawable.minotaur), otherAchievements.maxCaloriesStreak >= 365, otherAchievements.maxCaloriesStreak, 365, "Impossible"),
-            AchievementData("Golem", "Maintain a 365-Day Exercise Goal Streak", ImageVector.vectorResource(id = R.drawable.golem), otherAchievements.maxExerciseStreak >= 365, otherAchievements.maxExerciseStreak, 365, "Impossible"),
-            AchievementData("Unicorn", "Maintain a 365-Day Step Goal Streak", ImageVector.vectorResource(id = R.drawable.unicorn), otherAchievements.maxStepsStreak >= 365, otherAchievements.maxStepsStreak, 365, "Impossible")
+            AchievementData("Hydra", "Maintain a 365-Day Water Goal Streak", ImageVector.vectorResource(id = R.drawable.hydra), otherAchievements.maxWaterStreak >= 365, otherAchievements.activeWaterStreak, 365, "Impossible"),
+            AchievementData("Minotaur", "Maintain a 365-Day Calorie Goal Streak", ImageVector.vectorResource(id = R.drawable.minotaur), otherAchievements.maxCaloriesStreak >= 365, otherAchievements.activeCaloriesStreak, 365, "Impossible"),
+            AchievementData("Golem", "Maintain a 365-Day Exercise Goal Streak", ImageVector.vectorResource(id = R.drawable.golem), otherAchievements.maxExerciseStreak >= 365, otherAchievements.activeExerciseStreak, 365, "Impossible"),
+            AchievementData("Unicorn", "Maintain a 365-Day Step Goal Streak", ImageVector.vectorResource(id = R.drawable.unicorn), otherAchievements.maxStepsStreak >= 365, otherAchievements.activeStepsStreak, 365, "Impossible")
         ),
 
         // Early Playtester achievement only shows up if it's true
