@@ -59,6 +59,7 @@ import androidx.work.WorkManager
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.healthterra.data.UserDatabase
 import com.healthterra.helpers.generateRandomUsername
 import com.healthterra.services.FirebaseDeleteWorker
@@ -82,6 +83,7 @@ import com.healthterra.ui.viewModels.TodayTrackingsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
@@ -621,8 +623,21 @@ fun ProfileScreen() {
                     try {
                         settingsViewModel.setPendingAction(true)
 
-                        // Signs out from Firebase
-                        Firebase.auth.signOut()
+                        // Signs out from Firestore and Firebase
+                        val firestore = FirebaseFirestore.getInstance()
+                        try {
+                            firestore.waitForPendingWrites().await()
+                            firestore.terminate().await()
+                            firestore.clearPersistence().await()
+                        }
+
+                        catch (e: Exception) {
+                            Log.e("Google sign-out", "Error terminating Firestore", e)
+                        }
+
+                        finally {
+                            Firebase.auth.signOut()
+                        }
 
                         // Signs out from Google
                         val credentialManager = CredentialManager.create(context)

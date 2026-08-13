@@ -5,11 +5,15 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.healthterra.R
 import kotlinx.coroutines.launch
 
@@ -32,9 +36,13 @@ class CustomSnackbarData(
 @Composable
 fun PrepareAchievementSnackbar(achievementsData: TieredAchievements, snackbarHostState: SnackbarHostState, notifiedAchievements: String, pendingSyncFirestoreUserToRoom: Boolean, onUpdateNotifiedAchievements: (String) -> Unit) {
     val coroutineScope = rememberCoroutineScope()
+    val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateFlow.collectAsState()
 
-    LaunchedEffect(achievementsData, notifiedAchievements, pendingSyncFirestoreUserToRoom) {
+    LaunchedEffect(achievementsData, notifiedAchievements, pendingSyncFirestoreUserToRoom, lifecycleState) {
         if (pendingSyncFirestoreUserToRoom) return@LaunchedEffect
+
+        // Early return if the app is not open, avoids steps achievements popping up in the foreground
+        if (!lifecycleState.isAtLeast(Lifecycle.State.RESUMED)) return@LaunchedEffect
 
         val flatList = achievementsData.flatList
         if (flatList.isEmpty()) return@LaunchedEffect
