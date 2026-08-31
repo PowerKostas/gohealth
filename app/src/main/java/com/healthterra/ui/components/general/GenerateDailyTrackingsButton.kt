@@ -17,7 +17,7 @@ fun GenerateDailyTrackingsButton(days: Int) {
 
     Button(
         onClick = {
-            val today = LocalDate.now()
+            val today = LocalDate.now().minusDays(2)
             val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
             for (i in 0 until days) {

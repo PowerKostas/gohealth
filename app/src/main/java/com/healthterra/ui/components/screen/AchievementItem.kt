@@ -81,6 +81,9 @@ fun AchievementItem(item: AchievementData) {
     }
 
     if (showDialog) {
-        AchievementDialog(item.icon, item.title, item.description, item.currentProgress, item.goal) { showDialog = false }
+        // If the achievement is unlocked, force the progress to equal the goal in order for the UI to show it as complete
+        val displayProgress = if (item.isUnlocked) item.goal else item.currentProgress
+
+        AchievementDialog(item.icon, item.title, item.description, displayProgress, item.goal) { showDialog = false }
     }
 }
